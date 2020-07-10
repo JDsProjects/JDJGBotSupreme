@@ -201,8 +201,6 @@ async def on_message(message):
   if message.content.startswith(discordprefix+"support channel"):
     support_msg = message.content[len(discordprefix+"support channel"):]
 
-    user_info99 = message.author
-
     normal_username=str(message.author)
 
     #It allows us to get the username in full with the username and tag. unless you have something else to use...(repl.it also has a chat.)
