@@ -31,6 +31,7 @@ import math
 from async_timeout import timeout
 from keep_alive import keep_alive
 from clear_code import clear
+import DatabaseControl
 #don't delete any import statements - some things might be not used
 
 
@@ -43,7 +44,9 @@ DB_logindetails = str(os.environ['DB_data'])
 DB_client = pymongo.MongoClient(DB_logindetails)
 
 db = DB_client.db_name
-
+Chanels= db['ChanelLink']
+users = db['Users']
+testing = db['testings']
 content_database=db.list_collection_names()
 
 all_commands = """rm - is random messages
@@ -156,7 +159,10 @@ commmands_here=[  #never used
   "mail",
   "link",
   "clear",
-  
+  "link_channel",
+  "delete_channel",
+  "GetLinked",
+  "GetChannelId",
 
 ]
 
@@ -235,7 +241,7 @@ admins = [
   269904594526666754,
   717822288375971900,
   357006546674253826,
-  723179380058357860
+  723179380058357860,
 ]
 
 get_updates = [
@@ -346,7 +352,38 @@ async def on_message(message):
             await message.author.create_dm()
 
           await message.author.dm_channel.send("Happy Birthday, hope it's a good one, sorry for the random DM though....")
-
+  if not message.author.bot: #Channel Link Message Repeater
+    boolVal = 0
+    for name in commmands_here:
+      if message.content.startswith(discordprefix+name):
+        boolVal=1
+    if boolVal==0:
+      for chanId in DatabaseControl.GetLinkedChannelsList(db.testing,message.channel.id):
+        content= message.content
+        await client.get_channel(chanId).send(str(user) +": "+message.content)
+  if message.content.startswith(discordprefix+"GetChannelId") and not message.author.bot:
+    await message.channel.send(message.channel.id)
+    return
+  if message.content.startswith(discordprefix+"link_this") and not message.author.bot:
+    n1 = int(message.content.split(" ")[1])
+    DatabaseControl.AddChannelLink(db.testing,message.channel.id,n1)
+    await message.channel.send("This channel was linked to "+str(n1))
+    return   
+  if message.content.startswith(discordprefix+"link_channel") and not message.author.bot:
+    n1 = int(message.content.split(" ")[1])
+    n2 = int(message.content.split(" ")[2])
+    await message.channel.send(DatabaseControl.AddChannelLink(db.testing,n1,n2))
+    return
+  if message.content.startswith(discordprefix+"delete_channel") and not message.author.bot:
+    n1 = int(message.content.split(" ")[1])
+    n2 = int(message.content.split(" ")[2])
+    await message.channel.send(DatabaseControl.DeleteChannelLink_ChanNum(db.testing,n1,n2))
+    return
+  if message.content.startswith(discordprefix+"GetLinked") and not message.author.bot:
+    n1 =message.content.split(" ")[1]
+    print(n1)
+    await message.channel.send(DatabaseControl.GetLinkedChannels(db.testing,n1))
+    return
 
 
   if message.content.startswith(discordprefix+"help") and not message.author.bot:
@@ -999,7 +1036,7 @@ async def on_message(message):
       await message.channel.send("Message setup message for the link is: "+channel_msg)
     return
 
-  if message.content.startswith(discordprefix+"clear"):
+  if message.content.startswith(discordprefix+"clear") or message.content.startswith(discordprefix+"purge"):
     await message.delete()
     user = message.author
 
@@ -1192,7 +1229,8 @@ Support Server: https://discord.gg/rYMEvup (thank you Shadi(It's his server))
 Invite link is https://discordapp.com/oauth2/authorize?client_id=702238592725942374&scope=bot&permissions=8
 coded in Python
 Open source on https://repl.it/@JDJGInc_Offical/JDJGBotSupreme (check it out) - it's open source so you can see how it works.. Want to help? DM JDJG Inc. Official#3439 and join the support server
-We promise it follows(if our bot gets hacked, we will immediately change the token and tell us ourselves, or just join our support server(this makes it easier), some features will be moved to databases, one it makes it possible to store and keeps data private. If you ask what data we have on you, that might take a bit, but our token is stored safetly, as long as none of the project managers leak the info or repl.it isn't hacked(or anything else). the Bot is fine. """
+We promise it follows(if our bot gets hacked, we will immediately change the token and tell us ourselves, or just join our support server(this makes it easier), some features will be moved to databases, one it makes it possible to store and keeps data private. If you ask what data we have on you, that might take a bit, but our token is stored safetly, as long as none of the project managers leak the info or repl.it isn't hacked(or anything else). the Bot is fine.
+Github: https://github.com/JDJGInc/JDJGBotSupreme """
 
 legal_info = """Documents:
 
@@ -1214,7 +1252,11 @@ https://discord.com/invite/discord-developers(discord's developer server(for peo
 
 Please contact us if you feel in anyway we might not be following these rules....(this is so we both can be sure we're fine)
 
-We also tell you all the functions it does.. No we don't sell this information, if you do plan to donate, just ask. Though JDJG doesn't really need it.."""
+We also tell you all the functions it does.. No we don't sell this information, if you do plan to donate, just ask. Though JDJG doesn't really need it..
+
+Alt bot invite:
+
+https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8"""
 
 sleep_response = [
   "You should sleep, now.... if you do then sleep well",
@@ -1248,19 +1290,13 @@ def ad():
 keep_alive()
 
 
-token_grab = os.environ['Discordtoken']
+token_grab = os.environ['Discordtoken2']
 
 client.run(token_grab) 
 
 
 
 #(nightly bot - current open source code)
-
-
-
-#client.run(os.environ['Discordtoken2']) 
-
-#- canary bot(24/7)
 
 
 
