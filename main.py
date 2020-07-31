@@ -32,23 +32,15 @@ from async_timeout import timeout
 from keep_alive import keep_alive
 from clear_code import clear
 import DatabaseControl
+import RankSystem
 #don't delete any import statements - some things might be not used
 
 
 client = discord.Client()
 
 time_location = "America/New_York"  #The current timezone.
-
-DB_logindetails = str(os.environ['DB_data'])
-
-DB_client = pymongo.MongoClient(DB_logindetails)
-
-db = DB_client.db_name
-Chanels= db['ChanelLink']
-users = db['Users']
-testing = db['testings']
-content_database=db.list_collection_names()
-
+#DATABASE LOGIN MOVED TO DATABASECONFIG.PY
+import DatabaseConfig
 all_commands = """rm - is random messages
 ad -advice
 help is how you get help
@@ -198,6 +190,8 @@ async def status_task():
         await client.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.playing, name="Nomic Zorua"))
         await asyncio.sleep(4)
         await client.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.playing, name="JDJG and Shadi"))
+        await asyncio.sleep(5)
+        await client.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.playing, name="RenDev and LinuxTerm"))
         await asyncio.sleep(5)
 
 #be careful not to have a * anywhere else,
@@ -352,39 +346,51 @@ async def on_message(message):
             await message.author.create_dm()
 
           await message.author.dm_channel.send("Happy Birthday, hope it's a good one, sorry for the random DM though....")
+  #CHANNEL LINKER COMMANDS
   if not message.author.bot: #Channel Link Message Repeater
-    boolVal = 0
-    for name in commmands_here:
-      if message.content.startswith(discordprefix+name):
-        boolVal=1
-    if boolVal==0:
-      for chanId in DatabaseControl.GetLinkedChannelsList(db.testing,message.channel.id):
-        content= message.content
-        await client.get_channel(chanId).send(str(user) +": "+message.content)
+    if not message.content.startswith(discordprefix):
+      ret_str = str(user) +": "+message.content
+      print("USER: "+str(user))
+      print("MESSAGE: "+str(message.content))
+      #RankSystem.UpdateScore(user) #For the rank system
+      for chanId in DatabaseControl.GetLinkedChannelsList(message.channel.id):
+        await client.get_channel(chanId).send(ret_str)
+        if len(message.attachments) !=0: #attachment Code
+          picture = str(message.attachments[0].url)
+          await client.get_channel(chanId).send(picture)
   if message.content.startswith(discordprefix+"GetChannelId") and not message.author.bot:
     await message.channel.send(message.channel.id)
     return
   if message.content.startswith(discordprefix+"link_this") and not message.author.bot:
-    n1 = int(message.content.split(" ")[1])
-    DatabaseControl.AddChannelLink(db.testing,message.channel.id,n1)
-    await message.channel.send("This channel was linked to "+str(n1))
+    n1 = str(message.content.split(" ")[1])
+    n1 = DatabaseControl.to_ChannelId(n1)
+    DatabaseControl.AddChannelLink(message.channel.id,n1)
+    await message.channel.send("This channel was linked to "+ str(client.get_channel(n1)))
     return   
   if message.content.startswith(discordprefix+"link_channel") and not message.author.bot:
-    n1 = int(message.content.split(" ")[1])
-    n2 = int(message.content.split(" ")[2])
-    await message.channel.send(DatabaseControl.AddChannelLink(db.testing,n1,n2))
+    n1 = str(message.content.split(" ")[1])
+    n1 = DatabaseControl.to_ChannelId(n1)
+    n2 = str(message.content.split(" ")[2])
+    n2 = DatabaseControl.to_ChannelId(n2)
+    await message.channel.send(DatabaseControl.AddChannelLink(n1,n2))
     return
-  if message.content.startswith(discordprefix+"delete_channel") and not message.author.bot:
-    n1 = int(message.content.split(" ")[1])
-    n2 = int(message.content.split(" ")[2])
-    await message.channel.send(DatabaseControl.DeleteChannelLink_ChanNum(db.testing,n1,n2))
+  if message.content.startswith(discordprefix+"delete_link") and not message.author.bot:
+    n1 = str(message.content.split(" ")[1])
+    n1 = DatabaseControl.to_ChannelId(n1)
+    n2 = str(message.content.split(" ")[2])
+    n2 = DatabaseControl.to_ChannelId(n2)
+    await message.channel.send(DatabaseControl.DeleteChannelLink_ChanNum(n1,n2))
     return
   if message.content.startswith(discordprefix+"GetLinked") and not message.author.bot:
-    n1 =message.content.split(" ")[1]
-    print(n1)
-    await message.channel.send(DatabaseControl.GetLinkedChannels(db.testing,n1))
+    n1 = str(message.content.split(" ")[1])
+    n1 = DatabaseControl.to_ChannelId(n1)
+    await message.channel.send(DatabaseControl.GetLinkedChannels(client,n1))
     return
-
+#RANK SYSTEM COMMANDS
+  if message.content.startswith(discordprefix+"rank") and not message.author.bot:
+    RankSystem.GetStatus(client,message)
+    #await message.channel.send(RankSystem.CheckIfExisting(user))
+    return
 
   if message.content.startswith(discordprefix+"help") and not message.author.bot:
     await help(message)
@@ -1256,7 +1262,9 @@ We also tell you all the functions it does.. No we don't sell this information, 
 
 Alt bot invite:
 
-https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8"""
+https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8
+
+24/7 Hosting by LinuxTerm#8880 (thank you :D)"""
 
 sleep_response = [
   "You should sleep, now.... if you do then sleep well",
@@ -1294,7 +1302,7 @@ token_grab = os.environ['Discordtoken2']
 
 client.run(token_grab) 
 
-
+#token_grab uses Discordtoken - for 24/7 bot and Discordtoken2 for testing purposes
 
 #(nightly bot - current open source code)
 
