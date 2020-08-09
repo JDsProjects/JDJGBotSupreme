@@ -1,10 +1,10 @@
 from bson import ObjectId
 import DatabaseConfig
-def AddChannelLink(Channel_Source, Channel_destination):
+def AddChannelLink(Channel_Source, Channel_destination,databaseDest=DatabaseConfig.db.ChannelLink):
   document = {"src":Channel_Source,"dest":Channel_destination}
-  document_id = DatabaseConfig.db.ChannelLink.insert_one(document).inserted_id
+  document_id = databaseDest.insert_one(document).inserted_id
   return document_id
-def DeleteChannelLink_ID(ID):
+def DeleteChannelLink_ID(ID,databaseDest=DatabaseConfig.db.ChannelLink):
   DatabaseConfig.db.ChannelLink.delete_one({'_id': ObjectId(str(ID))})
   return (str(ID)+" Deleted")
 def DeleteChannelLink_ChanNum(Channel_Source,Channel_destination):

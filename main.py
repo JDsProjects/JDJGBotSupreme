@@ -16,11 +16,7 @@ import aiohttp  #do not use
 import requests #do not use unless you know why your doing
 from pytz import timezone #all good
 import pymongo
-import flask
-import database
-import dns
 import discord_webhook
-import PIL
 from difflib import SequenceMatcher
 from discord import Webhook, AsyncWebhookAdapter
 import tweepy
@@ -29,14 +25,17 @@ import itertools
 import functools
 import math
 from async_timeout import timeout
-from keep_alive import keep_alive
 from clear_code import clear
 import DatabaseControl
 import RankSystem
+import GlobalLinker
+import UpdateNotify
+import JDJG_os
 #don't delete any import statements - some things might be not used
 
-
 client = discord.Client()
+
+#don't touch the database
 
 time_location = "America/New_York"  #The current timezone.
 #DATABASE LOGIN MOVED TO DATABASECONFIG.PY
@@ -133,31 +132,82 @@ Eh...
 
 compliment is here as well
 apply bloopers I would like <role>, <message(reason why)>
+
+Arithmetic <starting_number> <number_multipled each time> <times_multipled>
+link_channel
+delete_link
+GetLinked
+GetChannelId
+rank
+global
 """
 
-commmands_here=[  #never used
+commmands_here=[
   "help",
   "rm",
   "ad",
-  "status",
   "rn",
   "about",
   "time",
   "say",
   "support DM ",
-  "log off",
-  "update",
   "support channel",
   "mail",
-  "link",
   "clear",
-  "link_channel",
-  "delete_channel",
-  "GetLinked",
-  "GetChannelId",
-
+  "rank",
+  "lead"
 ]
-
+admin_commands = [
+"log off",
+"dev_rank",
+"link_channel",
+"delete_link",
+"global",
+"toggle [sub-command]",
+"update [sub-command]",
+"GetLinked",
+"GetChannelId",
+"status"
+]
+commands_discription=[
+"The help message you are veiwing right now",
+"Sends a random message to the channel that the command was recieved from",
+"Gives random advice to you just when you ask for it :)",
+"Gives you a random number between a given range",
+"Old Help Page",
+"Gives the current time in the JDJG time zone!",
+"Bot repeats what you say...sort of like a robot!",
+"Does nothing for some reason",
+"Also does nothing",
+"Send mail to your best Discord Friends! Irl or not Irl! Creates a dm containing your mail to the specified user",
+"Clears the last thing you said in that channel",
+"Displays your current rank in the server as well as all linked servers",
+"Shows the leaderboard for the rank system. Use JDBot*lead local for server leaderboards and JDBot*lead global for the leaderboard for all connected servers"
+]
+admin_commands_discription =[
+  "Turns off JDJG bot for all servers",
+  "Gets the rank of the specified user",
+  "Merge two channels from any server into one combined chat room",
+  "Delete a linked channel from any channel or server",
+  "Defines a global channel that can be merged with all other servers global channel so that users can partisipate in a global chat room",
+  "Toggles JDBot Settings such as level up messages!",
+  "Notify people about important events that are happening in your server!",
+  "Get all channels linked to the current Channel",
+  "Gets the current channel Id",
+  "JDBot goes into sleep mode and displays no custom status for 5 seconds?"
+]
+admin_commands_usage_discription=[
+"JDBot*log off",
+"JDBot*dev_rank USERNAME_NO_DISCRIMINATOR",
+"JDBot*link_channel CHANNEL1_ID CHANNEL2_ID",
+"JDBot*delete_link CHANNEL1_ID CHANNEL2_ID",
+"JDBot*global",
+"JDBot*toggle level_msg",
+"JDBot*update [sub-subcommand] <sub commands are : title,body_head, body, preview,set,send>",
+"JDBot*GetLinked",
+"JDBot*GetChannelId",
+"JDBot*status"
+]
 bad_value = [
   "",
   " ",
@@ -177,12 +227,13 @@ application_user = [
 
 ]
 
+
 #jdjg's id only(don't add any more)
 
 async def status_task():
     while True:
         await client.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.playing, name="use JDBot*help for the commands"))
-
+        await asyncio.sleep(5)
         await client.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.playing, name="with Repl.it"))
         await asyncio.sleep(4)
         await client.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.watching, name="the creators:"))
@@ -193,6 +244,13 @@ async def status_task():
         await asyncio.sleep(5)
         await client.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.playing, name="RenDev and LinuxTerm"))
         await asyncio.sleep(5)
+        await client.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.playing, name="JDJG Bot will DM you two servers join if you want help from the bot makers - from about command or help command"))
+        await asyncio.sleep(5)
+        await client.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.playing, name="(the first one is the support server), though the blooper server will tend to do it now - second one"))
+        await asyncio.sleep(5)
+        await client.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.playing, name="use JDBot!help for the test commands"))
+        await asyncio.sleep(5)
+        
 
 #be careful not to have a * anywhere else,
 #or the text will be italicised
@@ -211,7 +269,25 @@ async def on_ready():
 async def help(message):
   if (message.author.dm_channel is None):
     await message.author.create_dm()
-    
+  embedVar2 = discord.Embed(title="User Commands")
+  i=-1
+  print(len(commmands_here))
+  print(len(commands_discription))
+  for x in commmands_here:
+    i=i+1
+    print(i)
+    embedVar2.add_field(name=x,value=commands_discription[i],inline=True)
+  await message.author.dm_channel.send(embed=embedVar2)
+  if message.author.id in admins:
+    embedVar1 = discord.Embed(title="Admin Commands")
+    i=-1
+    for x in admin_commands:
+      i=i+1
+      embedVar1.add_field(name=x,value=admin_commands_discription[i]+" usage: "+admin_commands_usage_discription[i],inline=True)
+    await message.author.dm_channel.send(embed=embedVar1)
+
+  return
+  #Old help message replaced with new one above ^^^. If you are sad that the old help message is gone, please contact RenDev and he will listen to your dispute
   await message.author.dm_channel.send("Help is on the way!")
   helpmsg = "prefix is JDBot*, commands are:\n "+all_commands
   embed_message = discord.Embed(title="About(commands):", description=helpmsg)
@@ -241,14 +317,14 @@ admins = [
 get_updates = [
   168422909482762240,
   660295633223024671,
-  717822288375971900
+  717822288375971900,
+  357006546674253826 #rendev
 ]
 
 #adding an id(if you have access to the source code and want to fork it, credit us, getting your discord id is easy, replace ours with the ones you are playing to use)
 
 send_channel = [
   556242984241201167, #my server
-  730895828855554069, #for my friend's shadi server(who is trying a fork to see how it works)
   730940969196847164,
   722675262256316488, #one for you to use if you want to
 ]
@@ -299,6 +375,11 @@ birthday_functions = {
 @client.event
 async def on_message(message):
 
+  
+  pass_yes2 = 0
+
+  pass_yes = 0
+
   sleep_time = "no"
   
   user = message.author
@@ -346,13 +427,22 @@ async def on_message(message):
             await message.author.create_dm()
 
           await message.author.dm_channel.send("Happy Birthday, hope it's a good one, sorry for the random DM though....")
+
+  #Birthday and sleep stuff ^ (deleted the old code in: https://repl.it/@JDJGInc_Offical/JDJGBotSupreme#unused_stuff/unused_code.py)
+
+
   #CHANNEL LINKER COMMANDS
   if not message.author.bot: #Channel Link Message Repeater
     if not message.content.startswith(discordprefix):
-      ret_str = str(user) +": "+message.content
-      print("USER: "+str(user))
-      print("MESSAGE: "+str(message.content))
-      #RankSystem.UpdateScore(user) #For the rank system
+      ret_str = str(user) +": "+GlobalLinker.FilterMessage(message)
+      await RankSystem.UpdateScore(message) #For the rank system
+      for gChan in DatabaseConfig.db.g_link_testing.find():
+        if message.channel.id == gChan['chan_id']:
+          for gChan in DatabaseConfig.db.g_link_testing.find():
+            if message.guild.id != gChan['ser_id']:
+              embedVar = discord.Embed(title=message.guild.name)
+              embedVar.add_field(name=str(message.author),value=str(GlobalLinker.FilterMessage(message)),inline=True)
+              await client.get_channel(gChan['chan_id']).send(embed=embedVar)
       for chanId in DatabaseControl.GetLinkedChannelsList(message.channel.id):
         await client.get_channel(chanId).send(ret_str)
         if len(message.attachments) !=0: #attachment Code
@@ -388,10 +478,34 @@ async def on_message(message):
     return
 #RANK SYSTEM COMMANDS
   if message.content.startswith(discordprefix+"rank") and not message.author.bot:
-    RankSystem.GetStatus(client,message)
+    await RankSystem.GetStatus(message)
     #await message.channel.send(RankSystem.CheckIfExisting(user))
     return
-
+  if message.content.startswith(discordprefix+"dev_rank") and not message.author.bot:
+    await RankSystem.DevGetStatus(client,message)
+    #await message.channel.send(RankSystem.CheckIfExisting(user))
+    return
+  if message.content.startswith(discordprefix+"get_user") and not message.author.bot:
+    await message.channel.send(RankSystem.GetUserByName(client,message))
+    return
+  if message.content.startswith(discordprefix+"lead") and not message.author.bot:
+    await RankSystem.GetTop10(client,message)
+    return
+  if message.content.startswith(discordprefix+"toggle") and not message.author.bot:
+    args = message.content.split(" ")[1]
+    if args == "level_msg":
+      await message.channel.send(RankSystem.ToggleLevelUpMsg(message))
+    return
+#GLOBAL LINKER
+  if message.content.startswith(discordprefix+"global") and not message.author.bot:
+    await message.channel.send(GlobalLinker.AddGlobalLink(client,message))
+    return
+#UPDATE NOTIFY
+  if message.content.startswith(discordprefix+"update") and message.author.id in admins and not message.author.bot:
+    await UpdateNotify.UpdateNote(message,client)
+    
+    return
+#OTHER STUFF
   if message.content.startswith(discordprefix+"help") and not message.author.bot:
     await help(message)
     return
@@ -400,8 +514,31 @@ async def on_message(message):
     await message.channel.send(random_message())
     return
 
+  if message.content.startswith(discordprefix+"guild_get") and not message.author.bot:
+
+    current_guild = message.guild
+    
+
+    #Just add more features I guess? - like being able to disable the owner id like the Mee6 serverinfo command?
+
+    #Example here: https://discord.com/channels/736422329399246990/736424228026450021/739518057768026147
+
+    #https://discordpy.readthedocs.io/en/latest/api.html#guild
+
+    await message.channel.send(current_guild)
+
+    return
+
   if message.content.startswith(discordprefix+"ad") and not message.author.bot:
     await message.channel.send(ad())
+    return
+
+  if message.content.startswith(discordprefix+"leave guild") and message.author.id in admins and not message.author.bot:
+
+    guild_info = client.get_guild(int(message.content.split(" ")[2]))
+
+    await guild_info.leave()
+
     return
 
   if message.content.startswith(discordprefix+"status") and message.author.id in admins and not message.author.bot:
@@ -413,10 +550,10 @@ async def on_message(message):
       number_one = int(message.content.split(" ")[1])
       number_two =  int(message.content.split(" ")[2])
     except:
-      await message.channel.send("That is not a number!")
+      await message.channel.send("That is not a number! I shall default to: 1-100")
       number_one = 0
       number_two = 100
-      return
+
 
     if number_one > number_two:
       await message.channel.send("Smaller number first")
@@ -487,6 +624,7 @@ async def on_message(message):
     await message.channel.send("Shutting off")
     await client.logout()
     return
+  
 
   if message.content.startswith(discordprefix+"update ") and message.author.id in admins and not message.author.bot:
     update_msg = message.content[len(discordprefix+"update "):]
@@ -825,7 +963,7 @@ async def on_message(message):
     user_info = "User: "+str(message.author)+"\n("+str(message.author.id)+")\n:"
     embed_message = discord.Embed(title=user_info, description=message.content)
  
-    await client.get_channel(731301751633739887).send(embed=embed_message)
+    await client.get_channel(738912143679946783).send(embed=embed_message)
     
     return
   
@@ -930,58 +1068,6 @@ async def on_message(message):
 
     return
 
-  if sleep_time == "yes" and not message.author.id in id_override:
-
-    for x in user_sleeptime:
-
-      time_info = user_sleeptime[x]
-
-      if x == message.author.id:   
-
-        user_sleeptime1 = int(time_info.split(" ")[0])
-
-        user_sleeptime2 = int(time_info.split(" ")[1])
-
-        user_sleeptime99 = int(time_info.split(" ")[2])
-
-        hour = int(time55.split(" ")[3])
-
-        minute = int(time55.split(" ")[4])
-
-        second = int(time55.split(" ")[5])
-
-      for y in user_waketime:
-
-       if y == message.author.id:
-        
-        time_end = user_waketime[y]
-
-        user_sleeptime4 = int(time_end.split(" ")[0])
-
-        user_sleeptime5 = int(time_end.split(" ")[1])
-
-        user_sleeptime6 = int(time_end.split(" ")[2])
-
-      if hour > user_sleeptime1 - 1   or hour < user_sleeptime4 -1:
-
-        if minute > user_sleeptime2 -1 or minute < user_sleeptime5 - 1:
-
-          if second -1 > user_sleeptime99 or second < user_sleeptime6 -1:
-      
-            if (message.author.dm_channel is None):
-
-              await message.author.create_dm()
-
-            message_used = sleep()
-
-            if message_used == "":
-
-              message_used = "sleep dude...."
-
-            await user.dm_channel.send(message_used)
-
-            return
-
   if message.content.startswith(discordprefix+"mail") and not message.author.bot:
     try:
       user = message.mentions[0]
@@ -1075,6 +1161,85 @@ async def on_message(message):
 
     await message.channel.send(result_here)
 
+    return
+
+  if message.content.startswith(discordprefix+"Arithmetic") and not message.author.bot:
+
+    og_number = int(message.content.split(" ")[1])
+
+    per_times = int(message.content.split(" ")[2])
+
+    number_times = int(message.content.split(" ")[3])
+
+    number_result = og_number+per_times*(number_times-1)
+    
+    await message.channel.send("Result of: \n"+str(og_number)+" + "+str(per_times)+" * ("+str(number_times)+" - 1) = "+str(number_result))
+    return
+
+  if (message.content.startswith(discordprefix+"user-find") or message.content.startswith(discordprefix+"user_find"))and not message.author.bot:
+
+    rankID = int(message.content.split(" ")[1])
+
+    #seperates id
+
+    user99 = client.get_user(rankID)
+
+    #gets the user
+
+    user_name = user99.name
+
+    #gets name
+
+    user_id = str(user99.id)
+    
+    #gets id
+    
+    discriminator99 = user99.discriminator
+
+    #gets ending bit like: #3439
+
+    avatar99 = user99.avatar
+
+    #avatar hash
+
+    bot_decide = user99.bot
+
+    #if it's a bot(bool expression)
+
+    if bot_decide == True:
+
+      await message.channel.send("That's a bot")
+
+    if bot_decide==False:
+
+      await message.channel.send("Yes, it's a user")
+
+
+      full_name = str(user_name)+"#"+str(discriminator99)
+
+      #makes it say the full name
+
+      await message.channel.send(full_name)
+
+      #prints the username
+
+      hash_check = "The avatar hash of that user is: "+str(avatar99)
+
+      #hash of the avatar
+      
+      await message.channel.send(hash_check)
+
+      await message.channel.send(user_id)
+
+    return
+
+  if message.content.startswith(discordprefix+"invite") and not message.author.bot:
+
+    await message.channel.send("Testing link: https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8")
+
+    await message.channel.send("normal invite: https://discordapp.com/oauth2/authorize?client_id=702238592725942374&scope=bot&permissions=8")
+
+    return
 
 
   if message.content.startswith(discordprefix) and not message.author.bot:
@@ -1082,10 +1247,26 @@ async def on_message(message):
     normal_username = str(message.author)
     user_info = "%s (%d):" % (normal_username, message.author.id)
     embed_message = discord.Embed(title=user_info, description=support_msg)
-    await client.get_channel(731301751633739887).send(embed=embed_message)
+    await client.get_channel(738912143679946783).send(embed=embed_message)
+
+    if (message.author.dm_channel is None):
+      await message.author.create_dm()
+    
+    await message.author.dm_channel.send(support_msg)
+
+    return
+  if message.content.startswith(discordprefix+"suspend") and message.author.id in admins and not message.author.bot:
+    await message.channel.send("testing bot")
     return
 
-  
+#RENDEV'S CODE...NO TOUCH
+#@client.event
+#async def on_message_delete(message):
+ # if message.author.bot:
+  #  return
+  #await client.send_message(message.channel, "<@{}>'s message was deleted".format(message.author.id))
+#@client.event
+#async def on_message_edit
 
     
     
@@ -1231,7 +1412,6 @@ credits = """Programmer - Nomic Zorua#6488
 Programmer - JDJG Inc. Official#3493 
 Programmer - Shadi#7879(for ranks and such+and some cool new features)- bit of help from him(thank You :D) and korikasyn#0001, as well as RenDev
 #2616.
-Support Server: https://discord.gg/rYMEvup (thank you Shadi(It's his server))
 Invite link is https://discordapp.com/oauth2/authorize?client_id=702238592725942374&scope=bot&permissions=8
 coded in Python
 Open source on https://repl.it/@JDJGInc_Offical/JDJGBotSupreme (check it out) - it's open source so you can see how it works.. Want to help? DM JDJG Inc. Official#3439 and join the support server
@@ -1264,7 +1444,9 @@ Alt bot invite:
 
 https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8
 
-24/7 Hosting by LinuxTerm#8880 (thank you :D)"""
+24/7 Hosting by LinuxTerm#8880 (thank you :D)
+
+https://discord.gg/sHUQCch - for another support center"""
 
 sleep_response = [
   "You should sleep, now.... if you do then sleep well",
@@ -1292,19 +1474,11 @@ def ad():
   return "\n"+ad_some.pop()
 
 
-
-
-
-keep_alive()
-
-
 token_grab = os.environ['Discordtoken2']
 
 client.run(token_grab) 
 
+
 #token_grab uses Discordtoken - for 24/7 bot and Discordtoken2 for testing purposes
 
 #(nightly bot - current open source code)
-
-
-

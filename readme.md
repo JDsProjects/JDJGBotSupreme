@@ -28,3 +28,7 @@ https://repl.it/talk/learn/Id-suggest-storing-the-connection-strin/16720/43971
 
 
 This bot can do many things.
+
+Make test_bot = False for whenever you read this bot(if you are running this on your pc)
+
+If you need help setting it up(we will add a wiki to setup it soon...)
