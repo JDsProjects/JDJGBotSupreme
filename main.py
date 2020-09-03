@@ -30,8 +30,15 @@ import DatabaseControl
 import RankSystem
 import GlobalLinker
 import UpdateNotify
-import JDJG_os
+import DatabaseConfig
+import urllib3
+import numpy as np
+from bs4 import BeautifulSoup
+import requests
+
 #don't delete any import statements - some things might be not used
+
+#JDJG_os will be embed and be good soon(but right now it needs some upgrades)
 
 client = discord.Client()
 
@@ -39,7 +46,7 @@ client = discord.Client()
 
 time_location = "America/New_York"  #The current timezone.
 #DATABASE LOGIN MOVED TO DATABASECONFIG.PY
-import DatabaseConfig
+
 all_commands = """rm - is random messages
 ad -advice
 help is how you get help
@@ -167,7 +174,8 @@ admin_commands = [
 "update [sub-command]",
 "GetLinked",
 "GetChannelId",
-"status"
+"status",
+"e_con"
 ]
 commands_discription=[
 "The help message you are veiwing right now",
@@ -529,6 +537,174 @@ async def on_message(message):
 
     return
 
+  #if message.content.startswith(discordprefix+"os") and not message.author.bot:
+
+    #version_info = "0.0.1"
+
+    #for now anyway
+
+    #Port this program to discord.py soon...
+
+    #operating_system = "DiscordOS"
+
+    #await client.chanel.send("\n Booting",operating_system)
+
+    #on = True
+
+    #logon = str(author.name)
+
+    #os_commands = [
+      #"cls",
+      #"clear",
+      #"exit",
+      #"break",
+      #"log off",
+      #"list commands",
+      #"random number",
+      #"ver",
+      #"version",
+      #"time",
+      #"username",
+      #"date",
+      #"datetime",
+      #"help",
+      #"type",
+
+    #]
+
+  
+
+    #command_subsystem = [
+      ##"r", #Read - Default value. Opens a file for reading, error if the file does not exist
+      #"a", #Append - Opens a file for appending, creates the file if it does not exist
+      #"w", #Write - Opens a file for writing, creates the file if it does not exist
+      #"x", # Create - Creates the specified file, returns an error if the file exist
+      #"t", #Text - Default value. Text mode
+      #"b", # Binary - Binary mode (e.g. images)
+
+    #]
+
+    #https://www.w3schools.com/python/ref_func_open.asp
+
+    #while on == True:
+
+      #display_name = logon+"@"+operating_system+":"
+
+      #command_console = input(display_name)
+
+      #print("\n")
+
+      #if command_console == "cls" or command_console == "clear":
+
+        #clear_code.clear()
+
+      #if command_console == "exit" or command_console == "break" or command_console == "log off":
+
+        #print("\n Logging out of console")
+
+        #break
+    
+      #if command_console == "list commands":
+
+        #command_amount = len(os_commands)
+
+        #command_count = 0
+
+        #while command_count < command_amount:
+
+          #print(os_commands[command_count])
+
+          #command_count = command_count+1
+
+      #if command_console == "random number":
+
+        #number_one = input("Starting number:")
+
+        #number_two = input("\n Ending number:")
+
+        #incomplete code(JDJG Bot has it anyway)
+
+        #good_or_bad=type(number_one)
+
+        #https://note.nkmk.me/en/python-check-int-float/#:~:text=float%20has%20is_integer()%20method,an%20integer%2C%20and%20False%20otherwise.&text=For%20example%2C%20a%20function%20that,function%20returns%20False%20for%20str%20.
+
+      #if good_or_bad == "str":
+
+        #print("Not good")
+
+      #if command_console == "time":
+
+        #time_info = (datetime.datetime.now(timezone(time_location)).strftime("%H:%M:%S"))
+
+        #print(time_info)
+
+      #if command_console == "date":
+
+        #value_search = "%m/%d/%Y"
+
+        #time_info = (datetime.datetime.now(timezone(time_location)).strftime(value_search))
+
+        #print(time_info)
+
+    
+      #if command_console == "datetime":
+
+        #value_search = "%m/%d/%Y %H:%M:%S"
+
+        #time_info = (datetime.datetime.now(timezone(time_location)).strftime(value_search))
+
+        #print(time_info)
+
+    
+    #if command_console == "ver" or command_console == "version":
+
+      #print(version_info)
+
+    #if command_console == "username":
+
+      #usage = logon
+
+     #print(usage)
+
+    #if command_console.startswith("type"):
+
+      #file_info = open(file_name,flag_info)
+
+      #rest_command = [len(command_console+"type")]
+
+      #total_number = len(rest_command)
+
+      #if rest_command == "help":
+
+        #total_count = 0
+
+        #number_amount=len(command_subsystem)
+
+
+        #while total_count < number_amount:
+
+          #print(command__subsystem[total_count])
+
+          #total_count = total_count + 1
+
+      #if total_number == 1 and not rest_command == "help":
+
+        #print("\n That's not enough information")
+
+        
+
+  #if not command_console in os_commands or not command_console.startswith(command_console):
+
+    #print("\n not A valid command")
+
+  #print("\n")
+
+  #now ported to https://repl.it/@JDJGInc_Offical/JDJGBotSupreme#JDJG_os.py
+
+  #og code at https://repl.it/@JDJGInc_Offical/Python-os-Console#main.py (I will write the rest here....)
+
+
+
   if message.content.startswith(discordprefix+"ad") and not message.author.bot:
     await message.channel.send(ad())
     return
@@ -544,6 +720,218 @@ async def on_message(message):
   if message.content.startswith(discordprefix+"status") and message.author.id in admins and not message.author.bot:
     await client.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(message.content[len(discordprefix+"status "):]))
     return
+
+  if message.content.startswith(discordprefix+"invert recolor") and not message.author.bot:
+
+    complete_color_code=message.content[len(discordprefix+"invert recolor"):]
+
+    #the first digits like 8(refer to N64 usually, the only color bit is the 4 digits on the right.... - we still need to reinsert them imnto memory)
+
+    #explained to me by: https://www.youtube.com/watch?v=5lZ31AlgNzw
+
+    #Insert your color code into complete_color_code(make sure it's still with """ on both sides a.k.a 3 ") - default one is SMG3's Color Code - must be a complete color code with all the hat information, etc. not an uncomplete one(so yes, it needs values, that you wouldn't use normally.)
+
+    Inverted_color_code = [
+
+      "",
+      
+    ]
+
+    Inverted_color_code_inverted = [
+
+      "",
+      
+    ]
+
+    #here to check if both color codes match
+
+    lines=complete_color_code.split("\n")
+
+    times_ran_1 = 0
+
+
+    while times_ran_1 < len(lines):
+
+      if '' == lines[times_ran_1]:
+
+        times_ran_1 = times_ran_1+1
+
+        Inverted_color_code.append('')
+
+      Inverted_color_code_inverted.append('')
+
+      if not '' == lines[times_ran_1]:
+
+        break
+
+    x = int(times_ran_1)
+
+    times_ran_program_1 = 0
+
+    #to check to make sure it doesn't go over, and sees if the first slot has a blank spot or not(and finds the first one, without a blank spot)
+
+
+    while x < len(lines):
+
+      color_value = lines[x]
+
+      color_value2 = lines[x+1]
+
+      colored_bit=color_value.split(" ")
+
+      colored_bit2 = color_value2.split(" ")
+
+      color_code_front = colored_bit[0]
+
+      color_code_front2 = colored_bit2[0]
+
+      color_section = colored_bit[1]
+
+      color_section2 = colored_bit2[1]
+
+
+      r = int(color_section[0:2], 16)
+      g = int(color_section[2:4], 16)
+      b = int(color_section2[0:2], 16)
+
+      r = 0xFF - r
+      g = 0xFF - g
+      b = 0xFF - b
+
+      #solution suggested by John10v10#5883
+
+      bits_used998 = f"{r:0{2}x}{g:0{2}x}{b:0{2}x}"
+
+      first_color_line =  bits_used998[0:4].upper()
+
+      second_color_line = bits_used998[4:6].upper()
+
+      color_code_needed = color_code_front+" "+first_color_line
+
+      color_code_needed_2 = color_code_front2+" "+second_color_line+color_section2[2:4]
+
+      Inverted_color_code.append(color_code_needed)
+
+      Inverted_color_code.append(color_code_needed_2)
+
+      x = x +2
+
+      times_ran_program_1 = times_ran_program_1 + 1
+
+      recolor_send = ("all"+" "+x-times_ran_1+""+"of the color code lines ran!")
+
+    await message.channel.send(recolor_send)
+
+    times_ran_1 = 0
+
+
+    while times_ran_1 < len(Inverted_color_code):
+
+      if '' == Inverted_color_code[times_ran_1]:
+
+        times_ran_1 = times_ran_1+1
+
+      if not '' == Inverted_color_code[times_ran_1]:
+
+        break
+
+    z = int(times_ran_1)
+
+    while z < len(Inverted_color_code):
+
+      color_value = Inverted_color_code[z]
+
+      color_value2 = Inverted_color_code[z+1]
+
+      colored_bit=color_value.split(" ")
+
+      colored_bit2 = color_value2.split(" ")
+
+      color_code_front = colored_bit[0]
+
+      color_code_front2 = colored_bit2[0]
+
+      color_section = colored_bit[1]
+
+      color_section2 = colored_bit2[1]
+
+
+      r = int(color_section[0:2], 16)
+      g = int(color_section[2:4], 16)
+      b = int(color_section2[0:2], 16)
+
+      r = 0xFF - r
+      g = 0xFF - g
+      b = 0xFF - b
+
+      #solution suggested by John10v10#5883
+
+      bits_used998 = f"{r:0{2}x}{g:0{2}x}{b:0{2}x}"
+
+      first_color_line =  bits_used998[0:4].upper()
+
+      second_color_line = bits_used998[4:6].upper()
+
+      color_code_needed = color_code_front+" "+first_color_line
+
+      color_code_needed_2 = color_code_front2+" "+second_color_line+color_section2[2:4]
+
+      Inverted_color_code_inverted.append(color_code_needed)
+
+      Inverted_color_code_inverted.append(color_code_needed_2)
+
+      z = z +2
+
+
+    if Inverted_color_code_inverted == lines:
+
+      message.channel.send("\nYour color code was succesfully inverted")
+
+      want_it = "yes"
+
+    if not Inverted_color_code_inverted == lines:
+
+      await message.channel.send("\nColor failed....")
+
+      want_it = "no"
+
+      want_it2 = "yes"
+
+
+
+
+    j = 0
+
+
+    if want_it == "yes":
+
+      await message.channel.send("\nInverted Color Code:")
+
+
+      while j < len(Inverted_color_code):
+
+        message.channel.send(Inverted_color_code[j])
+
+        j = j + 1
+
+    jdjg = 0
+
+    if want_it2 == "yes":
+
+      await message.channel.send("\nOrginal Color Code that was inverted and was inverted back: ")
+
+      while jdjg < len(Inverted_color_code_inverted):
+
+        message.channel.send(Inverted_color_code_inverted[jdjg])
+
+        jdjg = jdjg + 1
+
+      message.channel.send("\nOrginal color code:")
+
+      message.channel.send(complete_color_code)
+
+    return
+
 
   if message.content.startswith(discordprefix+"rn") and not message.author.bot:
     try:
@@ -619,7 +1007,44 @@ async def on_message(message):
         print("Error processesing user:", adID)
       
       return
+
+  if message.content.startswith(discordprefix+"backup_emojis") and not message.author.bot:
+
+    guild_search = client.get_guild(736422329399246990)
+
+    backup_emoji1= 748753645138608239
+
+    guild_1 = client.get_guild(backup_emoji1)
+
+    backup_emoji2 = 748753770476732499
+
+    guild_2 = client.get_guild(backup_emoji2)
+
+    guild_emoji_fetch = guild_search.emojis
+    i = -1
+    for obj in guild_emoji_fetch:
       
+      response = requests.get(str(obj.url))
+      img = response.content
+      #resp = urllib3.PoolManager().request('GET',str(obj.url))
+     # image99 = BeautifulSoup(resp.data)
+    
+      if(i<50):
+        if str(obj.animated) == "True":
+          await guild_1.create_custom_emoji(name = str(obj.name),image=img)
+        if str(obj.animated) == "False":
+          i = i-1
+      if(i>=50):
+        if str(obj.animated) == "False":
+          await guild_2.create_custom_emoji(name = str(obj.name),image=img)
+        if str(obj.animated) == "True":
+          i =  i-1
+
+
+    return
+  
+
+
   if message.content.startswith(discordprefix+"log off") and message.author.id in admins and not message.author.bot:
     await message.channel.send("Shutting off")
     await client.logout()
@@ -1260,15 +1685,43 @@ async def on_message(message):
     return
 
 #RENDEV'S CODE...NO TOUCH
-#@client.event
-#async def on_message_delete(message):
- # if message.author.bot:
-  #  return
-  #await client.send_message(message.channel, "<@{}>'s message was deleted".format(message.author.id))
-#@client.event
-#async def on_message_edit
+@client.event
+async def on_message_delete(message):
+  if message.author.bot:
+   return
+  await message.channel.send("Message was Deleted")
+  if(message.content.startswith("deleteMe")):
+   await client.delete_message(message)
+@client.event
+async def on_message_edit(before,after):
+  print("*")
+  message = await find_message(after,before)
+  embedVar = discord.Embed(title=after.guild.name)
+  embedVar.add_field(name=str(after.author),value=str(GlobalLinker.FilterMessage(after)),inline=True)
+  await message.edit(embed=embedVar)
+async def find_message(messageC,messageB):
+  i=0
+  print("Hello")
+  for chan in DatabaseConfig.db.g_link_testing.find():
+    i=i+1
+    print(i)
+    channel = client.get_channel(chan['chan_id'])
+    print("Chan_id: "+ str(channel.id) + "  :  "+str(messageB.channel.id) )
+    if channel.id != messageB.channel.id:
+      async for mess in channel.history():
+        try:
+          embed_content_in_dict = mess.embeds[0].to_dict()
+          print(embed_content_in_dict['fields'][0]['value'])
+          if messageB.content==embed_content_in_dict['fields'][0]['value']:
+            print("HELLO"+embed_content_in_dict['fields'][0]['name'])
+            if embed_content_in_dict['fields'][0]['name'] == messageB.author:
+          #if mess.created_at.minute == messageB.created_at.minute:
+              return mess
+        except:
+          banana=0
+        
 
-    
+
     
 
 
@@ -1474,7 +1927,7 @@ def ad():
   return "\n"+ad_some.pop()
 
 
-token_grab = os.environ['Discordtoken2']
+token_grab = os.environ['Discordtoken']
 
 client.run(token_grab) 
 
