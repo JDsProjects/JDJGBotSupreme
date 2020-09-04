@@ -38,6 +38,8 @@ import requests
 
 #don't delete any import statements - some things might be not used
 
+#will add JDJG_os soon, as well as My recolor program(maybe)
+
 #JDJG_os will be embed and be good soon(but right now it needs some upgrades)
 
 client = discord.Client()
