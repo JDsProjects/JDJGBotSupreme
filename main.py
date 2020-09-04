@@ -40,6 +40,8 @@ import requests
 
 #will add JDJG_os soon, as well as My recolor program(maybe)
 
+#All code that has been transfered over took a while.
+
 #JDJG_os will be embed and be good soon(but right now it needs some upgrades)
 
 client = discord.Client()
