@@ -4,6 +4,7 @@ import os
 import asyncio
 import random
 import time
+import B
 import sqlite3
 from discord.ext import commands, tasks # don't use these
 from discord.ext.commands import Bot, Cog # don't use these
@@ -450,11 +451,15 @@ async def on_message(message):
       await RankSystem.UpdateScore(message) #For the rank system
       for gChan in DatabaseConfig.db.g_link_testing.find():
         if message.channel.id == gChan['chan_id']:
+         # print(str(gChan['chan_id']) + " CUR: "+str(message.channel.id))
           for gChan in DatabaseConfig.db.g_link_testing.find():
             if message.guild.id != gChan['ser_id']:
               embedVar = discord.Embed(title=message.guild.name)
               embedVar.add_field(name=str(message.author),value=str(GlobalLinker.FilterMessage(message)),inline=True)
-              await client.get_channel(gChan['chan_id']).send(embed=embedVar)
+              try:
+                await client.get_channel(gChan['chan_id']).send(embed=embedVar)
+              except:
+                print(gChan['chan_id'])
       for chanId in DatabaseControl.GetLinkedChannelsList(message.channel.id):
         await client.get_channel(chanId).send(ret_str)
         if len(message.attachments) !=0: #attachment Code
@@ -1451,6 +1456,11 @@ async def on_message(message):
 
     return
 
+  if message.content.startswith(discordprefix+"if_nitro") and not message.author.bot:
+
+    return
+
+
   if message.content.startswith(discordprefix+"invite") and not message.author.bot:
 
     await message.channel.send("Testing link: https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8")
@@ -1722,6 +1732,7 @@ def ad():
 
 token_grab = os.environ['Discordtoken']
 
+B.b()
 client.run(token_grab) 
 
 
