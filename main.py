@@ -1,5 +1,6 @@
 import discord
-#import discord.ext
+#import discord.ext 
+import ClientConfig
 import os
 import asyncio
 import random
@@ -36,7 +37,7 @@ import urllib3
 import numpy as np
 from bs4 import BeautifulSoup
 import requests
-
+import GetPfp
 #don't delete any import statements - some things might be not used
 
 #will add JDJG_os soon, as well as My recolor program(maybe)
@@ -45,7 +46,7 @@ import requests
 
 #JDJG_os will be embed and be good soon(but right now it needs some upgrades)
 
-client = discord.Client()
+client = ClientConfig.client
 
 #don't touch the database
 
@@ -300,21 +301,6 @@ async def help(message):
     await message.author.dm_channel.send(embed=embedVar1)
 
   return
-  #Old help message replaced with new one above ^^^. If you are sad that the old help message is gone, please contact RenDev and he will listen to your dispute
-  await message.author.dm_channel.send("Help is on the way!")
-  helpmsg = "prefix is JDBot*, commands are:\n "+all_commands
-  embed_message = discord.Embed(title="About(commands):", description=helpmsg)
-  await message.author.dm_channel.send(embed=embed_message)
-
-  helpmsg2 = "prefix is JDBot*, More commands are:\n "+all_commands2
-
-  embed_message = discord.Embed(title="About(commands):",description=helpmsg2)
-
-  await message.author.dm_channel.send(embed=embed_message)
-  
-  embed_message = discord.Embed(title="About(legal):",description=legal_info)
-
-  await message.author.dm_channel.send(embed=embed_message)
 
    
     
@@ -325,13 +311,6 @@ admins = [
   717822288375971900,
   357006546674253826,
   723179380058357860,
-]
-
-get_updates = [
-  168422909482762240,
-  660295633223024671,
-  717822288375971900,
-  357006546674253826 #rendev
 ]
 
 #adding an id(if you have access to the source code and want to fork it, credit us, getting your discord id is easy, replace ours with the ones you are playing to use)
@@ -347,25 +326,6 @@ from_to_channel={
 }
 
 
-user_sleeptime = {
-  168422909482762240:"21 0 0",
-  717822288375971900:"21 0 0",
-
-}
-
-
-user_waketime = {
-  168422909482762240:"6 0 0",
-  717822288375971900:"6 0 0",
-
-}
-
-user_timezone = {
-  168422909482762240:"America/New_York",
-  717822288375971900:"America/New_York",
-
-
-}
 
 
 id_override = [
@@ -373,93 +333,23 @@ id_override = [
 
 ]
 
-birthday_functions = {
-  269904594526666754:"7 19",
-  168422909482762240:"7 3",
-
-
-
-}
-
-#support channels(get contacted of a support message)
+#Typing Status Support
 
 #commands with embed: help, mail, support, about, update(will soon)
-
 @client.event
 async def on_message(message):
-
-  
-  pass_yes2 = 0
-
-  pass_yes = 0
-
-  sleep_time = "no"
+  #await client.user.edit(username="JDJG Bot")
   
   user = message.author
 
-  time = message.created_at
-
-  time99 = time.astimezone(timezone(time_location)).strftime("%m/%d/%Y, %H:%M:%S")
-
-  for x in user_timezone:
-
-    time_location99 = user_timezone[x]
-
-    if x == message.author.id:
-
-      time55 = time.astimezone(timezone(time_location99)).strftime("%m %d %Y %H %M %S")
-
-      sleep_time = "yes"
-
-  for z in birthday_functions:
-
-    for x in user_timezone:
-
-      time_location99 = user_timezone[x]
-
-      dates = birthday_functions[z]
-
-      guess = time.astimezone(timezone(time_location99)).strftime("%m %d %Y %H %M %S")
-
-      #didn't know which birthday certain users might have...
-
-      guess_1 = int(guess.split(" ")[0])
-
-      guess_2 = int(guess.split(" ")[1])
-
-      if z == message.author.id and x == message.author.id:
-
-        user_month = int(dates.split(" ")[0])
-
-        user_month2 = int(dates.split(" ")[1])
-
-        if user_month == guess_1 and user_month2 == guess_2:
-
-          if (message.author.dm_channel is None):
-
-            await message.author.create_dm()
-
-          await message.author.dm_channel.send("Happy Birthday, hope it's a good one, sorry for the random DM though....")
-
-  #Birthday and sleep stuff ^ (deleted the old code in: https://repl.it/@JDJGInc_Offical/JDJGBotSupreme#unused_stuff/unused_code.py)
-
-
+  time99 = message.created_at.astimezone(timezone(time_location)).strftime("%m/%d/%Y, %H:%M:%S")
+  #await bot.send_typing(ctx.channel)
   #CHANNEL LINKER COMMANDS
   if not message.author.bot: #Channel Link Message Repeater
     if not message.content.startswith(discordprefix):
       ret_str = str(user) +": "+GlobalLinker.FilterMessage(message)
-      await RankSystem.UpdateScore(message) #For the rank system
-      for gChan in DatabaseConfig.db.g_link_testing.find():
-        if message.channel.id == gChan['chan_id']:
-         # print(str(gChan['chan_id']) + " CUR: "+str(message.channel.id))
-          for gChan in DatabaseConfig.db.g_link_testing.find():
-            if message.guild.id != gChan['ser_id']:
-              embedVar = discord.Embed(title=message.guild.name)
-              embedVar.add_field(name=str(message.author),value=str(GlobalLinker.FilterMessage(message)),inline=True)
-              try:
-                await client.get_channel(gChan['chan_id']).send(embed=embedVar)
-              except:
-                print(gChan['chan_id'])
+      await RankSystem.UpdateScore(message) #For the rank 
+      await GlobalLinker.SendMessage(message)
       for chanId in DatabaseControl.GetLinkedChannelsList(message.channel.id):
         await client.get_channel(chanId).send(ret_str)
         if len(message.attachments) !=0: #attachment Code
@@ -493,6 +383,22 @@ async def on_message(message):
     n1 = DatabaseControl.to_ChannelId(n1)
     await message.channel.send(DatabaseControl.GetLinkedChannels(client,n1))
     return
+  if message.content.startswith(discordprefix+"global_list") and not message.author.bot:
+    i=0
+    embedVar = Embed(title = "Gobal Channels List")
+    for obj in DatabaseConfig.db.g_link_testing.find():
+      i=i+1
+      header = str(i) + ": "
+      try:
+        header = header +str(client.get_guild(obj["ser_id"]).name)
+        body  = str(client.get_channel(obj["chan_id"]).name)
+      except:
+        header = header + "Cannot Connect"
+        body = "<#"+str(obj["chan_id"])+">"
+      embedVar.add_field(name = header,value = body)
+    await message.channel.send(embed = embedVar)
+
+    return
 #RANK SYSTEM COMMANDS
   if message.content.startswith(discordprefix+"rank") and not message.author.bot:
     await RankSystem.GetStatus(message)
@@ -515,13 +421,53 @@ async def on_message(message):
     return
 #GLOBAL LINKER
   if message.content.startswith(discordprefix+"global") and not message.author.bot:
-    await message.channel.send(GlobalLinker.AddGlobalLink(client,message))
+    args = "NULL"
+    try:
+      args = message.content.split(" ")[1]
+    except:
+      await message.channel.send("Did not input an argument!")
+    if(args=="link"):
+      await message.channel.send(GlobalLinker.AddGlobalLink(client,message))
+      return
+    if(args=="delete"):
+      await message.channel.send(GlobalLinker.TerminateLink(message))
+      return
+    if(args=="test"):
+      await GlobalLinker.FindGlobal(message)
+      return
+    await message.channel.send("Valid arguments are link or delete")
     return
 #UPDATE NOTIFY
   if message.content.startswith(discordprefix+"update") and message.author.id in admins and not message.author.bot:
     await UpdateNotify.UpdateNote(message,client)
     
     return
+
+  if message.content.startswith(discordprefix+"help_2") and not message.author.bot:
+
+    #Old help message replaced with new one above ^^^. If you are sad that the old help message is gone, please contact RenDev and he will listen to your dispute
+
+    if (message.author.dm_channel is None):
+      await message.author.create_dm()
+
+    await message.author.dm_channel.send("Help is on the way!")
+
+    helpmsg = "prefix is JDBot*, commands are:\n "+all_commands
+    embed_message = discord.Embed(title="About(commands):", description=helpmsg)
+    await message.author.dm_channel.send(embed=embed_message)
+
+    helpmsg2 = "prefix is JDBot*, More commands are:\n "+all_commands2
+
+    embed_message = discord.Embed(title="About(commands):",description=helpmsg2)
+
+    await message.author.dm_channel.send(embed=embed_message)
+  
+    embed_message = discord.Embed(title="About(legal):",description=legal_info)
+
+    await message.author.dm_channel.send(embed=embed_message)
+
+    return
+
 #OTHER STUFF
   if message.content.startswith(discordprefix+"help") and not message.author.bot:
     await help(message)
@@ -546,173 +492,17 @@ async def on_message(message):
 
     return
 
-  #if message.content.startswith(discordprefix+"os") and not message.author.bot:
+  if message.content.startswith(discordprefix+"server_icon") and not message.author.bot:
 
-    #version_info = "0.0.1"
+    await message.channel.send(GetPfp.GetServerPfp(message))
 
-    #for now anyway
+    return
 
-    #Port this program to discord.py soon...
-
-    #operating_system = "DiscordOS"
-
-    #await client.chanel.send("\n Booting",operating_system)
-
-    #on = True
-
-    #logon = str(author.name)
-
-    #os_commands = [
-      #"cls",
-      #"clear",
-      #"exit",
-      #"break",
-      #"log off",
-      #"list commands",
-      #"random number",
-      #"ver",
-      #"version",
-      #"time",
-      #"username",
-      #"date",
-      #"datetime",
-      #"help",
-      #"type",
-
-    #]
-
-  
-
-    #command_subsystem = [
-      ##"r", #Read - Default value. Opens a file for reading, error if the file does not exist
-      #"a", #Append - Opens a file for appending, creates the file if it does not exist
-      #"w", #Write - Opens a file for writing, creates the file if it does not exist
-      #"x", # Create - Creates the specified file, returns an error if the file exist
-      #"t", #Text - Default value. Text mode
-      #"b", # Binary - Binary mode (e.g. images)
-
-    #]
-
-    #https://www.w3schools.com/python/ref_func_open.asp
-
-    #while on == True:
-
-      #display_name = logon+"@"+operating_system+":"
-
-      #command_console = input(display_name)
-
-      #print("\n")
-
-      #if command_console == "cls" or command_console == "clear":
-
-        #clear_code.clear()
-
-      #if command_console == "exit" or command_console == "break" or command_console == "log off":
-
-        #print("\n Logging out of console")
-
-        #break
+  if message.content.startswith(discordprefix+"avatar") and not message.author.bot:
     
-      #if command_console == "list commands":
-
-        #command_amount = len(os_commands)
-
-        #command_count = 0
-
-        #while command_count < command_amount:
-
-          #print(os_commands[command_count])
-
-          #command_count = command_count+1
-
-      #if command_console == "random number":
-
-        #number_one = input("Starting number:")
-
-        #number_two = input("\n Ending number:")
-
-        #incomplete code(JDJG Bot has it anyway)
-
-        #good_or_bad=type(number_one)
-
-        #https://note.nkmk.me/en/python-check-int-float/#:~:text=float%20has%20is_integer()%20method,an%20integer%2C%20and%20False%20otherwise.&text=For%20example%2C%20a%20function%20that,function%20returns%20False%20for%20str%20.
-
-      #if good_or_bad == "str":
-
-        #print("Not good")
-
-      #if command_console == "time":
-
-        #time_info = (datetime.datetime.now(timezone(time_location)).strftime("%H:%M:%S"))
-
-        #print(time_info)
-
-      #if command_console == "date":
-
-        #value_search = "%m/%d/%Y"
-
-        #time_info = (datetime.datetime.now(timezone(time_location)).strftime(value_search))
-
-        #print(time_info)
-
+    await message.channel.send(GetPfp.GetUserPfp(message))
     
-      #if command_console == "datetime":
-
-        #value_search = "%m/%d/%Y %H:%M:%S"
-
-        #time_info = (datetime.datetime.now(timezone(time_location)).strftime(value_search))
-
-        #print(time_info)
-
-    
-    #if command_console == "ver" or command_console == "version":
-
-      #print(version_info)
-
-    #if command_console == "username":
-
-      #usage = logon
-
-     #print(usage)
-
-    #if command_console.startswith("type"):
-
-      #file_info = open(file_name,flag_info)
-
-      #rest_command = [len(command_console+"type")]
-
-      #total_number = len(rest_command)
-
-      #if rest_command == "help":
-
-        #total_count = 0
-
-        #number_amount=len(command_subsystem)
-
-
-        #while total_count < number_amount:
-
-          #print(command__subsystem[total_count])
-
-          #total_count = total_count + 1
-
-      #if total_number == 1 and not rest_command == "help":
-
-        #print("\n That's not enough information")
-
-        
-
-  #if not command_console in os_commands or not command_console.startswith(command_console):
-
-    #print("\n not A valid command")
-
-  #print("\n")
-
-  #now ported to https://repl.it/@JDJGInc_Offical/JDJGBotSupreme#JDJG_os.py
-
-  #og code at https://repl.it/@JDJGInc_Offical/Python-os-Console#main.py (I will write the rest here....)
-
-
+    return
 
   if message.content.startswith(discordprefix+"ad") and not message.author.bot:
     await message.channel.send(ad())
@@ -841,23 +631,25 @@ async def on_message(message):
 
     return
   
+  if message.content.startswith(discordprefix+"emoji") and not message.author.bot:
 
+    import re
+
+    full_emojis=re.findall(r':\w*:\d*',message.content)
+
+    custom_emoji_names = [(e.split(':')[1].replace('>', '')) for e in full_emojis]
+
+    custom_emoji_ids = [int(e.split(':')[2].replace('>', '')) for e in full_emojis]
+
+    print(custom_emoji_names)
+
+    print(custom_emoji_ids)
+
+    return
 
   if message.content.startswith(discordprefix+"log off") and message.author.id in admins and not message.author.bot:
     await message.channel.send("Shutting off")
     await client.logout()
-    return
-  
-
-  if message.content.startswith(discordprefix+"update ") and message.author.id in admins and not message.author.bot:
-    update_msg = message.content[len(discordprefix+"update "):]
-    update_msg_embed = discord.Embed(title="New Update:", description=update_msg)
-    for updateID in get_updates:
-      get_updates_epic = client.get_user(updateID)
-
-      if (get_updates_epic.dm_channel is None):
-        await get_updates_epic.create_dm()
-      await get_updates_epic.send(embed=update_msg_embed)
     return
 
 
@@ -1456,10 +1248,6 @@ async def on_message(message):
 
     return
 
-  if message.content.startswith(discordprefix+"if_nitro") and not message.author.bot:
-
-    return
-
 
   if message.content.startswith(discordprefix+"invite") and not message.author.bot:
 
@@ -1468,7 +1256,6 @@ async def on_message(message):
     await message.channel.send("normal invite: https://discordapp.com/oauth2/authorize?client_id=702238592725942374&scope=bot&permissions=8")
 
     return
-
 
   if message.content.startswith(discordprefix) and not message.author.bot:
     support_msg = "user tried to excute command(doesn't exist): "+str(message.content)
@@ -1490,38 +1277,46 @@ async def on_message(message):
 #RENDEV'S CODE...NO TOUCH
 @client.event
 async def on_message_delete(message):
-  if message.author.bot:
-   return
-  await message.channel.send("Message was Deleted")
-  if(message.content.startswith("deleteMe")):
-   await client.delete_message(message)
+  if not message.author.bot:
+    try:
+     can = await GlobalLinker.FindGlobal(message)
+     for obj in can:
+        channel = client.get_channel(int(obj["chan_id"]))
+        msg= await channel.fetch_message(obj["mes_id"].id)
+        print(msg.id)
+        await msg.delete()
+    except:
+      banana = 0
+@client.event
+async def on_typing(channel,user,_time):
+  if not user.bot:
+    #try:
+    docs = DatabaseConfig.db.g_link_testing.find()
+    for chan in docs:
+      if (chan["chan_id"]!=channel.id):
+       # print("CHAN_ID: "+str(chan["chan_id"]))
+        try:
+          #print(client.get_channel(int(chan["chan_id"])).name)
+          await client.get_channel(int(chan["chan_id"])).trigger_typing()
+        except:
+          banana = 1
+    return
+    #except:
+  return
+
+
 @client.event
 async def on_message_edit(before,after):
-  print("*")
-  message = await find_message(after,before)
-  embedVar = discord.Embed(title=after.guild.name)
-  embedVar.add_field(name=str(after.author),value=str(GlobalLinker.FilterMessage(after)),inline=True)
-  await message.edit(embed=embedVar)
-async def find_message(messageC,messageB):
-  i=0
-  print("Hello")
-  for chan in DatabaseConfig.db.g_link_testing.find():
-    i=i+1
-    print(i)
-    channel = client.get_channel(chan['chan_id'])
-    print("Chan_id: "+ str(channel.id) + "  :  "+str(messageB.channel.id) )
-    if channel.id != messageB.channel.id:
-      async for mess in channel.history():
-        try:
-          embed_content_in_dict = mess.embeds[0].to_dict()
-          print(embed_content_in_dict['fields'][0]['value'])
-          if messageB.content==embed_content_in_dict['fields'][0]['value']:
-            print("HELLO"+embed_content_in_dict['fields'][0]['name'])
-            if embed_content_in_dict['fields'][0]['name'] == messageB.author:
-          #if mess.created_at.minute == messageB.created_at.minute:
-              return mess
-        except:
-          banana=0
+   if not after.author.bot:
+    try:
+     can = await GlobalLinker.FindGlobal(before)
+     newEmbed = GlobalLinker.GetGlobalEmbed(after)
+     for obj in can:
+        channel = client.get_channel(int(obj["chan_id"]))
+        msg= await channel.fetch_message(obj["mes_id"].id)
+        await msg.edit(embed = newEmbed)
+    except:
+      banana = 0
         
 
 
