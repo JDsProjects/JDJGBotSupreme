@@ -1,2 +1,3 @@
 import discord
-client = discord.Client()
+intents_usage=discord.Intents.all()
+client = discord.Client(intents = intents_usage)

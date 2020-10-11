@@ -1,3 +1,6 @@
+#just make a text command line that works and will save the current os time, etc.
+
+#and will stay in the mode of the os until you decide to exit the os.
 if message.content.startswith(discordprefix+"os") and not message.author.bot:
 
     version_info = "0.0.1"

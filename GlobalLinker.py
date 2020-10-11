@@ -33,7 +33,16 @@ async def SendMessage(message):
                 await client.get_channel(gChan['chan_id']).send(embed=embedVar)
               except:
                 banana = 1
-
+async def TestGLink(message):
+  embedVar = discord.Embed(title=message.guild.name)
+  embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)            
+  embedVar.set_thumbnail(url = GetPfp.GetServerPfp(message))
+  val = str(FilterMessage(message))
+  images = message.attachments
+  for obj in images:
+    val=val + (""+obj.url)
+  embedVar.add_field(name=str(message.author),value=val,inline=True)
+  await message.channel.send(embed = embedVar)
 def TerminateLink(message):
   DatabaseConfig.db.g_link_testing.delete_one({'ser_id':message.guild.id})
   return "Deleted Link forever" 
@@ -61,8 +70,12 @@ async def FindGlobal(message):
   return ret
 def GetGlobalEmbed(message):
   embedVar = discord.Embed(title=message.guild.name)
-  embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)
+  embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)            
   embedVar.set_thumbnail(url = GetPfp.GetServerPfp(message))
-  embedVar.add_field(name=str(message.author),value=str(FilterMessage(message)),inline=True)
+  val = str(FilterMessage(message))
+  images = message.attachments
+  for obj in images:
+    val=val + ("\n"+obj.url)
+  embedVar.add_field(name=str(message.author),value=val,inline=True)
   return embedVar
-#def GetEmote(message):
+

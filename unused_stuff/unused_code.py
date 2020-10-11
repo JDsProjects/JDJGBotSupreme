@@ -11,14 +11,57 @@ user_waketime = {
 
 user_sleeptime = {
   168422909482762240:"21 0 0",
-  717822288375971900:"21 0 0",
+  717822288375971900:"22 0 0",
 
 }
+
+#24 hour time
 
 birthday_functions = {
   269904594526666754:"7 19",
   168422909482762240:"7 3",
 }
+
+id_override = [
+  168422909482762240,
+
+]
+
+#the date.
+
+#implent some of the list from:
+
+#https://repl.it/@JDJGInc_Offical/TimeZone-Check#main.py
+
+sleep_response99 = []
+
+sleep_response = [
+  "You should sleep, now.... if you do then sleep well",
+  "trust me sleep is imporant",
+  "Being tired sucks(I felt it many times before)",
+  "Sure life is limited but seriously it's actually not bad...",
+  "When it's too late for you, you know your commands are disabled, why? well it's so you don't keep on staying up...",
+  "Commands are returned after you wake up(it's two way)",
+  "Commands were disabled for you right now",
+  "Sleep and I will see you Tommorow",
+  "Mods have been notified",
+  "Why won't you sleep?",
+  "go to sleep dude...",
+  ">_> sleep please",
+  ]
+
+def sleep():
+  global sleep_response99
+
+  if len(sleep_response99) == 0:
+
+    sleep_response99 = sleep_response
+
+    random.shuffle(sleep_response99)
+
+  return "\n"+sleep_response99.pop()
+
+
 
 pass_yes2 = 0
 
@@ -125,3 +168,9 @@ if sleep_time == "yes" and not message.author.id in id_override:
                 await user.dm_channel.send(message_used)
 
                 return
+
+#it would essentially get your timezone(check the time you sleep, when it was your birthday, etc.)
+
+#yes I know the current method is stupid for getting this stuff.
+
+#this part of the reason why I need a rewrite and also so DBs work with it.

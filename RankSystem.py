@@ -29,9 +29,9 @@ async def UpdateScore(message):
       doc2 = DatabaseConfig.db.server_settings.find_one({'ser_id':message.guild.id})
       try:
         if doc2['st']==1:
-          await message.channel.send("Congrats <@"+str(user.id)+">! You have just leveled up to level "+str(level)+"!")
+          await message.channel.send("Congrats "+str(user)+" You have just leveled up to level "+str(level)+"!")
       except:
-        await message.channel.send("Congrats <@"+str(user.id)+">! You have just leveled up to level "+str(level)+"!")
+        await message.channel.send("Congrats "+str(user)+" You have just leveled up to level "+str(level)+"!")
     DatabaseConfig.db.users_testing.delete_one(doc)
     doc['exp'] = exp
     doc['level'] = level
@@ -46,7 +46,7 @@ def GetRank(user,server="all"):
       ret.append(int(doc['exp']))
     else:
       for users in server.members:
-        if doc['user_id']==users.id:
+       if doc['user_id']==users.id:
           ret.append(int(doc['exp']))
   ret.sort(reverse=True)
   i=0
@@ -54,8 +54,6 @@ def GetRank(user,server="all"):
     i=i+1
     if xp==int(user_dat['exp']):
       return i
-
-
 async def GetTop10(client,message):
   ret=[]
   i=-1
@@ -103,9 +101,16 @@ async def GetTop10(client,message):
 
     
 
-async def GetStatus(message):
+async def GetStatus(_message="NULL",_user="NULL"):
   doc = ""
-  user = message.author
+  if(_message=="NULL"):
+    message = {"author":_user,"guild":_message.guild,"channel":_message.channel}
+  else:
+    message = _message
+  if(_user == "NULL"):
+    user = message.author
+  else:
+    user = _user
   if CheckIfExisting(user)==1:
     doc = DatabaseConfig.db.users_testing.find_one({"user_id":user.id})
     level= int(doc['level'])

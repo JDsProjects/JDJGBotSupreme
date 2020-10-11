@@ -1,4 +1,6 @@
 import ClientConfig
+import GlobalLinker
+import DatabaseConfig
 def GetServerPfp(message):
   
   contents = message.content.split(" ")
@@ -20,24 +22,43 @@ def GetServerPfp(message):
   return server_icon
 
 
-
-
-def GetUserPfp(message):
-  
-  contents = message.content.split(" ")
-  
-  id_bit = 0
- 
+async def get_username(message):
+  args = message.content.replace(message.content.split(" ")[0]+" ","")
+  if(len(message.content.split(" "))==1):
+    return message.author.id
   try:
-
-    id_bit = int(contents[1])
- 
+    test = int(args)
   except:
+    test = -1
+  if(test!=-1):
+    return 0
+  users = ClientConfig.client.users
+  for us in users:
+    try:
+      if (us.name == args):  
+        return us.id
+    except:
+      banana = 1
+  return 0
 
-    id_bit = int(message.author.id)
+async def GetUserPfp(message):
+  args = message.content.replace(message.content.split(" ")[0]+" ","")
+  print(args)
+  id_bit = 0
+  if(len(str(message.author.id))!=len(args)):
+    id_bit = await get_username(message)
+  else:
+    try:
+      id_bit = int(args)
+    except:
+      id_bit  = await get_username(message)
 
-  server_icon=ClientConfig.client.get_user(id_bit).avatar_url
-  return server_icon
+  #try:
+  user = await ClientConfig.client.fetch_user(id_bit)
+  url = str(user.avatar_url)
+  return url
+  #except:
+    #return "NULL"
 
 def DownloadAllPfp(message):
   for obj in message.guild.members:
