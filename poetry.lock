@@ -191,6 +191,20 @@ dotenv = ["python-dotenv"]
 
 [[package]]
 category = "main"
+description = "giphy-api"
+name = "giphy-client"
+optional = false
+python-versions = "*"
+version = "1.0.0"
+
+[package.dependencies]
+certifi = "*"
+python-dateutil = "*"
+six = ">=1.10"
+urllib3 = ">=1.15"
+
+[[package]]
+category = "main"
 description = "Google API client core library"
 name = "google-api-core"
 optional = false
@@ -360,6 +374,17 @@ version = "3.1.0"
 rsa = ["cryptography"]
 signals = ["blinker"]
 signedtoken = ["cryptography", "pyjwt (>=1.0.0)"]
+
+[[package]]
+category = "main"
+description = "Python Pastebin API interaction object."
+name = "pastebin"
+optional = false
+python-versions = "*"
+version = "1.1.2"
+
+[package.dependencies]
+setuptools = "*"
 
 [[package]]
 category = "main"
@@ -612,7 +637,7 @@ python-versions = "*"
 version = "2020.9.20"
 
 [metadata]
-content-hash = "590f815eb79dfd53001cc276f5f37cedee41cdca0e97114809f2f97a4876ae89"
+content-hash = "56d168f03f005d6568b4b7713f8dbacf4df5381e13275848e35a4c855606231d"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -688,6 +713,9 @@ dnspython = [
 flask = [
     {file = "Flask-1.1.2-py2.py3-none-any.whl", hash = "sha256:8a4fdd8936eba2512e9c85df320a37e694c93945b33ef33c89946a340a238557"},
     {file = "Flask-1.1.2.tar.gz", hash = "sha256:4efa1ae2d7c9865af48986de8aeb8504bf32c7f3d6fdc9353d34b21f4b127060"},
+]
+giphy-client = [
+    {file = "giphy_client-1.0.0.tar.gz", hash = "sha256:80ac8f4dbe64fcc3eeaef695e2c53fb9f76bb09880329c6ead201db8eb80a2e4"},
 ]
 google-api-core = [
     {file = "google-api-core-1.22.4.tar.gz", hash = "sha256:4a9d7ac2527a9e298eebb580a5e24e7e41d6afd97010848dd0f306cae198ec1a"},
@@ -786,6 +814,9 @@ multidict = [
 oauthlib = [
     {file = "oauthlib-3.1.0-py2.py3-none-any.whl", hash = "sha256:df884cd6cbe20e32633f1db1072e9356f53638e4361bef4e8b03c9127c9328ea"},
     {file = "oauthlib-3.1.0.tar.gz", hash = "sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889"},
+]
+pastebin = [
+    {file = "Pastebin-1.1.2.tar.gz", hash = "sha256:ac7fb9cd9130a188cb1188186ab8f2607513f76ec599e78ed7c902ce816f116b"},
 ]
 pil-compat = [
     {file = "pil-compat-1.0.0.tar.gz", hash = "sha256:cb88f387ae4eb2d2898aa2b2051e004bb21bc22de2cd91cea92897386ec1f33b"},

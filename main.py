@@ -5,6 +5,7 @@ import os
 import asyncio
 import random
 import B
+import random_response
 import sqlite3
 from itertools import cycle # this import is only really used for really complex math, which you aren't doing.
 import datetime # don't double import
@@ -269,8 +270,6 @@ async def status_task():
 
 discordprefix = "JDBot*"
 
-#commands.Bot(discordprefix = discordprefix) Don't mix cog and on_message syntax
-
 ##Replace admins with your user ids on discord for you to be admins, and the help commands with your prefix, basically replace JDBot* with your prefix of choice if you want to.
 
 @client.event
@@ -325,7 +324,9 @@ send_channel = [
   738912143679946783, 
 ]
 
-safe_servers = [736422329399246990, 736966204606120007]
+safe_servers = [736422329399246990, 736966204606120007,736051343185412296]
+
+slur_okay = [736051343185412296]
 
 @client.event
 async def on_guild_join(guild_fetched):
@@ -363,11 +364,20 @@ async def on_message(message):
   user = message.author
 
   if client.user in message.mentions and not message.author.bot:
-    await message.channel.send("Why did you mention me?")
+    
+    embed = discord.Embed(title="Mention info:",description="Tip: you can disable level up messages with JDBot*toggle level_msg \nNow converting mention into a command.",color=random.randint(0, 16777215))
 
-    await message.channel.send("you can disable level up messages with JDBot*toggle level_msg")
+    await message.channel.send(embed=embed)
 
-  #make this eventually turn into the prefix and then the rest of the command still exists.
+    replace_value = f"<@!{client.user.id}> "
+
+    message.content=message.content.replace(replace_value, discordprefix)
+
+    message.mentions.remove(client.user)
+
+    #print(message.content)
+
+
 
 
   if client.user in message.mentions and not message.author.bot and "shut up " in (message.content.lower()+" "):
@@ -508,7 +518,6 @@ async def on_message(message):
     await message.channel.send("Pong")
 
     return
-
 
   if message.content.startswith(discordprefix+"safe") and not message.author.bot and user.guild_permissions.administrator == True:
 
@@ -656,7 +665,11 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"random_message") and not message.author.bot:
-    await message.channel.send(random_message())
+
+    message_generator = random.choice(random_response.random_message)
+    embed = discord.Embed(title = "Random Message Time...",color=random.randint(0, 16777215))
+    embed.add_field(name = f"{message_generator}", value = "_ _")
+    await message.channel.send(embed=embed)
     return
 
   if message.content.startswith(discordprefix+"closest_user") and not message.author.bot:
@@ -1079,8 +1092,6 @@ async def on_message(message):
     
     return
 
-
-
   if message.content.startswith(discordprefix+"file") and not message.author.bot:
 
     await message.channel.send(message.attachments)
@@ -1242,6 +1253,287 @@ async def on_message(message):
     return
 
     #please make this into an embed
+
+
+  if message.content.startswith(discordprefix+"order_tenor shuffle") and not message.author.bot:
+
+    urls = []
+
+    import requests
+
+    order_wanted = message.content.replace(discordprefix+"order_tenor shuffle","")
+
+    apikey =  os.environ["tenor_key"]
+    
+    limit = 5
+
+    response = requests.get(
+    "https://api.tenor.com/v1/search?q=%s&key=%s&limit=%s" % (order_wanted, apikey, limit))
+
+    if response.status_code == 200:
+
+      data_used=response.json()
+
+      for i in range(len(data_used['results'])):
+        url = data_used['results'][i]['media'][0]['gif']['url']
+
+        urls.append(url)
+
+      value_grabber=random.randint(0,len(urls))
+
+      order_image = urls[value_grabber]
+
+      await message.delete()
+
+      order_description = (f"{message.author} ordered a {order_wanted}")
+
+      pfp = message.author.avatar_url
+
+      order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
+
+      order_info = (f"order for {message.author}:")
+
+      embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
+
+      embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time}")
+
+      embed_info.set_author(name=order_info,icon_url=(pfp))
+
+      embed_info.add_field(name="Powered by:",value="Tenor")
+
+      embed_info.set_image(url=order_image)
+
+      await message.channel.send(embed=embed_info)
+
+      await client.get_channel(738912143679946783).send(embed=embed_info)
+
+      image_channel = client.get_channel(764543893118648342)
+
+      await image_channel.send("let's see the best result")
+
+      for i in range(len(data_used['results'])):
+        url = data_used['results'][i]['media'][0]['gif']['url']
+
+        await image_channel.send(url)
+
+
+      
+
+      return
+    
+    if not response.status_code == 200:
+
+      await message.channel.send("Failed searching for the gif")
+
+
+
+    return
+
+  if message.content.startswith(discordprefix+"order_tenor") and not message.author.bot:
+
+    urls_dictionary = {}
+
+    import requests
+
+    order_wanted = message.content.replace(discordprefix+"order_tenor","")
+
+    apikey =  os.environ["tenor_key"]
+    
+    limit = 5
+
+    response = requests.get(
+    "https://api.tenor.com/v1/search?q=%s&key=%s&limit=%s" % (order_wanted, apikey, limit))
+
+    if response.status_code == 200:
+
+      data_used=response.json()
+
+      for i in range(len(data_used['results'])):
+        url = data_used['results'][i]['media'][0]['gif']['url']
+        title = data_used['results'][i]["itemurl"]
+
+        urls_dictionary[title]=url
+
+      gifNearest = sorted(urls_dictionary, key=lambda x: SequenceMatcher(None, x, order_wanted).ratio())[-1]
+
+      order_image = urls_dictionary[gifNearest]
+
+      await message.delete()
+
+      order_description = (f"{message.author} ordered a {order_wanted}")
+
+      pfp = message.author.avatar_url
+
+      order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
+
+      order_info = (f"order for {message.author}:")
+
+      embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
+
+      embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time}")
+
+      embed_info.set_author(name=order_info,icon_url=(pfp))
+
+      embed_info.add_field(name="Powered by:",value="Tenor")
+
+      embed_info.set_image(url=order_image)
+
+      await message.channel.send(embed=embed_info)
+
+      await client.get_channel(738912143679946783).send(embed=embed_info)
+
+      image_channel = client.get_channel(764543893118648342)
+
+      await image_channel.send("let's see the best result")
+
+      for i in range(len(data_used['results'])):
+        url = data_used['results'][i]['media'][0]['gif']['url']
+
+        await image_channel.send(url)
+
+
+      
+
+      return
+    
+    if not response.status_code == 200:
+
+      await message.channel.send("Failed searching for the gif")
+
+
+
+    return  
+
+  if message.content.startswith(discordprefix+"order_giphy shuffle") and not message.author.bot:
+
+    order_wanted = message.content.replace(discordprefix+"order_giphy shuffle","")
+
+    import giphy_client
+    from giphy_client.rest import ApiException
+
+    giphy_usage = giphy_client.DefaultApi()
+
+    try:
+      api_response = giphy_usage.gifs_search_get(api_key=os.environ["giphy_token"],limit=5,rating="g",q=order_wanted)
+
+      lst = list(api_response.data)
+
+      if len(lst) > 0:
+
+        gif_number = random.randint(0,len(lst))
+
+        gifNearest = lst[gif_number]
+
+        order_image = (f"https://media3.giphy.com/media/{gifNearest.id}/giphy.gif")
+
+        await message.delete()
+
+        order_description = (f"{message.author} ordered a {order_wanted}")
+
+        pfp = message.author.avatar_url
+
+        order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
+
+        order_info = (f"order for {message.author}:")
+
+        embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
+
+        embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time}")
+
+        embed_info.set_author(name=order_info,icon_url=(pfp))
+
+        embed_info.add_field(name="Powered by:",value="GIPHY")
+
+        embed_info.set_image(url=order_image)
+
+        await message.channel.send(embed=embed_info)
+
+        await client.get_channel(738912143679946783).send(embed=embed_info)
+
+        image_channel = client.get_channel(764543893118648342)
+
+        await image_channel.send("let's see the best result")
+
+        for x in lst:
+
+          await image_channel.send(x.url)
+      
+      if len(lst) == 0:
+
+        await message.channel.send("search failed... \n Error: No gifs found.")
+
+
+    except ApiException as e:
+
+      await message.channel.send("Either the rate limit was reached or you didn't insert anything")
+
+      print(e)
+
+    return
+
+  if message.content.startswith(discordprefix+"order_giphy") and not message.author.bot:
+
+    order_wanted = message.content.replace(discordprefix+"order_giphy ","")
+
+    import giphy_client
+    from giphy_client.rest import ApiException
+
+    giphy_usage = giphy_client.DefaultApi()
+
+    try:
+      api_response = giphy_usage.gifs_search_get(api_key=os.environ["giphy_token"],limit=5,rating="g",q=order_wanted)
+
+      lst = list(api_response.data)
+
+      if len(lst) > 0:
+
+        gifNearest = sorted(lst, key=lambda x: SequenceMatcher(None, x.url, order_wanted).ratio())[-1]
+
+        order_image = (f"https://media3.giphy.com/media/{gifNearest.id}/giphy.gif")
+
+        await message.delete()
+
+        order_description = (f"{message.author} ordered a {order_wanted}")
+
+        pfp = message.author.avatar_url
+
+        order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
+
+        order_info = (f"order for {message.author}:")
+
+        embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
+
+        embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time}")
+
+        embed_info.set_author(name=order_info,icon_url=(pfp))
+
+        embed_info.add_field(name="Powered by:",value="GIPHY")
+
+        embed_info.set_image(url=order_image)
+
+        await message.channel.send(embed=embed_info)
+
+        await client.get_channel(738912143679946783).send(embed=embed_info)
+
+        image_channel = client.get_channel(764543893118648342)
+
+        await image_channel.send("let's see the best result")
+
+        for x in lst:
+
+          await image_channel.send(x.url)
+
+      if len(lst) == 0:
+
+        await message.channel.send("search failed... \n Error: No gifs found.")
+
+    except ApiException as e:
+
+      await message.channel.send("Either the rate limit was reached or you didn't insert anything")
+
+      print(e)
+
+    return
 
   if message.content.startswith(discordprefix+"order_shuffle") and not message.author.bot:
 
@@ -1564,8 +1856,17 @@ async def on_message(message):
 
       pass
 
-    
-  
+  if "reverse " in (message.content.lower()+" ") and message.guild.id in safe_servers and not message.author.bot:
+
+    try:
+
+      await message.channel.send("Your reverse card was banned.")
+
+      await message.channel.send("https://media.discordapp.net/attachments/374607459907665920/722874475720212501/unknown.png")
+
+    except:
+
+      pass
 
   if "hey all " in (message.content.lower()+" ") and message.guild.id in safe_servers and not message.author.bot:
 
@@ -1642,18 +1943,25 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"pfp") and not message.author.bot:
     
-    await message.channel.send(await GetPfp.GetUserPfp(message))
+    await message.channel.send((await GetPfp.GetUserPfp(message)).avatar_url)
     
     return
 
   if message.content.startswith(discordprefix+"avatar") and not message.author.bot:
-    
-    await message.channel.send(await GetPfp.GetUserPfp(message))
+    user = await GetPfp.GetUserPfp(message)
+    pfp = user.avatar_url
+    embed = discord.Embed(title = f"{user.name}'s avatar:",color=random.randint(0, 16777215))
+    embed.set_image(url=(pfp))
+    await message.channel.send(embed=embed)
     
     return
 
   if message.content.startswith(discordprefix+"advice") and not message.author.bot:
-    await message.channel.send(ad())
+
+    advice_response=random.choice(random_response.advice)
+    embed = discord.Embed(title = "Here is some advice for you!",color=random.randint(0, 16777215))
+    embed.add_field(name = f"{advice_response}", value = "Hopefully this helped!")
+    await message.channel.send(embed=embed)
     return
 
   if message.content.startswith(discordprefix+"leave guild") and message.author.id in admins and not message.author.bot:
@@ -1674,7 +1982,7 @@ async def on_message(message):
       number_one = int(message.content.split(" ")[1])
       number_two =  int(message.content.split(" ")[2])
     except:
-      await message.channel.send("That is not a number! I shall default to: 1-100")
+      await message.channel.send("That is not a number! I shall default to numbers between 0 to 100")
       number_one = 0
       number_two = 100
 
@@ -1683,9 +1991,10 @@ async def on_message(message):
       await message.channel.send("Smaller number first")
     
     random_number = random.randint(number_one, number_two)
-  
-    random_number_message = "A random number from %d to %d is : %d." % (number_one, number_two, random_number)
-    await message.channel.send(random_number_message)
+
+    embed = discord.Embed(title = f"A random number from {number_one} to {number_two}:", description = f"{random_number}",color=random.randint(0, 16777215))
+    await message.channel.send(embed = embed)
+    
     return
 
   if message.content.startswith(discordprefix+"about") and not message.author.bot:
@@ -1713,7 +2022,13 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"time") and not message.author.bot:
-    await message.channel.send(datetime.datetime.now(timezone(time_location)).strftime("%m/%d/%Y, %H:%M:%S"))
+
+    currenttime = datetime.datetime.now(timezone(time_location)).strftime("%m/%d/%Y, %H:%M:%S")
+
+    embed = discord.Embed(title="Current Server Time:",description=currenttime,color=random.randint(0, 16777215))
+    embed.add_field(name="Time Zone(closest):",value=time_location)
+    await message.channel.send(embed=embed)
+
     return
     
   if message.content.startswith(discordprefix+"say") and not message.author.bot:
@@ -1836,6 +2151,140 @@ async def on_message(message):
     for x in dump_server.emojis:
 
       await x.delete()
+
+    return
+
+  if message.content.startswith(discordprefix+"emoji_add") and not message.author.bot and user.guild_permissions.manage_emojis == True:
+
+    emote_collect = []
+
+    from PIL import Image
+    from io import BytesIO
+    import requests
+
+    id_used = (message.guild.id)
+
+    dump_server = client.get_guild(id_used)
+
+    animated_amount = 0
+
+    static_amount = 0
+
+    for e in dump_server.emojis:
+
+      if e.animated == "yes":
+
+        animated_amount = animated_amount + 1
+
+      if e.animated == "no":
+
+        static_amount = static_amount + 1
+
+    emoji_url = []
+
+    emoji_name = []
+
+    for em in emote.get(message):
+
+      emoji_url.append(em)
+
+    for name in emote.get2(message):
+
+      emoji_name.append(name)
+
+    e = 0
+
+    while e < len(emoji_name):
+
+      img_link = emoji_url[e]
+
+      emoji_name_grabbed = emoji_name[e]
+
+      response=requests.get(img_link)
+
+      try:
+
+        img = Image.open(BytesIO(response.content))
+
+      except:
+
+        await message.channel.send("Don't use emojis with webhooks or bots.")
+
+        return
+
+
+      if img.is_animated == True:
+
+        if animated_amount < 50:
+
+          pass_value = "yes"
+
+          emote_data = await dump_server.create_custom_emoji(name = emoji_name_grabbed,image=response.content)
+
+          emote_collect.append(emote_data)
+
+          animated_amount = animated_amount + 1
+
+        if animated_amount >=50:
+
+          pass_value = "no"
+
+          await message.channel.send("That's why too many emojis")
+      
+      if img.is_animated == False:
+
+        if static_amount < 50:
+
+          emote_data = await dump_server.create_custom_emoji(name = emoji_name_grabbed,image=response.content)
+
+          emote_collect.append(emote_data)
+
+          pass_value = "yes"
+
+          static_amount = static_amount+1
+        
+        if static_amount >=50:
+
+          pass_value = "no"
+
+          await message.channel.send("That's why too many emojis") 
+
+      e = e + 1
+
+    e = 0
+
+    pfp = client.user.avatar_url
+
+    if emote_data.animated == True:
+
+      animated_value = "Animated"
+
+    if emote_data.animated == False:
+
+      animated_value = "Static"
+
+    if pass_value == "yes":
+
+      for emote_data in emote_collect:
+
+        time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
+
+        emoji_embed=discord.Embed(title=f"Added Emote: {emote_data.name}",description=time_used,color=random.randint(0, 16777215))
+
+        emoji_embed.set_author(name=f"{message.author} Added an emoji.",icon_url=(pfp))
+
+        emoji_embed.add_field(name=f"Emoji Type:",value=f"{animated_value}")
+
+        emoji_embed.set_image(url=emote_data.url)
+
+        emoji_embed.set_footer(text = f"{message.author.id}\n Emoji in {dump_server.name}\n ID: {dump_server.id}")
+
+        channel_used=client.get_channel(738912143679946783)
+        await channel_used.send(embed=emoji_embed)
+
+        await message.channel.send(embed=emoji_embed)
+
+
 
     return
 
@@ -2093,8 +2542,6 @@ async def on_message(message):
 
     webhook_url = webhook.url
 
-    author_info = ()
-
     webhook = discord_webhook.DiscordWebhook(url=webhook_url)
 
     embed = discord_webhook.DiscordEmbed(title=f"{message.author}'s Message:",color=random.randint(0, 16777215))
@@ -2219,6 +2666,7 @@ async def on_message(message):
     message_to_send.set_author(name=f"You have been warned by {message.author}",icon_url=(pfp))
 
     message_to_send.set_image(url="https://media1.tenor.com/images/e160829e84c01257050490b2dd46c0cb/tenor.gif")
+    message_to_send.set_footer(text = f"ID: {message.author.id}")
     
     if (user.dm_channel is None):
       await user.create_dm()
@@ -2353,14 +2801,16 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"insult") and not message.author.bot:
+    import time
 
     await message.channel.send("Preparing insult......")
+    time.sleep(1)
 
-    await message.channel.send("Please wait...(also why would you want to insult yourself?)")
+    insultt = random.choice(random_response.insult)
 
-    insult_request = insult_response()
-
-    await message.channel.send(insult_request)
+    embed = discord.Embed(title = "Here is an insult (at your request)",color=random.randint(0, 16777215))
+    embed.add_field(name = "Don't know why you want to insult yourself though?", value = f"{insultt}")
+    await message.channel.send(embed=embed)
 
     return
   
@@ -2525,7 +2975,6 @@ async def on_message(message):
     response=requests.get(webhook_url)
 
     try:
-
      message_info = message.content.split(" ")[2]
 
     except:
@@ -2604,9 +3053,17 @@ async def on_message(message):
       
   if message.content.startswith(discordprefix+"radical") and not message.author.bot:
 
-    num=message.content.split(" ")[1]
+    try:
 
-    root_int=message.content.split(" ")[2]
+      num=message.content.split(" ")[1]
+
+      root_int=message.content.split(" ")[2]
+
+    except:
+
+      num = 1
+
+      root_int = 1
 
     try:
 
@@ -2624,46 +3081,50 @@ async def on_message(message):
 
 
 
-    root_answer = num_int**(1/root_int)
+    root_answer = int(root_int**(1/num_int))
 
-    final_information = "result of "+str(num)+" radical "+str(root_int)+" is: "+str(root_answer)
+    embed = discord.Embed(title = "The Radical Function Has Been Completed!")
+    embed.set_footer(text = f"{message.author.name} | {message.author.id}")
+    embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/d/d1/Calculator_on_macOS.png")
+    embed.add_field(name = f"Formula: {num}√ {root_int}", value = f"Result: {root_answer}")
 
-    await message.channel.send(final_information)
-
+    await message.channel.send(embed=embed)
+    channel_usage=client.get_channel(738912143679946783)
+    await channel_usage.send(embed=embed)
     return
 
 
   if message.content.startswith(discordprefix+"power") and not message.author.bot:
 
-    num = message.content.split(" ")[1]
-
-    root = message.content.split(" ")[2]
-
     try:
+
+      num = message.content.split(" ")[1]
+
+      root = message.content.split(" ")[2]
 
       num_int = int(num)
 
       root_int = int(root)
 
+      ans = (num_int**root_int)
+
+      embed = discord.Embed(title = f"Result of the function",color=random.randint(0, 16777215))
+      embed.add_field(name = f"Formula: {num} ^ {root_int}", value = f"Result: {ans}")
+      embed.set_footer(text = f"{message.author.id}")
+      embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/d/d1/Calculator_on_macOS.png")
+      await message.channel.send(embed = embed)
+
     except:
 
-      num = int(1)
-
-      root_int = int(1)
-
-      await message.channel.send("Why would you use something that isn't a number, try again")
-
-    ans = (num_int**root_int)
-
-    final_information = "result of "+str(num)+" to the power of "+str(root_int)+" is: "+str(ans)
-
-    await message.channel.send(final_information) 
-
+      await message.channel.send("either it was a string you used or you didn't give enough values.")
+      
     return
 
   if message.content.startswith(discordprefix+"works") and not message.author.bot:
 
     number_here = random.randint(1,100)
+    pfp = message.author.avatar_url
+    works_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
 
     try:
 
@@ -2671,9 +3132,27 @@ async def on_message(message):
 
       name_2 = message.content.split(" ")[2] 
 
-      values = (f"{name_1} works with {name_2} at a rate of {number_here}%")
+      embed_message = discord.Embed(title = f"How well does {name_1} and {name_2} work together?",color=random.randint(0, 16777215))
+      embed_message.set_author(name=f"{message.author}",icon_url=(pfp))
 
-      await message.channel.send(values)
+
+
+      if  number_here  < 50:
+        resp = "They don't work well together at ALL :angry:"
+      elif number_here < 70 and number_here > 51:
+        resp = "They work quite poorly together..."
+      elif number_here < 90 and number_here  > 71:
+        resp = "They work kinda good together, maybe"
+      elif number_here < 99 and number_here > 91:
+        resp = "They work REALLY good together, wow. Nice."
+      elif number_here == 100:
+        resp = "Let them collaborate anytime."
+      
+      embed_message.add_field(name = f"They work at a rate {number_here}%", value = resp)
+      embed_message.set_footer(text = f"{message.author.id} \nTime: {works_time}")
+      await message.channel.send(embed=embed_message)
+
+      await client.get_channel(738912143679946783).send(embed=embed_message)
 
     except:
 
@@ -2728,19 +3207,18 @@ async def on_message(message):
       await message.channel.send("unknown format: '%s'" % convert_to)
       return
 
-    await message.channel.send("Converted from: "+convert_from+". To: "+convert_to+". "+converted_value)
+    embed = discord.Embed(title = "The conversion has been completed!",color=random.randint(0, 16777215))
+    embed.add_field(name = f"Converted from {convert_from}, to:", value = f"{convert_to}: {converted_value}")
+    await message.channel.send(embed=embed)
 
     return
   
   if message.content.startswith(discordprefix+"emote") and not message.author.bot:
 
     emote_wanted=message.content.replace(discordprefix+"emote ","")
-
-    #returned_info = client.emojis.find(emote_wanted)
     
     emojiNearest = sorted(client.emojis, key=lambda x: SequenceMatcher(None, x.name, emote_wanted).ratio())[-1]
 
-    #await message.channel.send(returned_info)
     await message.channel.send(emojiNearest)
 
     return
@@ -2770,15 +3248,23 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"message time") and not message.author.bot:
 
-    time99 = message.created_at.astimezone(timezone(time_location)).strftime("%m/%d/%Y, %H:%M:%S")
+    #region_finder = (message.guild.region)
 
-    await message.channel.send(time99)
+    time_speacil = time_location
+
+    time99 = message.created_at.astimezone(timezone(time_speacil)).strftime("%m/%d/%Y, %H:%M:%S")
+
+    embed = discord.Embed(title = "Message Time:",color=random.randint(0, 16777215))
+    embed.add_field(name = f"{time99}", value = "_ _")
+    await message.channel.send(embed=embed)
 
     return
 
   if message.content.startswith(discordprefix+"mail") and not message.author.bot:
+
     try:
       user = message.mentions[0]
+
     except:
       try:
         user = client.get_user(int(message.content.split(" ",2)[1]))
@@ -2835,9 +3321,11 @@ async def on_message(message):
     return
 
   for banned_word in banned_words:
-    if banned_word in message.content:
+    if banned_word in message.content.lower() and not message.guild.id in slur_okay:
       await message.delete()
-      await message.channel.send(determine())
+      banned_response=random.choice(random_response.response_used)
+      await message.channel.send(banned_response)
+      return
 
   if message.content.startswith(discordprefix+"clear") or message.content.startswith(discordprefix+"purge"):
     await message.delete()
@@ -2861,38 +3349,53 @@ async def on_message(message):
   #case for if all other commands did not work
 
   if message.content.startswith(discordprefix+"compliment") and not message.author.bot:
+    
+    complimentt = random.choice(random_response.compliment)
 
-    await message.channel.send("Sending compliment.....")
-
-    await message.channel.send(":D Alright let's send this data over...")
-
-    compliment_response = yes_49()
-
-    result_here = "<a:mariodance:738972099460202567>"+compliment_response
-
-    await message.channel.send(result_here)
+    embed = discord.Embed(title = "Here is a compliment, for you!")
+    embed.add_field(name = "I hope you like it!", value=complimentt)
+    await message.channel.send(embed=embed)
 
     return
 
   if message.content.startswith(discordprefix+"Arithmetic") and not message.author.bot:
 
-    og_number = int(message.content.split(" ")[1])
+    try:
 
-    per_times = int(message.content.split(" ")[2])
+      og_number = int(message.content.split(" ")[1])
 
-    number_times = int(message.content.split(" ")[3])
+      per_times = int(message.content.split(" ")[2])
 
-    number_result = og_number+per_times*(number_times-1)
-    
-    await message.channel.send("Result of: \n"+str(og_number)+" + "+str(per_times)+" * ("+str(number_times)+" - 1) = "+str(number_result))
+      number_times = int(message.content.split(" ")[3])
+
+      number_result = og_number+per_times*(number_times-1)
+
+      embed = discord.Embed(title = f"Result of the function",color=random.randint(0, 16777215))
+
+      embed.add_field(name=f"Formula: {og_number}+{per_times}*({number_times}-1)",value=f"Result: {number_result}")
+
+      embed.set_footer(text = f"{message.author.id}")
+      embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/d/d1/Calculator_on_macOS.png")
+
+      await message.channel.send(embed=embed)
+
+    except:
+
+      await message.channel.send("Either you forgot the values needed or you used text after the Arithmetic")
     return
 
 
   if message.content.startswith(discordprefix+"invite") and not message.author.bot:
+    
+    embed  = discord.Embed(title = "The Invite Links!", value = "One is for testing, one is the normal bot.")
+    embed.add_field(name = "Testing Link:", value = "https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8", inline = False)
+    embed.add_field(name = "Normal Invite:", value = "https://discordapp.com/oauth2/authorize?client_id=702238592725942374&scope=bot&permissions=8", inline = False)
 
-    await message.channel.send("Testing link: https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8")
+    bot_pfp = client.user.avatar_url
 
-    await message.channel.send("normal invite: https://discordapp.com/oauth2/authorize?client_id=702238592725942374&scope=bot&permissions=8")
+    embed.set_thumbnail(url=bot_pfp)
+
+    await message.channel.send(embed=embed)
 
     return
 
@@ -2923,9 +3426,6 @@ async def on_message(message):
     
     await message.author.dm_channel.send(embed=embed_message)
 
-    return
-  if message.content.startswith(discordprefix+"suspend") and message.author.id in admins and not message.author.bot:
-    await message.channel.send("testing bot")
     return
 
 #RENDEV'S CODE...NO TOUCH
@@ -2979,121 +3479,9 @@ banned_words = [
   'retard',
   'pussy',
   'bastard',
-  'nigga',
+  'nigga',]
 
-] 
-
-banned_response = [ 
-  'Do you really need to curse?',
-  'the f word and s words work but really using racial slurs, why?(still not the best idea)',
-  'Ugh....',
-]
-
-response_banned = []
-
-def determine():
-  global response_banned
-  if len(response_banned) == 0:
-    response_banned = banned_response
-    random.shuffle(response_banned)
-  return "\n"+response_banned.pop()
-
-response_answers_yes = [
-  "You are nice to me :D, Thank you :D",
-  "Hope your life is good :D",
-  "People can trust you...",
-  "Thank You for your help.",
-  "Loading epic dance for you....",
-  "<a:mariodance:738972099460202567> is how you make me....",
-]
-
-response_yes = []
-
-def yes_49():
-
-  global response_yes
-
-  if len(response_yes) == 0:
-
-    response_yes = response_answers_yes
-
-    random.shuffle(response_yes)
-
-  return "\n"+response_yes.pop()
-
-#for banned words a.k.a slurs and such (don't open if you aren't a programmer - or easily offended)
-
-insult_doom94 = [
-  "Look I can insult better than some people, but at least I don't willing send it to people unlike you, who wants it",
-  "Geez, You could better stuff with your time",
-  "Sorry you were too slow for a request... but SERIOUSLY WHY DO YOU NEED TO INSULT YOURSELF?",
-  "Sorry for not wanting to insult you :rolling_eyes: loading... yoshi banner hammer...",
-  "You are so bad you deserve to get banned(JDJG doesn't approve of this message",
-  "Some people get custom tailored stuff, now you don't because you Didn't ask. MWHAAA!",
-  "Loading yoshi ban hammer.... <a:yoshihammer:717570681637699615>",
-  ".______________________. Geez you made me unable to comment about you, you're that evil...",
-  "Some people like being evil, but why? Being good is better...(trust me)",
-  "We ran out of insults for you, because frankly we don't care..",
-
-
-]
-
-insultdoom96 = []
-
-
-random_responses_all = [
-"Alright",
-"10/10 It tastes bad",
-"attack of the killer Nuggets",
-"I have a new epic idea \n it's a horror game",
-"bruh",
-"well we're doomed",
-"I'm coming",
-"For freedom",
-"I have no comment",
-"Well I... frick",
-"Why did you post that?",
-"Wait what?",
-"New Movie idea World War Karen(Karens v.s. the world)",
-"Stop Banning people when they don't deserve that",
-"I shouldn't have said that",
-"frick me",
-]
-random_responses = []
-
-def insult_response():
-  global insultdoom96
-  if len(insultdoom96) == 0:
-  
-    insultdoom96 = insult_doom94
-    random.shuffle(insultdoom96)
-
-  return "\n"+insultdoom96.pop()
-
-
-def random_message():
-  global random_responses
-  if len(random_responses) == 0:
-    random_responses = random_responses_all
-    random.shuffle(random_responses)
-  return "\n"+random_responses.pop()
-
-ad_all = [
-  "Hey Fun fact in Project64 you can copy cheats in the cheat file(just have things that makes it easier to copy(you need to open it in Sublime or Notepad++ in order to read that(a.k.a notepad does't work on just it's own",
-"When I say eh, it can have many meanings, also take what I say with a grain of salt at times.",
-"I can edit javascript code, because one it's easy to see, but I also know python.(I mainly know python but I can understand other programming languages because they are all similar in a couple of ways)",
-"Trust is how you truly get along with people, you might not fully trust your friends, but you might as well do trust them a bit",
-"True friends have their falls and don't always get along, but they will always be able to get able to hang out around better",
-"never moderate with a person feeling, basically never have your emotions bring you head on, use crictial thinking as well, and forgive them, however if they keep doing it, then think about it",
-"Not all choices are the best, but try to choose the best one",
-"to be the best person, you need to learn from your mistakes and be true to yourself, and don't be a jerk to others, and fight others who can't themselves(people are thrown down, because of their status, a.k.a bullied), also don't let people make you a worse person by changing yourself to what they want entirely(have your own choices) ",
-"I really don't have any advice right now",
-"Advice is something you might need time to time, but it's what you do with it, that counts",
-"Be nice when you can but you can still be mean when you need to(don't go overboard)",
-"don't let people have power over you",
-"not all authority is good, try to find the good people in life to hang out with",
-"Not all advice is spelled correctly..",
-]
+#for banned words a.k.a slurs and such (don't open if you aren't a programmer - or easily offended
 
 credits = """Programmer - Nomic Zorua#6488 
 Programmer - JDJG Inc. Official#3493 
@@ -3132,20 +3520,10 @@ https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&p
 https://discord.gg/sHUQCch - for another support center"""
 
 
-ad_some = []
-
-def ad():
-  global ad_some
-  if len(ad_some) == 0:
-    ad_some = ad_all
-    random.shuffle(ad_some)
-  return "\n"+ad_some.pop()
-
-
 token_grab = os.environ['Discordtoken']
 
 B.b()
-client.run(token_grab) 
+client.run(token_grab)
 
 
 #token_grab uses Discordtoken - for 24/7 bot and Discordtoken2 for testing purposes

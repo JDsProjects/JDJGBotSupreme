@@ -55,8 +55,7 @@ async def GetUserPfp(message):
 
   #try:
   user = await ClientConfig.client.fetch_user(id_bit)
-  url = str(user.avatar_url)
-  return url
+  return user
   #except:
     #return "NULL"
 
