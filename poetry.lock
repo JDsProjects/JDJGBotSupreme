@@ -637,7 +637,7 @@ python-versions = "*"
 version = "2020.9.20"
 
 [metadata]
-content-hash = "56d168f03f005d6568b4b7713f8dbacf4df5381e13275848e35a4c855606231d"
+content-hash = "0721254f8c018e434ab8273f38e92f8b362cce89bc982d605d2ac01d4adf12a6"
 python-versions = "^3.8"
 
 [metadata.files]

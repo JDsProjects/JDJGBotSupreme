@@ -1,21 +1,7 @@
 import random
-def cc_inverter(color_code_passed):
+def invert(complete_color_code):
 
-  complete_color_code = ""
-
-  x = 0
-
-  while x < len(color_code_passed):
-
-    last_bit="\n"+color_code_passed[x]
-
-    complete_color_code=complete_color_code+last_bit
-
-    x = x + 1
-    
-    
   complete_color_code=complete_color_code.upper()
-
   
 
   #you might want to convert this to a database fetching for Cometspectrum
@@ -30,20 +16,6 @@ def cc_inverter(color_code_passed):
   lines=complete_color_code.split("\n")
 
   #makes this into a list
-
-  while times_ran_1 < len(lines):
-
-    if '' == lines[times_ran_1]:
-
-      times_ran_1 = times_ran_1+1
-
-      Inverted_color_code.append('')
-
-      Inverted_color_code_inverted.append('')
-
-    if not '' == lines[times_ran_1]:
-
-      break
 
   #this is to check to make sure it will start at an actual value, rather than not starting at an actual value and causing the program to crash.
 
@@ -112,16 +84,6 @@ def cc_inverter(color_code_passed):
   times_ran_1 = 0
 
   #basically the same code as before.
-
-  while times_ran_1 < len(Inverted_color_code):
-
-    if '' == Inverted_color_code[times_ran_1]:
-
-      times_ran_1 = times_ran_1+1
-
-    if not '' == Inverted_color_code[times_ran_1]:
-
-      break
 
   z = int(times_ran_1)
 
@@ -201,37 +163,44 @@ import DatabaseConfig
 import discord
 def VaildateUser(_user):
   try:
-    DatabaseConfig.db.color_code.insert_one({"user_id":_user.id,"color":["NULL"]})
+    DatabaseConfig.db.color_code.insert_one({"user_id":_user.id,"color":"NULL"})
     return 1
   except:
     return 0
-def SaveColorCode(_user, color_code):
+def get(_user):
+  VaildateUser(_user)
+  user = DatabaseConfig.db.color_code.find_one({"user_id":_user.id})
+  return user['color']
+def valid_cc(_user):
+  if(get(_user)=="NULL"):
+    return 0
+  return 1
+def save(_user, color_code):
   VaildateUser(_user)
   user = DatabaseConfig.db.color_code.find_one({"user_id":_user.id})
   user['color'] = color_code
   DatabaseConfig.db.color_code.delete_one({"user_id":_user.id})
   DatabaseConfig.db.color_code.insert_one(user)
-def ReturnColorCode(_user):
-  user = DatabaseConfig.db.find_one({"user_id":_user.id})
-  return "banana"
-def GetEmbed(_user, invert = 0):
-  embedVar = discord.Embed(title = _user.author.name+"'s Color Code",color=random.randint(0, 16777215))
-  color_code = ReturnColorCode(_user)
-  val = None
-  for obj in color_code:
-    val+='\n'+obj
-  embedVar.add_field(name = "Color Code:",value = val)
-def normalize(_color_code):
-  color_code = []
-  for obj in _color_code:
-    color_code.append(obj.replace(" ",""))
-  new_code = []
-  is_other = (len(color_code[0])==len(color_code[1]))
-  if(is_other):
-    i=-1
-    while i<(len(color_code)/2):
-      new_code.append(color_code[i]+color_code[i+1])
-      i+=1
-    return new_code
-  else:
-    return color_code
+
+async def veiw(_user,channel, wire,ins = 0):
+#  import Pixman
+#  _color_code = get(_user)
+#  if(ins):
+#    _color_code = invert(_color_code)
+#  decoder = Pixman.ram()
+#  image  = Pixman.get()
+#  image.decode(decoder.b(_color_code))
+#  image.render()
+#  image.export("render.png")
+
+ # await channel.send("Color Code of "+_user.name+"```"
+  #+_color_code+"```")
+ #await channel.send(file=discord.File('render.png'))
+  import _3D
+  _color_code = get(_user)
+  if(ins):
+    _color_code = invert(_color_code)
+  marioRender = _3D.mario()
+  marioRender.render(_color_code,wire)
+  await channel.send("Color Code of "+_user.name+"```"+_color_code+"```")
+  await channel.send(file=discord.File('render.png'))
