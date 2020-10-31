@@ -96,15 +96,19 @@ async def GetTop10(client,message):
         
         
 
-
+class fakeMessage:
+  def __init__(self,_author,_guild,_channel):
+    self.author = _author
+    self.guild = _guild
+    self.channel = _channel
       
 
     
 
-async def GetStatus(_message="NULL",_user="NULL"):
+async def GetStatus(_message,_user="NULL"):
   doc = ""
-  if(_message=="NULL"):
-    message = {"author":_user,"guild":_message.guild,"channel":_message.channel}
+  if(_user!="NULL"):
+    message  = fakeMessage(_user,_message.guild,_message.channel)
   else:
     message = _message
   if(_user == "NULL"):

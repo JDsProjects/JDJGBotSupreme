@@ -1,5 +1,7 @@
 from PIL import Image, ImageDraw
 import math
+import tris
+path = "./out/"
 class Vec2:
     def __init__(self,_x,_y):
         self.x = _x
@@ -28,20 +30,30 @@ class Vec3:
         ret = Vec3((a,b,c))
         return ret
     def rx(self,ang):
-        x = self.y
-        y = self.z
-        self.y = (x*math.cos(ang))-(y*math.sin(ang))
-        self.z = (x*math.sin(ang))+(y*math.sin(ang))
+        x = self.x
+        y = self.y
+        z = self.z
+        y1 = (y*math.cos(ang))-(z*math.sin(ang))
+        z1 = (y*math.sin(ang))+(z*math.cos(ang))
+        ret = Vec3((x, y1,z1))
+        return ret
+
     def ry(self,ang):
         x = float(self.x) * 1
-        y = float(self.z) * 1
-        self.x = (x*math.cos(ang))-(y*math.sin(ang))
-        self.z = (x*math.sin(ang))+(y*math.sin(ang))
+        y = self.y
+        z = float(self.z) * 1
+        x1 = (x*math.cos(ang))-(z*math.sin(ang))
+        z1 = (x*math.sin(ang))+(z*math.cos(ang))
+        ret = Vec3((x1,y,z1))
+        return ret
     def rz(self,ang):
         x = self.x
         y = self.y
-        self.x = (x*math.cos(ang))-(y*math.sin(ang))
-        self.y = (x*math.sin(ang))+(y*math.sin(ang))
+        z = self.z
+        x1 = (x*math.cos(ang))-(y*math.sin(ang))
+        y1 = (x*math.sin(ang))+(y*math.cos(ang))
+        ret = Vec3((x1,y1,z))
+        return ret
     def to_3D(self,w):
         self.x = self.x / w
         self.y = self.y / w
@@ -54,17 +66,64 @@ class Vec3:
         #print(str(self.x)+" : "+str(self.y))
         #os.system("pause")
         return Vec2(self.x,self.y)
+    def cross(self,line):
+      b= line
+      a = self
+      ret = Vec3((0,0,0))
+      ret.x = (a.y * b.z) - (a.z * b.y)
+      ret.y = (a.z * b.x) - (a.x * b.z)
+      ret.z = (a.x * b.y) - (a.y * b.x)
+      return ret
+    def len(self):
+      return math.sqrt((self.x*self.x)+(self.y*self.y)+(self.z*self.z))
+    def dot(self,line):
+      a = self
+      b = line
+      return (a.x * b.x) + (a.y * b.y) + (a.z * b.z)
+    def sub(self, point):
+      ret = Vec3((0,0,0))
+      ret.x = self.x - point.x
+      ret.y = self.y - point.y
+      ret.z = self.z - point.z
+      return ret
+    def add(self, point):
+      ret = Vec3((0,0,0))
+      ret.x = self.x + point.x
+      ret.y = self.y + point.y
+      ret.z = self.z + point.z
+      return ret
+    def div_f(self, num):
+      ret = Vec3((0,0,0))
+      ret.x = self.x/num
+      ret.y = self.y/num
+      ret.z = self.z/num
+      return ret
+    def rayCast(self,line):
+      ret = Vec3((0,0,0))
+      _len = self.len()
+      ret.x = self.x/_len
+      ret.y = self.y/_len
+      ret.z = self.z/_len
+      ret = ret.dot(line)
+      return ret
+
 class tri:
-    def __init__(self,points):
+    def __init__(self,v,n):
         #print(points[0])
-        self.p1 = points[0]
-        self.p2 = points[1]
-        self.p3 = points[2]
+        self.p1 = v[0]
+        self.p2 = v[1]
+        self.p3 = v[2]
+        self.n1 = n[0]
+        self.n2 = n[1]
+        self.n3 = n[2]
     p1 = "NULL"
     p2 = "NULL"
     p3 = "NULL"
+    n1 = "NULL"
+    n2 = "NULL"
+    n3 = "NULL"
 class Render3D:
-    pos = (-2,-94,-105)
+    pos = (-2,-94,105)
     rot = (0,0,0)
     zf = 0.0001
     zn = 0.1
@@ -73,6 +132,10 @@ class Render3D:
     drawer = "NULL"
     f = "NULL"
     q =  "NULL" 
+    shaders = 0.3
+    gamma = 0
+    #light = Vec3((1,1,-0.09))
+    light = Vec3((-1,0.6,-0.09))
     def __init__(self):
         self.image =  Image.new("RGBA", (500, 500), (0,0,0,0))
         self.drawer = ImageDraw.Draw(self.image)
@@ -83,6 +146,7 @@ class Render3D:
         lines = f.read().split('\n')
         vertex = []
         mesh = []
+        normals=[]
         #print(lines)
         for line in lines:
          #   print(line)
@@ -92,20 +156,43 @@ class Render3D:
                     line = line.split(" ")
                     vertex.append(Vec3((float(line[0]),float(line[1]),float(line[2]))))
                 else:
-                    if line.startswith("f "):
-                        line = line.replace("f ","")
-                        line = line.split(" ")
-                        points = []
-                        points.append(vertex[int(line[0].split("/")[0])-1])
-                        points.append(vertex[int(line[1].split("/")[0])-1])
-                        points.append(vertex[int(line[2].split("/")[0])-1])
-                        mesh.append(tri((points)))
-        self.objs.append({"name":file_path.replace("./out/","").replace(".obj",""),"obj":mesh,"color":color})        
+                    if line.startswith("vn "):
+                      line = line.replace("vn ","").split(" ")
+                      normals.append(Vec3((float(line[0]),float(line[1]),float(line[2]))))
+                    else:
+                      if line.startswith("f "):
+                          line = line.replace("f ","")
+                          line = line.split(" ")
+                          points = []
+                          vni = []
+                          points.append(vertex[int(line[0].split("/")[0])-1])
+                          points.append(vertex[int(line[1].split("/")[0])-1])
+                          points.append(vertex[int(line[2].split("/")[0])-1])
+                          vni.append(normals[int(line[0].split("/")[2])-1])
+                          vni.append(normals[int(line[1].split("/")[2])-1])
+                          vni.append(normals[int(line[2].split("/")[2])-1])
+                          mesh.append(tri(points,vni))
+        self.objs.append({"name":file_path.replace(path+"","").replace(".obj",""),"obj":mesh,"color":color})
+    def translate(self, _point):
+        point = _point
+        point=point.scale(1)
+        point = point.ry(self.rot[1])
+        point = point.rz(self.rot[2])
+        point = point.rx(self.rot[0])
+        point.x=point.x+self.pos[0]
+        point.y+=self.pos[1]
+        point.z+=self.pos[2]
+        return point
+    def shade_8bit(self, byte,shading):
+      color_ratio = 1-self.shaders-self.gamma
+      return (byte*color_ratio) + (shading*self.shaders) + (255*self.gamma)
+      #byte /=255
+      #return (byte * shading)*255
     def project(self,wire):
         for obj in self.objs:
           if(obj["name"]=="Face"):
             drawer = ImageDraw.Draw(self.image)
-            img = Image.open("./out/m.png").convert("RGBA")
+            img = Image.open(path+"m.png").convert("RGBA")
             x,y = img.size
             for _x in range(x):
               for _y in range(y):
@@ -114,25 +201,35 @@ class Render3D:
                   drawer.point((_x+270,_y+245),fill=color)
                   drawer.point(((x-_x)+205,_y+245),fill=color)          
           for _tri in obj["obj"]:
-              points = [_tri.p1,_tri.p2,_tri.p3]
+              points = [self.translate(_tri.p1),self.translate(_tri.p2),self.translate(_tri.p3)]
               _points=[]
-              for _p in points:
-                p = Vec3((_p.x,_p.y,_p.z))
-                p=p.scale(1)
-                p.ry(self.rot[1])
-                p.x=p.x+self.pos[0]
-                p.y+=self.pos[1]
-                p.z+=self.pos[2]
-                z =  p.z
-                newp = Vec3((p.x*self.f,p.y*self.f,((z*self.q)-(self.zn*self.q))))
-                newp.to_3D(z)
-                newp = newp.to_2D()
-                newp.x = newp.x + 250
-                newp.y = newp.y + 250
-                _points.append(newp.to_tu())
-              self.drawer.polygon(_points, fill = obj["color"])
-              if(wire):
-                self.drawer.polygon(_points, outline=(255,255,255,10))
+              line1 = points[1].sub(points[0])
+              line2 = points[2].sub(points[0])
+              normal = line1.cross(line2)
+              _pos = Vec3(self.pos)
+              trans_location = _pos.add(points[0])
+              normal  = normal.div_f(normal.len())
+              normal_dot =normal.dot(trans_location) #normal.rayCast(trans_location)
+              if(normal_dot < 0):
+                #shading = (self.light.rayCast(normal))*(255)
+                shading = self.light.div_f(self.light.len()).dot(normal)*255
+                for _p in points:
+                  p = _p
+                  z =  p.z
+                  newp = Vec3((p.x*self.f,p.y*self.f,((z*self.q)-(self.zn*self.q))))
+                  newp.to_3D(z)
+                  newp = newp.to_2D()
+                  newp.x = newp.x + 250
+                  newp.y = newp.y + 250
+                  _points.append(newp.to_tu())
+                color = Vec3((obj["color"]))
+                color.x=self.shade_8bit(color.x, shading)
+                color.y=self.shade_8bit(color.y, shading)
+                color.z=self.shade_8bit(color.z, shading)
+                color = (int(color.x), int(color.y), int(color.z))
+                self.drawer.polygon(_points, fill = color)
+                if(wire):
+                  self.drawer.polygon(_points, outline=(255,255,255,10))
 class mario:
     key = [{"name":"hat","adr":["38"]},{"name":"hair","adr":["98","9C","A0","A4"]},{"name":"head","adr":["80","84","88","8C"]},{"name":"arms_chest","adr":["3C","40","44"]},{"name":"overalls","adr":["20","24","28","2C"]},{"name":"gloves","adr":["50","54","58","5C"]},{"name":"shoes","adr":["68","6C","70","74"]}]
     engine = Render3D()
@@ -144,6 +241,7 @@ class mario:
     def decode3D(self,name,color):
         if(name=="hat"):
             self.find_one("cappy",color)
+            self.find_one("logo",color)
             return
         if(name=="hair"):
             self.find_one("haircap",color)
@@ -159,6 +257,7 @@ class mario:
             self.find_one("face",color)
             self.find_one("eyes",color)
             self.find_one("mstash",color)
+            self.find_one("hairpiece",color)
             return
         if(name=="gloves"):
             self.find_one("righthand",color)
@@ -192,39 +291,51 @@ class mario:
                         if(cc_adr== obj1):
                             #print(cc_adr +"   OBJ:  "+obj)
                             self.decode3D(name,color)
-    def render(self,cc,wire):
+    def set_rot(self, x,y,z):
+      x = x * (3.14/180)
+      y = y * (3.14/180)
+      z = z * (3.14/180)
+      self.engine.rot = (x,y,z)
+    def render(self,cc,wire,user="NULL"):
       decoder = ram()
+      #path = "./obj1/"
       self.engine.objs =[]
-      self.engine.load("./out/But.obj",(0,0,255,255))
-      self.engine.load("./out/RightLowerArm.obj",(255,0,0,255))
-      self.engine.load("./out/RightUpperArm.obj",(255,0,0,255))
-      self.engine.load("./out/LeftUpperArm.obj",(255,0,0,255))
-      self.engine.load("./out/LeftLowerArm.obj",(255,0,0,255))
-      self.engine.load("./out/RightHand.obj",(128,128,128,255))
-      self.engine.load("./out/LeftHand.obj",(128,128,128,255))
-      self.engine.load("./out/RightUpperLeg.obj",(0,0,255,255))
-      self.engine.load("./out/RightLowerLeg.obj",(0,0,255,255))
-      self.engine.load("./out/LeftUpperLeg.obj",(0,0,255,255))
-      self.engine.load("./out/LeftLowerLeg.obj",(0,0,255,255))
-      self.engine.load("./out/RightShoe.obj",(128,0,0,255))
-      self.engine.load("./out/LeftShoe.obj",(128,0,0,255))
-      self.engine.load("./out/HairCap.obj",(128,0,0,255))
-      self.engine.load("./out/cappy.obj",(255,0,0,255))
-      self.engine.load("./out/shirt.obj",(255,0,0,255))
-      self.engine.load("./out/Overalls.obj",(0,0,255,255))
-      self.engine.load("./out/Buttons.obj",(255,255,0,255))
-      self.engine.load("./out/mstash.obj",(254,193,121,255))
-      self.engine.load("./out/Face.obj",(254,193,121,255))
+      self.engine.load(path+"But.obj",(0,0,255,255))
+      self.engine.load(path+"RightLowerArm.obj",(255,0,0,255))
+      self.engine.load(path+"RightUpperArm.obj",(255,0,0,255))
+      self.engine.load(path+"LeftLowerArm.obj",(255,0,0,255))
+      self.engine.load(path+"LeftUpperArm.obj",(255,0,0,255))
+
+      self.engine.load(path+"RightHand.obj",(255,255,255,255))
+      self.engine.load(path+"LeftHand.obj",(255,255,255,255))
+      #rightLeg
+      self.engine.load(path+"RightShoe.obj",(128,0,0,255))
+      self.engine.load(path+"RightLowerLeg.obj",(0,0,255,255))
+      self.engine.load(path+"RightUpperLeg.obj",(0,0,255,255))
+      #leftLeg
+      self.engine.load(path+"LeftShoe.obj",(128,0,0,255))
+      self.engine.load(path+"LeftLowerLeg.obj",(0,0,255,255))
+      self.engine.load(path+"LeftUpperLeg.obj",(0,0,255,255))
+      self.engine.load(path+"HairCap.obj",(128,0,0,255))
+      self.engine.load(path+"hairPiece.obj",(254,193,121,255))
+      self.engine.load(path+"cappy.obj",(255,0,0,255))
+      self.engine.load(path+"Overalls.obj",(0,0,255,255))    
+      self.engine.load(path+"shirt.obj",(255,0,0,255))
+      self.engine.load(path+"logo.obj",(255,0,0,255))
+      self.engine.load(path+"Buttons.obj",(255,255,0,255))
+      self.engine.load(path+"mstash.obj",(254,193,121,255))
+      self.engine.load(path+"Face.obj",(254,193,121,255))
 
       for mesh in self.engine.objs:
         if(mesh["name"].lower()=="face"):
-          self.engine.load("./out/Eyes.obj",mesh["color"])
+          self.engine.load(path+"Eyes.obj",mesh["color"])
       #self.decode3D("hat",(255,255,0,255))
       self.decode(decoder.decode(cc))
       self.engine.pos = (-2,-168,400)
+      self.set_rot(0,360/2,0)
       self.engine.project(wire)
       card = self.engine.image.copy()
-      img = Image.open("./out/eyes.png").convert("RGBA")
+      img = Image.open(path+"eyes.png").convert("RGBA")
       drawer = ImageDraw.Draw(card)
       x,y = img.size
       for _x in range(x):
@@ -233,7 +344,7 @@ class mario:
           color = img.getpixel((_x,_y))
           if(color[3]==255):
             drawer.point((_x+6,_y+14),fill=color)
-      img = Image.open("./out/m.png").convert("RGBA")
+      img = Image.open(path+"m.png").convert("RGBA")
       x,y = img.size
       for _x in range(x):
         for _y in range(y):
@@ -241,6 +352,23 @@ class mario:
           color = img.getpixel((_x,_y))
           if(color[3]==255):
             #drawer.point((_x+265,_y+250),fill=color)
+            color[3]
+      if(user!=168422909482762240):
+        logo = path+"Logo.png"
+      else:
+        logo = path+"jdjg.png"
+      img = Image.open(logo).convert("RGBA")
+      x,y = img.size
+      for _x in range(x):
+        for _y in range(y):
+          #card.point(((x*self.pix_size)+_x,(y*self.pix_size)+_y),fill=color)
+          color = img.getpixel((_x,_y))
+          off = 120
+          if(color[3]==255):
+            drawer.point(((_x*2)+220,(_y*2)+off),fill=color)
+            drawer.point(((_x*2)+220,(_y*2)+off+1),fill=color)
+            drawer.point(((_x*2)+221,(_y*2)+off),fill=color)
+            drawer.point(((_x*2)+221,(_y*2)+off+1),fill=color)
             color[3]
       #card.paste(img, (225, 190))
       #img.save("render.png", format="png")

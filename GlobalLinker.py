@@ -25,6 +25,10 @@ async def SendMessage(message):
         if message.channel.id == gChan['chan_id']:
           for gChan in DatabaseConfig.db.g_link_testing.find():
             if message.guild.id != gChan['ser_id']:
+             # try:
+              #  print(client.get_guild(gChan['ser_id']).name)
+              #except:
+              #  print("Error " + str(gChan['ser_id']))
               embedVar = discord.Embed(title=message.guild.name)
               embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)
               embedVar.set_thumbnail(url = GetPfp.GetServerPfp(message))

@@ -1,4 +1,5 @@
 import random
+import _3D
 def invert(complete_color_code):
 
   complete_color_code=complete_color_code.upper()
@@ -196,11 +197,28 @@ async def veiw(_user,channel, wire,ins = 0):
  # await channel.send("Color Code of "+_user.name+"```"
   #+_color_code+"```")
  #await channel.send(file=discord.File('render.png'))
-  import _3D
-  _color_code = get(_user)
-  if(ins):
-    _color_code = invert(_color_code)
-  marioRender = _3D.mario()
-  marioRender.render(_color_code,wire)
-  await channel.send("Color Code of "+_user.name+"```"+_color_code+"```")
-  await channel.send(file=discord.File('render.png'))
+ async with channel.typing():
+    jdjg = 0
+    if(_user=="NULL"):
+      _color_code = ""
+      jdjg =1
+      ins =0
+    else:
+      jdjg = _user.id
+      _color_code = get(_user)
+    if(ins):
+      _color_code = invert(_color_code)
+    marioRender = _3D.mario()
+    marioRender.render(_color_code,wire,jdjg)
+    try:
+      await channel.send("Color Code of "+_user.name+"```"+_color_code+"```")
+    except:
+      banana = 1
+    await channel.send(file=discord.File('render.png'))
+    return
+async def veiw_raw(instructions,channel, wire):
+  async with channel.typing():
+    marioRender = _3D.mario()
+    marioRender.render(instructions,wire)
+    await channel.send(file=discord.File('render.png'))
+    return

@@ -6,7 +6,7 @@ import asyncio
 import random
 import B
 import random_response
-from itertools import cycle # this import is only really used for really complex math, which you aren't doing.
+#from itertools import cycle # this import is only really used for really complex math, which you aren't doing.
 import datetime # don't double import
 import requests #do not use unless you know why your doing
 from pytz import timezone #all good
@@ -14,10 +14,10 @@ import pymongo
 import discord_webhook
 from difflib import SequenceMatcher
 import tweepy
-import youtube_dl
-import itertools
+#import youtube_dl
+#import itertools
 import functools
-import math
+#import math
 from async_timeout import timeout
 from clear_code import clear
 import DatabaseControl
@@ -156,7 +156,7 @@ commmands_here=[
   "random_message",
   "advice",
   "random_number",
-  "about",
+  "about/help_2",
   "time",
   "say",
   "support DM ",
@@ -176,8 +176,7 @@ admin_commands = [
 "update [sub-command]",
 "GetLinked",
 "GetChannelId",
-"status",
-"e_con"
+"status"
 ]
 commands_discription=[
 "The help message you are veiwing right now",
@@ -265,6 +264,8 @@ async def status_task():
 
 discordprefix = "JDBot*"
 
+guild_prefixes = {}
+
 ##Replace admins with your user ids on discord for you to be admins, and the help commands with your prefix, basically replace JDBot* with your prefix of choice if you want to.
 
 @client.event
@@ -278,16 +279,18 @@ async def help(message):
     await message.author.create_dm()
   embedVar2 = discord.Embed(title="User Commands",color=random.randint(0, 16777215))
   i=-1
-  print(len(commmands_here))
-  print(len(commands_discription))
+ # print(len(commmands_here))
+  #print(len(commands_discription))
   for x in commmands_here:
     i=i+1
-    print(i)
+    #print(i)
     embedVar2.add_field(name=x,value=commands_discription[i],inline=True)
   await message.author.dm_channel.send(embed=embedVar2)
   if message.author.id in admins:
     embedVar1 = discord.Embed(title="Admin Commands",color=random.randint(0, 16777215))
     i=-1
+    #print(len(admin_commands))
+    #print(len(admin_commands_usage_discription))
     for x in admin_commands:
       i=i+1
       embedVar1.add_field(name=x,value=admin_commands_discription[i]+" usage: "+admin_commands_usage_discription[i],inline=True)
@@ -322,7 +325,7 @@ send_channel = [
 
 safe_servers = [736422329399246990, 736966204606120007,736051343185412296]
 
-slur_okay = [736051343185412296]
+slur_okay = [736051343185412296,745559622856998953]
 
 @client.event
 async def on_guild_join(guild_fetched):
@@ -369,118 +372,160 @@ async def on_message(message):
     message.content=message.content.replace(replace_value, discordprefix)
 
     message.mentions.remove(client.user)
-  
+
+
 
   if client.user in message.mentions and not message.author.bot and "shut up " in (message.content.lower()+" "):
     await message.channel.send("I try to help you know")
+  
+  if message.content.startswith(discordprefix+" ") and not message.author.bot:
 
-  if message.guild is None and message.content.startswith("shut up") and not message.author.bot:
+    message_info=message.content.split(" ")
 
-    pfp=message.author.avatar_url
+    while '' in message_info:
 
-    time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
-    await message.channel.send("Can you not? I am here to help you out. Telling me to shut up is not nice!")
-
-    embed_message = discord.Embed(title="they told me to shut up :(",description=time_used,color=random.randint(0, 16777215),timestamp=datetime.datetime.utcnow())
-
-    embed_message.set_author(name=f"The user known as {message.author}",icon_url=(pfp))
-    
-    embed_message.set_thumbnail(url = "https://cdn.discordapp.com/emojis/738514652664955012.png")
-
-    embed_message.set_footer(text = f"{message.author.id}")
-
-
-    channel_usage=client.get_channel(738912143679946783)
-
-    embed_message.add_field(name="Sent To:",value=str(channel_usage))
-
-
-    await channel_usage.send(embed=embed_message)
-
-
-
-    return
-
-  if "hello " in (message.content.lower()+" ") and message.guild is None and not message.author.bot:
-
-    try:
-
-      await message.add_reaction("<a:mariodance:738972099460202567>")
-
-    except:
-
-      pass
+      message_info.remove('')
   
 
-  if "hi " in (message.content.lower()+" ") and message.guild is None and not message.author.bot:
+    if len(message_info) > 0:
 
-    try:
+      x = 2
+      
+      message.content = message_info[0]+message_info[1]
 
-      await message.add_reaction("<a:mariodance:738972099460202567>")
+      while x < (len(message_info)):
 
-    except:
+        if x == (len(message_info)-1):
 
-      pass
+          message.content = (message.content+" "+message_info[-1])
 
-  if "hey all " in (message.content.lower()+" ") and message.guild is None and not message.author.bot:
+        else:
 
-    try:
+         message.content = (message.content+" "+message_info[x])
 
-      await message.add_reaction("<a:mariodance:738972099460202567>")
+        x = x + 1
 
-    except:
+      
+      x = 0
 
-      pass
-
-  if "sup " in (message.content.lower()+" ") and message.guild is None and not message.author.bot:
-
-    try:
-
-      await message.add_reaction("<a:mariodance:738972099460202567>")
-
-    except:
-
-      pass
-
-  if "what's up " in (message.content.lower()+" ") and message.guild is None and not message.author.bot or "what's up?" in (message.content.lower()+" ") and message.guild is None and not message.author.bot:
-
-    try:
-
-      await message.channel.send("It depends on your perception of up, but I suggest you rephase the statement.")
-
-    except:
-
-      pass
-
-  if "jdjgchips" in message.content.lower() and message.guild is None and not message.author.bot or "chips" in message.content.lower() and message.guild is None and not message.author.bot:
-
-    try:
-
-      await message.add_reaction("<:JDJGooh:737913423853256784>")
-
-      await message.channel.send("ooh chips.")
-
-    except:
-
-      pass
-   
-
-  
-
-  if message.guild is None and not message.author.bot:
+  if message.guild is None and not message.author.bot and not message.content.startswith(discordprefix):
 
     import re
-
     punc = [' ','.','!','?']
-    tmpStr = message.content
+    tmpStr = message.content.lower()
     tmpStr = tmpStr.replace("sus","")
     for pun in punc:
       tmpStr = tmpStr.replace("sus"+pun,"")
     check_sus = (len(message.content)!=len(tmpStr))
 
+    tmpStr = message.content.lower()
+    tmpStr = tmpStr.replace("shut up","")
+    for pun in punc:
+      tmpStr = tmpStr.replace("shut up"+pun,"")
+    shut_up = (len(message.content)!=len(tmpStr))
+
+    tmpStr = message.content.lower()
+    tmpStr = tmpStr.replace("hello","")
+    for pun in punc:
+      tmpStr = tmpStr.replace("hello"+pun,"")
+    hello_check = (len(message.content)!=len(tmpStr))
+
+    tmpStr = message.content.lower()
+    tmpStr = tmpStr.replace("hi","")
+    for pun in punc:
+      tmpStr = tmpStr.replace("hi"+pun,"")
+    hi_check = (len(message.content)!=len(tmpStr))
+
+    tmpStr = message.content.lower()
+    tmpStr = tmpStr.replace("hey all","")
+    for pun in punc:
+      tmpStr = tmpStr.replace("hey all"+pun,"")
+    hey_all_check = (len(message.content)!=len(tmpStr))
+
+    tmpStr = message.content.lower()
+    tmpStr = tmpStr.replace("sup","")
+    for pun in punc:
+      tmpStr = tmpStr.replace("sup"+pun,"")
+    sup_check = (len(message.content)!=len(tmpStr))
+
+    tmpStr = message.content.lower()
+    tmpStr = tmpStr.replace("what's up","")
+    for pun in punc:
+      tmpStr = tmpStr.replace("what's up"+pun,"")
+    what_up_check = (len(message.content)!=len(tmpStr))
+
+    tmpStr = message.content.lower()
+    tmpStr = tmpStr.replace("chips","")
+    for pun in punc:
+      tmpStr = tmpStr.replace("chips"+pun,"")
+    jdjg_chip_check = (len(message.content)!=len(tmpStr))
+
+    tmpStr = message.content.lower()
+    tmpStr = tmpStr.replace("reverse","")
+    for pun in punc:
+      tmpStr = tmpStr.replace("reverse"+pun,"")
+    reverse_check = (len(message.content)!=len(tmpStr))
+
+
     if (check_sus):
       await message.channel.send("You sus for saying sus.")
+    if (shut_up):
+      pfp=message.author.avatar_url
+      time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
+      await message.channel.send("Can you not? I am here to help you out. Telling me to shut up is not nice!")
+      embed_message = discord.Embed(title="they told me to shut up :(",description=time_used,color=random.randint(0, 16777215),timestamp=datetime.datetime.utcnow())
+      embed_message.set_author(name=f"The user known as {message.author}",icon_url=(pfp))
+      embed_message.set_thumbnail(url = "https://cdn.discordapp.com/emojis/738514652664955012.png")
+      embed_message.set_footer(text = f"{message.author.id}")
+      channel_usage=client.get_channel(738912143679946783)
+      embed_message.add_field(name="Sent To:",value=str(channel_usage))
+      await channel_usage.send(embed=embed_message)
+    if (hello_check):
+      await message.add_reaction("<a:mariodance:738972099460202567>")
+    if (hi_check):
+      if message.content == "hi" or "hi " in message.content:
+        try:
+          await message.add_reaction("<a:mariodance:738972099460202567>")
+        except:
+          pass
+
+    if (hey_all_check):
+      try:
+        await message.add_reaction("<a:mariodance:738972099460202567>")
+      except:
+        pass
+
+    if(sup_check):
+      try:
+        await message.add_reaction("<a:mariodance:738972099460202567>")
+      except:
+        pass
+
+    if(what_up_check):
+      try:
+        await message.channel.send("It depends on your perception of up, but I suggest you rephase the statement.")
+      except:
+        pass
+    
+    if(jdjg_chip_check):
+
+      try:
+        await message.add_reaction("<:JDJGooh:737913423853256784>")
+        await message.channel.send("ooh chips.")
+      except:
+        pass
+
+    if (reverse_check):
+
+      try:
+        await message.channel.send("Your reverse card was banned.")
+
+        await message.channel.send("https://media.discordapp.net/attachments/374607459907665920/722874475720212501/unknown.png")
+
+      except:
+
+        pass
+
     else:
 
       pfp=message.author.avatar_url
@@ -504,6 +549,133 @@ async def on_message(message):
 
     return
 
+  if not message.guild is None and not message.author.bot:
+
+    if message.guild.id in guild_prefixes and not message.author.bot:
+
+      server_prefix=guild_prefixes[message.guild.id]
+
+      if message.content.startswith(server_prefix):
+
+        message.content = message.content.replace(server_prefix,discordprefix)
+
+        print(message.content)
+
+    if message.guild.id in safe_servers and not message.author.bot:
+
+      import re
+      punc = [' ','.','!','?']
+      tmpStr = message.content.lower()
+      tmpStr = tmpStr.replace("sus","")
+      for pun in punc:
+        tmpStr = tmpStr.replace("sus"+pun,"")
+      check_sus = (len(message.content)!=len(tmpStr))
+
+      tmpStr = message.content.lower()
+      tmpStr = tmpStr.replace("hello","")
+      for pun in punc:
+        tmpStr = tmpStr.replace("hello"+pun,"")
+      hello_check = (len(message.content)!=len(tmpStr))
+
+      tmpStr = message.content.lower()
+      tmpStr = tmpStr.replace("hi","")
+      for pun in punc:
+        tmpStr = tmpStr.replace("hi"+pun,"")
+      hi_check = (len(message.content)!=len(tmpStr))
+
+      tmpStr = message.content.lower()
+      tmpStr = tmpStr.replace("reverse","")
+      for pun in punc:
+        tmpStr = tmpStr.replace("reverse"+pun,"")
+      reverse_check = (len(message.content)!=len(tmpStr))
+
+      tmpStr = message.content.lower()
+      tmpStr = tmpStr.replace("hey all","")
+      for pun in punc:
+        tmpStr = tmpStr.replace("hey all"+pun,"")
+      hey_all_check = (len(message.content)!=len(tmpStr))
+
+      tmpStr = message.content.lower()
+      tmpStr = tmpStr.replace("sup","")
+      for pun in punc:
+        tmpStr = tmpStr.replace("sup"+pun,"")
+      sup_check = (len(message.content)!=len(tmpStr))
+
+      tmpStr = message.content.lower()
+      tmpStr = tmpStr.replace("chips","")
+      for pun in punc:
+        tmpStr = tmpStr.replace("chips"+pun,"")
+      chips_check = (len(message.content)!=len(tmpStr))
+
+      tmpStr = message.content.lower()
+      tmpStr = tmpStr.replace("what's up","")
+      for pun in punc:
+        tmpStr = tmpStr.replace("what's up"+pun,"")
+      what_up_check = (len(message.content)!=len(tmpStr))
+
+      tmpStr = message.content.lower()
+      tmpStr = tmpStr.replace("sup","")
+      for pun in punc:
+        tmpStr = tmpStr.replace("sup"+pun,"")
+      sup_check = (len(message.content)!=len(tmpStr))
+
+      if (check_sus):
+        try:
+          await message.channel.send("You sus for saying sus.")
+        except:
+          pass
+
+      if (hello_check):
+        try:
+          await message.add_reaction("<a:mariodance:738972099460202567>")
+        except:
+          pass 
+
+      if (hi_check):
+        if message.content == "hi" or "hi " in message.content:
+          try:
+            await message.add_reaction("<a:mariodance:738972099460202567>")
+          except:
+            pass
+
+      if(reverse_check):
+        try:
+          await message.channel.send("Your reverse card was banned.")
+          await message.channel.send("https://media.discordapp.net/attachments/374607459907665920/722874475720212501/unknown.png")
+        except:
+          pass
+
+      if (hey_all_check):
+        try:
+          await message.add_reaction("<a:mariodance:738972099460202567>")
+        except:
+          pass
+
+      if (sup_check):
+        try:
+          await message.add_reaction("<a:mariodance:738972099460202567>")
+        except:
+          pass
+
+      if(chips_check):
+        try:
+          await message.add_reaction("<:JDJGooh:737913423853256784>")
+          await message.channel.send("ooh chips.")
+        except:
+          pass
+
+      if (what_up_check):
+        try:
+          await message.channel.send("It depends on your perception of up, but I suggest you rephase the statement.")
+        except:
+          pass
+
+      if (sup_check):
+        try:
+          await message.add_reaction("<a:mariodance:738972099460202567>")
+        except:
+          pass
+
   if message.content.startswith(discordprefix+"ping") and not message.author.bot:
 
     await message.channel.send("Pong")
@@ -526,8 +698,6 @@ async def on_message(message):
 
     embed_message.add_field(name="result:",value=run_command)
 
-
-
     if (message.author.dm_channel is None):
       await message.author.create_dm()
 
@@ -540,24 +710,22 @@ async def on_message(message):
     user_id=await GetPfp.get_username(message)
 
     if not user_id == 0:
-
       pass
-
     if user_id == 0:
-
       user_id=message.content.replace(discordprefix+"mention ","")
-
       try:
-
         user_id=int(user_id)
-
       except:
-        
         user_id = message.author.id
+    
+    user_there=client.get_user(user_id)
 
-    await message.channel.send(f"\<@!{user_id}>")
+    if user_there == None:
 
+      user_there = message.author
 
+    await message.channel.send(f"{user_there.mention}")
+    
     return
 
   if message.content.startswith(discordprefix+"safe") and not message.author.bot and user.guild_permissions.administrator == True:
@@ -614,7 +782,7 @@ async def on_message(message):
     return
   if message.content.startswith(discordprefix+"global_list") and not message.author.bot:
     i=0
-    embedVar = discord.Embed(title = "Gobal Channels List")
+    embedVar = discord.Embed(title = "Gobal Channels List",color=random.randint(0, 16777215))
     for obj in DatabaseConfig.db.g_link_testing.find():
       i=i+1
       header = str(i) + ": "
@@ -748,15 +916,8 @@ async def on_message(message):
 
         clean_member_list.append(x)
 
-        
-
     userNearest_server_nick = sorted(clean_member_list, key=lambda x: SequenceMatcher(None, x.nick,user_wanted).ratio())[-1]
-
     await message.channel.send(userNearest_server_nick)
-
-
-
-
     return
 
 
@@ -1120,16 +1281,20 @@ async def on_message(message):
     import color_code
     from PIL import Image
     import Pixman
-    new_cmd = message.content.replace(discordprefix+"cc_","")
+    new_cmd = message.content.replace(discordprefix+"cc_","").split(" ")[0]
+    
+    
     mode =0
     if ('1' in new_cmd):
       mode=1
     if ('2' in new_cmd):
       mode=2
+   
+   
     if (new_cmd != new_cmd.replace("view","")):
       wire=mode
       if(wire<2):
-        await color_code.veiw(message.author,message.channel,wire)
+        await color_code.veiw(message.author,message.channel,wire,0)
       else:
         _user = message.author
         _color_code = color_code.get(_user)
@@ -1140,6 +1305,7 @@ async def on_message(message):
         image.export("render.png")
         await message.channel.send("Color Code of "+_user.name+"```"+_color_code+"```")
         await message.channel.send(file=discord.File('render.png'))
+    
     if(new_cmd != new_cmd.replace("iv","")):
       #View
       if(mode<2):
@@ -1154,7 +1320,28 @@ async def on_message(message):
         image.export("render.png")
         await message.channel.send("Color Code of "+_user.name+"```"+_color_code+"```")
         await message.channel.send(file=discord.File('render.png'))
-
+    
+    if (new_cmd != new_cmd.replace("test","")):
+      instructs = message.content.replace("JDBot*cc_test ","")
+      wire=mode
+      print(wire)
+      if(wire<2):
+        #await color_code.veiw("NULL",message.channel,wire,0)
+        if(instructs[0]=='8'):
+          await color_code.veiw_raw(instructs,message.channel,wire)
+        else:
+          await color_code.veiw("NULL",message.channel,wire,0)
+      else:
+        _user = message.author 
+        _color_code = color_code.get(_user)
+        decoder = Pixman.ram()
+        image  = Pixman.get()
+        image.decode(decoder.b(_color_code))
+        image.render()
+        image.export("render.png")
+        await message.channel.send("Color Code of "+_user.name+"```"+_color_code+"```")
+        await message.channel.send(file=discord.File('render.png'))
+      await message.delete()
 
       
     if(new_cmd != new_cmd.replace("save"," ")):
@@ -1162,9 +1349,11 @@ async def on_message(message):
       new_cmd=new_cmd.replace("save ","")
       if (new_cmd[0] != ' '):
         color_code.save(message.author,new_cmd)
+        await message.delete()
         await message.channel.send("Color Code Saved!")
       else:
         print(new_cmd)
+        await message.delete()
         await message.channel.send("Invalid Format!")
 
       
@@ -1330,10 +1519,11 @@ async def on_message(message):
     #embedVar.add_field(name="Global Rank: ",value=user_global_rank)
     #embedVar.add_field(name="Local Rank: ",value=user_local_rank)
     await message.channel.send(embed=embedVar)
-    try:
-      await RankSystem.GetStatus(message,user99 )
-    except:
-      await message.channel.send("User not in Rank System")
+    #try:
+    print("USERNAME: "+user99.name)
+    await RankSystem.GetStatus(message,user99 )
+   # except:
+      #await message.channel.send("User not in Rank System")
     #turn these into embed info stuff. hash check will just an embed image(so feel free to delete hash_check i-tself, but keep avatar99, or at least the stuff to get it.)
 
     return
@@ -1476,9 +1666,6 @@ async def on_message(message):
         url = data_used['results'][i]['media'][0]['gif']['url']
 
         await image_channel.send(url)
-
-
-      
 
       return
     
@@ -1748,33 +1935,18 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"image_check") and not message.author.bot:
-
     from PIL import Image
     import requests
     from io import BytesIO
 
-
     check_image = message.content.replace(discordprefix+"image_check ","")
-
     try:
-
       response=requests.get(check_image)
-
       img = Image.open(BytesIO(response.content))
-
       await message.channel.send(img)
-
     except:
-    
       await message.channel.send("Not a valid image")
-
-
-
-
-
     return
-
-
 
   if message.content.startswith(discordprefix+"order") and not message.author.bot:
     import time
@@ -1802,7 +1974,6 @@ async def on_message(message):
      'fileType': 'jpg|gif|png|jpeg',
      'safe': 'medium',
      }
-
 
     try:
 
@@ -1847,7 +2018,7 @@ async def on_message(message):
     time_after=time.process_time()
 
 
-    time_spent = (time_after - time_before)
+    time_spent = int((time_after - time_before)*1000)
 
     await message.delete()
 
@@ -1863,7 +2034,7 @@ async def on_message(message):
 
     embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time} \nCopyright: Public Domain")
 
-    embed_info.add_field(name="Time Spent:",value=f"{time_spent} seconds")
+    embed_info.add_field(name="Time Spent:",value=f"{time_spent} MS")
 
     embed_info.set_author(name=order_info,icon_url=(pfp))
 
@@ -1907,26 +2078,6 @@ async def on_message(message):
     GetPfp.DownloadAllPfp(message)
     return
 
-  if "hello " in (message.content.lower()+" ") and message.guild.id in safe_servers and not message.author.bot:
-
-    try:
-
-      await message.add_reaction("<a:mariodance:738972099460202567>")
-
-    except:
-
-      pass
-
-  if "sus " in (message.content.lower()+" ") and message.guild.id in safe_servers and not message.author.bot:
-
-    try:
-
-     await message.channel.send("You sus for saying sus.")
-
-    except:
-
-      pass
-
   if message.content.startswith(discordprefix+"fetch_content") and message.author.id in admins and not message.author.bot:
 
     data_here=message.content.replace(discordprefix+"fetch_content ","")
@@ -1934,82 +2085,6 @@ async def on_message(message):
     print(data_here)
 
     return
-
-
-
-  if "hi " in (message.content.lower()+" ") and message.guild.id in safe_servers and not message.author.bot:
-
-    try:
-
-      await message.add_reaction("<a:mariodance:738972099460202567>")
-
-    except:
-
-      pass
-
-  if "reverse " in (message.content.lower()+" ") and message.guild.id in safe_servers and not message.author.bot:
-
-    try:
-
-      await message.channel.send("Your reverse card was banned.")
-
-      await message.channel.send("https://media.discordapp.net/attachments/374607459907665920/722874475720212501/unknown.png")
-
-    except:
-
-      pass
-
-  if "hey all " in (message.content.lower()+" ") and message.guild.id in safe_servers and not message.author.bot:
-
-    try:
-
-      await message.add_reaction("<a:mariodance:738972099460202567>")
-
-    except:
-
-      pass
-
-  if "sup " in (message.content.lower()+" ") and message.guild.id in safe_servers and not message.author.bot:
-
-    try:
-
-      await message.add_reaction("<a:mariodance:738972099460202567>")
-
-    except:
-
-      pass
-
-  if "what's up " in (message.content.lower()+" ") and message.guild.id in safe_servers and not message.author.bot or "what's up?" in (message.content.lower()+" ")  and message.guild.id in safe_servers and not message.author.bot:
-
-    try:
-
-      await message.channel.send("It depends on your perception of up, but I suggest you rephase the statement.")
-
-    except:
-
-      pass
-
-  if "jdjgchips" in message.content.lower() and message.guild.id in safe_servers and not message.author.bot or "chips" in message.content.lower() and message.guild.id in safe_servers and not message.author.bot:
-
-    try:
-
-      await message.add_reaction("<:JDJGooh:737913423853256784>")
-
-      await message.channel.send("ooh chips.")
-
-    except:
-
-      pass
-
-  if "sup " in (message.content.lower()+" ") and message.guild.id in safe_servers and not message.author.bot:
-
-    try:
-
-      await message.add_reaction("<a:mariodance:738972099460202567>")
-
-    except:
-
-      pass
 
   if message.content.startswith(discordprefix+"guild_get") and not message.author.bot:
 
@@ -2182,6 +2257,24 @@ async def on_message(message):
       
       return
 
+  if message.content.startswith(discordprefix+"old_servers") and not message.author.bot:
+    try:
+      server_1= await client.fetch_guild(762393253114150912)
+      server_2 = await client.fetch_guild(743639558855327895)
+      channel_1 = await client.fetch_channel(762393253114150915)
+      channel_2 = await client.fetch_channel(762097801474998272)
+    except:
+      server_1 = "Couldn't find the guild."
+      server_2 = "Couldn't find the guild."
+      channel_1 = "Couldn't find the channel"
+      channel_2 = "Couldn't find the channel"
+    await message.channel.send(server_1)
+    await message.channel.send(server_2)
+    await message.channel.send(channel_1)
+    await message.channel.send(channel_2)
+    return
+
+
   if message.content.startswith(discordprefix+"backup_emojis") and message.author.id in admins  and not message.author.bot:
 
     import requests
@@ -2209,7 +2302,6 @@ async def on_message(message):
           await guild_2.create_custom_emoji(name = str(obj.name),image=img)
         if str(obj.animated) == "True":
           i =  i-1
-
 
     return
 
@@ -2817,38 +2909,44 @@ async def on_message(message):
 
 
   if message.content.startswith(discordprefix+"coin") and not message.author.bot:
-
+    pfp = message.author.avatar_url
     guess_dice=message.content.replace(discordprefix+"coin ","")
 
-    value = random.choice([True,False])
-
+    value = random.choice([True,False]) 
     win = False
     if guess_dice.lower().startswith("h") and value:
       win = True
     elif guess_dice.lower().startswith("t") and not value:
       win = True
-
     elif guess_dice.lower().startswith("h") and not value:
       win = False
     elif guess_dice.lower().startswith("t") and value:
       win = False
-
     else:
       await message.channel.send("Was that a choice?")
       return
     
-    if win:
-      embed_message = discord.Embed(title="coin flip",color=random.randint(0, 16777215))
-      embed_message.add_field(name="The coin flipped: "+("heads" if value else "tails"),value=f"You guessed: {guess_dice}")
-      embed_message.add_field(name="Result: ",value="Won")
-      await message.channel.send(embed=embed_message)
-      await message.channel.send(":partying_face:")
+    if(value):
+      pic_name = "heads"
     else:
+      pic_name ="Tails"
+    
+    if win:
+      f = discord.File("./images/"+pic_name+".png",pic_name+".png")
       embed_message = discord.Embed(title="coin flip",color=random.randint(0, 16777215))
-      embed_message.add_field(name="The coin flipped: "+("heads" if value else "tails"),value=f"You guessed:{guess_dice}")
+      embed_message.set_author(name=f"{message.author}",icon_url=(pfp))
+      embed_message.add_field(name="The Coin Flipped: "+("heads" if value else "tails"),value=f"You guessed: {guess_dice}")
+      embed_message.add_field(name="Result: ",value="Won")
+      embed_message.set_image(url="attachment://"+pic_name+".png")
+      await message.channel.send(file = f,embed=embed_message)
+    else:
+      f = discord.File("./images/"+pic_name+".png",pic_name+".png")
+      embed_message = discord.Embed(title="coin flip",color=random.randint(0, 16777215))
+      embed_message.set_author(name=f"{message.author}",icon_url=(pfp))
+      embed_message.add_field(name="The Coin Flipped: "+("heads" if value else "tails"),value=f"You guessed: {guess_dice}")
       embed_message.add_field(name="Result: ",value="Lost")
-      await message.channel.send(embed=embed_message)
-      await message.channel.send(":frowning:")
+      embed_message.set_image(url="attachment://"+pic_name+".png")
+      await message.channel.send(file = f,embed=embed_message)
     return
 
   if message.content.startswith(discordprefix+"webhook_update") and not message.author.bot and message.author.id in jdjg_id:
@@ -3168,7 +3266,7 @@ async def on_message(message):
 
     root_answer = int(root_int**(1/num_int))
 
-    embed = discord.Embed(title = "The Radical Function Has Been Completed!")
+    embed = discord.Embed(title = "The Radical Function Has Been Completed!",color=random.randint(0, 16777215))
     embed.set_footer(text = f"{message.author.name} | {message.author.id}")
     embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/d/d1/Calculator_on_macOS.png")
     embed.add_field(name = f"Formula: {num}√ {root_int}", value = f"Result: {root_answer}")
@@ -3219,7 +3317,6 @@ async def on_message(message):
 
       embed_message = discord.Embed(title = f"How well does {name_1} and {name_2} work together?",color=random.randint(0, 16777215))
       embed_message.set_author(name=f"{message.author}",icon_url=(pfp))
-
 
 
       if  number_here  < 50:
@@ -3341,7 +3438,7 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"mail") and not message.author.bot:
-
+    
     try:
       user = message.mentions[0]
 
@@ -3401,7 +3498,9 @@ async def on_message(message):
     return
 
   for banned_word in banned_words:
-    if banned_word in message.content.lower() and not message.guild.id in slur_okay:
+    if message.guild == None:
+      pass
+    elif banned_word in message.content.lower() and not message.guild.id in slur_okay:
       await message.delete()
       banned_response=random.choice(random_response.response_used)
       await message.channel.send(banned_response)
@@ -3432,7 +3531,7 @@ async def on_message(message):
     
     complimentt = random.choice(random_response.compliment)
 
-    embed = discord.Embed(title = "Here is a compliment, for you!")
+    embed = discord.Embed(title = "Here is a compliment, for you!",color=random.randint(0, 16777215))
     embed.add_field(name = "I hope you like it!", value=complimentt)
     await message.channel.send(embed=embed)
 
@@ -3467,7 +3566,7 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"invite") and not message.author.bot:
     
-    embed  = discord.Embed(title = "The Invite Links!", value = "One is for testing, one is the normal bot.")
+    embed  = discord.Embed(title = "The Invite Links!", value = "One is for testing, one is the normal bot.",color=random.randint(0, 16777215))
     embed.add_field(name = "Testing Link:", value = "https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8", inline = False)
     embed.add_field(name = "Normal Invite:", value = "https://discordapp.com/oauth2/authorize?client_id=702238592725942374&scope=bot&permissions=8", inline = False)
 
@@ -3515,7 +3614,7 @@ async def on_message_delete(message):
     #if(message.content=="banana"):
       #import LinkerPort
       #LinkerPort.port()
-    em =discord.Embed(title=str(message.author.name)+" Deleted a Message")
+    em =discord.Embed(title=str(message.author.name)+" Deleted a Message",color=random.randint(0, 16777215))
     em.add_field(name="Message: ",value=message.content)
     await client.get_channel(738912143679946783).send(embed=em)
     try:
@@ -3549,7 +3648,7 @@ async def on_typing(channel,user,_time):
 async def on_message_edit(before,after):
   #print("EDIT")
   if(before.content!=after.content):
-    embedVar = discord.Embed(title=before.author.name+" Edited a Message")
+    embedVar = discord.Embed(title=before.author.name+" Edited a Message",color=random.randint(0, 16777215))
     embedVar.add_field(name="Before:",value=str(before.content))
     embedVar.add_field(name="After:",value=str(after.content))
     logs = client.get_channel(738912143679946783)
@@ -3575,11 +3674,15 @@ async def on_error(name,*arguments,**karguments):
   embed_message.set_footer(text=f"Discord details: \n{arguments}")
   idle_error=termcolor.colored(idle_error,"red")
   print(f"\n{idle_error} \n{arguments}")
-  for adID in admin_contact:
-    admin_user = client.get_user(adID)
-    if (admin_user.dm_channel is None):
-      await admin_user.create_dm()
-    await admin_user.send(embed=embed_message)
+  try:
+    for adID in admin_contact:
+      admin_user = client.get_user(adID)
+      if (admin_user.dm_channel is None):
+        await admin_user.create_dm()
+      await admin_user.send(embed=embed_message)
+  except:
+
+    print("\n can't DM them")
 
   await client.get_channel(738912143679946783).send(embed=embed_message)
 
@@ -3604,7 +3707,41 @@ async def on_member_join(member):
     
     creation_date = (i.created_at).strftime('%m/%d/%Y %H:%M:%S')
 
-  embed_message=discord.Embed(name=f"{member} just joined {member.guild.name}",timestamp=datetime.datetime.utcnow(),color=random.randint(0, 16777215))
+  embed_message=discord.Embed(title=f"{member} just joined {member.guild.name}",timestamp=datetime.datetime.utcnow(),color=random.randint(0, 16777215))
+
+  embed_message.set_footer(text=f"User ID: {member.id}")
+
+  await client.get_channel(738912143679946783).send(embed=embed_message)
+
+@client.event
+async def on_invite_create(invite):
+  invite.revoked
+  invite.guild
+  invite.max_age
+  invite.code
+  invite.inviter
+  invite.id
+  invite.url
+  invite.uses
+  creation_date = (i.created_at).strftime('%m/%d/%Y %H:%M:%S')
+
+@client.event
+async def on_invite_delete(invite):
+  print(invite.revoked)
+  print(invite.guild)
+  print(invite.max_age)
+  print(invite.code)
+  print(invite.inviter)
+  print(invite.id)
+  print(invite.url)
+  print(invite.uses)
+  creation_date = (i.created_at).strftime('%m/%d/%Y %H:%M:%S')
+  print(creation_date)
+
+@client.event
+async def on_member_remove(member):
+
+  embed_message=discord.Embed(title=f"{member} just left {member.guild.name}",timestamp=datetime.datetime.utcnow(),color=random.randint(0, 16777215))
 
   embed_message.set_footer(text=f"User ID: {member.id}")
 
@@ -3635,8 +3772,23 @@ async def on_user_update(before,after):
 
   await client.get_channel(738912143679946783).send(embed=embed_message)
 
+@client.event
+async def on_guild_remove(guild_fetched):
+  channels = [channel for channel in guild_fetched.channels]
+  roles = roles= [role for role in guild_fetched.roles]
+  embed = discord.Embed(title="Bot just left: "+str(guild_fetched.name), color=random.randint(0,16777215))
+  embed.set_thumbnail(url = guild_fetched.icon_url)
+  embed.add_field(name='Server Name:',value=f'{guild_fetched.name}')
+  embed.add_field(name='Server ID:',value=f'{guild_fetched.id}')
+  embed.add_field(name='Server region:',value=f'{guild_fetched.region}')
+  embed.add_field(name='Server Creation Date:',value=f'{guild_fetched.created_at}')
+  embed.add_field(name='Server Owner:',value=f'{guild_fetched.owner}')
+  embed.add_field(name='Server Owner ID:',value=f'{guild_fetched.owner.id}')
+  embed.add_field(name='Member Count:',value=f'{guild_fetched.member_count}')
+  embed.add_field(name='Amount of Channels:',value=f"{len(channels)}")
+  embed.add_field(name='Amount of Roles:',value=f"{len(roles)}")
+  await client.get_channel(738912143679946783).send(embed=embed)
 
-      
 
 banned_words = [
   'faggot',
