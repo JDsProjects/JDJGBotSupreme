@@ -23,6 +23,7 @@ pil-compat = "^1.0.0"
 giphy-client = "^1.0.0"
 pastebin = "^1.1.2"
 termcolor = "^1.1.0"
+wget = "^3.2"
 
 [tool.poetry.dev-dependencies]
 

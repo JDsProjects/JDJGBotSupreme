@@ -2,16 +2,11 @@ import re
 import requests
 def get(message):
   images = []
-
   full_emojis=re.findall(r':\w*:\d*',message.content)
-
   # custom_emoji_names = [(e.split(':')[1].replace('>', '')) for e in full_emojis]
-
   custom_emoji_ids = [(e.split(':')[2].replace('>', '')) for e in full_emojis]
-
   extentions = ["gif","png"]
     #print(custom_emoji_names)
-
     #print(custom_emoji_ids)
   for e in custom_emoji_ids:
     ex_vaild = bool(0)

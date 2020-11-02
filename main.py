@@ -6,6 +6,7 @@ import asyncio
 import random
 import B
 import random_response
+import aiohttp
 #from itertools import cycle # this import is only really used for really complex math, which you aren't doing.
 import datetime # don't double import
 import requests #do not use unless you know why your doing
@@ -32,15 +33,17 @@ import GetPfp
 import emote
 import color_code
 import userinfo
+import jdjg_os
 today = datetime.date.today()
 day = today.strftime('%m/%d/%Y %H:%M:%S')
+
+import logging
+logging.basicConfig(level=logging.WARNING)
+ratelimit_detection=logging.Filter(name='ratelimit')
+
 #don't delete any import statements - some things might be not used
 
-#will add JDJG_os soon, as well as My recolor program(maybe)
-
 #All code that has been transfered over took a while.
-
-#JDJG_os will be embed and be good soon(but right now it needs some upgrades)
 
 client = ClientConfig.client
 
@@ -268,11 +271,14 @@ guild_prefixes = {}
 
 ##Replace admins with your user ids on discord for you to be admins, and the help commands with your prefix, basically replace JDBot* with your prefix of choice if you want to.
 
+async def startup():
+  await client.wait_until_ready()
+  client.os_user = "None"
+  await status_task()
+
 @client.event
 async def on_ready():
   print("Bot is ready.\n")
-  await client.wait_until_ready()
-  client.loop.create_task(status_task())
 
 async def help(message):
   if (message.author.dm_channel is None):
@@ -516,16 +522,12 @@ async def on_message(message):
         pass
 
     if (reverse_check):
-
       try:
-        await message.channel.send("Your reverse card was banned.")
-
-        await message.channel.send("https://media.discordapp.net/attachments/374607459907665920/722874475720212501/unknown.png")
-
+        file = discord.File("reverse.png")
+        await message.channel.send("Your reverse card was banned." ,file=file)
       except:
-
         pass
-
+    
     else:
 
       pfp=message.author.avatar_url
@@ -640,8 +642,8 @@ async def on_message(message):
 
       if(reverse_check):
         try:
-          await message.channel.send("Your reverse card was banned.")
-          await message.channel.send("https://media.discordapp.net/attachments/374607459907665920/722874475720212501/unknown.png")
+          file = discord.File("reverse.png")
+          await message.channel.send("Your reverse card was banned." ,file=file)
         except:
           pass
 
@@ -682,6 +684,13 @@ async def on_message(message):
 
     await message.channel.send(f"Response time: {client.latency*1000}")
 
+    return
+
+  if message.content.startswith(discordprefix+"save_image") and not message.author.bot and message.author.id in jdjg_id:
+    if len(message.attachments) > 0:
+      obj = message.attachments[0]
+      file_name=obj.filename
+      url = await obj.save(f"speacil_images/{file_name}",seek_begin=True,use_cached=False)
     return
 
   if message.content.startswith(discordprefix+"console") and not message.author.bot and message.author.id in jdjg_id:
@@ -1073,33 +1082,19 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"dice_roll20") and not message.author.bot:
-
     pfp=message.author.avatar_url
-
     type_dice = "d20"
-
     dice_gif = "https://media1.tenor.com/images/c05126b9ad27709b3930670b6ab4c070/tenor.gif"
-
-
     dice_roll20=random.randint(1,20)
-
     dice_roll20 = str(dice_roll20)
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
+    file = discord.File("images/dice.png",filename="dice.png")
     embed_message = discord.Embed(title=f" Rolled a {dice_roll20}", description=time_used, color=random.randint(0, 16777215))
-
     embed_message.set_footer(text = f"{message.author.id}")
-
-    embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
-
+    embed_message.set_thumbnail(url="attachment://dice.png")
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
-
     embed_message.set_image(url=dice_gif)
-
-    await message.channel.send(embed=embed_message)
-
-
+    await message.channel.send(embed=embed_message,file=file)
     return
   
   if message.content.startswith(discordprefix+"dice_roll6") and not message.author.bot:
@@ -1873,11 +1868,7 @@ async def on_message(message):
       except:
 
         url_collection.remove(x)
-
-
-
     
-
     await message.delete()
 
     order_description = (f"{message.author} ordered a {order_wanted}")
@@ -2260,49 +2251,135 @@ async def on_message(message):
   if message.content.startswith(discordprefix+"old_servers") and not message.author.bot:
     try:
       server_1= await client.fetch_guild(762393253114150912)
-      server_2 = await client.fetch_guild(743639558855327895)
-      channel_1 = await client.fetch_channel(762393253114150915)
-      channel_2 = await client.fetch_channel(762097801474998272)
     except:
       server_1 = "Couldn't find the guild."
+    try:
+      server_2 = await client.fetch_guild(743639558855327895)
+    except:
       server_2 = "Couldn't find the guild."
+    try:
+      server_test = await client.fetch_guild(362679932670705667)
+    except:
+      server_test = "Couldn't find the guild."
+    try:
+      channel_1 = await client.fetch_channel(762393253114150915)
+    except:
       channel_1 = "Couldn't find the channel"
+    try:
+      channel_2 = await client.fetch_channel(762097801474998272)
+    except:
       channel_2 = "Couldn't find the channel"
     await message.channel.send(server_1)
     await message.channel.send(server_2)
     await message.channel.send(channel_1)
     await message.channel.send(channel_2)
+    await message.channel.send(server_test)
     return
 
+  if message.content.startswith(discordprefix+"invert") and not message.author.bot:
+    from PIL import Image
+    from io import BytesIO
+    import inverter
+    if len(message.attachments) == 0:
+      for message_wanted in await message.channel.history(limit=100).flatten():
+        if not message_wanted.author.bot and len(message_wanted.attachments) != 0:
+          image_invert =  message_wanted.attachments[0]
+    if len(message.attachments) > 0:
+      image_invert = message.attachments[0]
+    img = await image_invert.read()
+    try:
+      img=Image.open(BytesIO(img))
+    except:
+      await message.channel.send("not a valid image.")
+      return
+    inverted_image = inverter.invert(img)
+    buffer = BytesIO()
+    image_format = (img.format)
+    if img.format != "GIF":
+      inverted_image.save(buffer,format = image_format)
+    elif img.is_animated == False:
+      inverted_image.save(buffer,format = image_format)
+    elif img.is_animated == True:
+      inverted_image.save(buffer,format = image_format,save_all=True)
+    buffer.seek(0)
+    file_name = (f"invert.{image_format}")
+    file=discord.File(buffer, filename=file_name)
+    embed = discord.Embed(title="Inverted image:",timestamp=(message.created_at),color=random.randint(0, 16777215))
+    embed.set_image(url=f"attachment://invert.{image_format}")
+    await message.channel.send(embed=embed,file=file)
+    return
+
+  
+
+  if message.content.startswith(discordprefix+"closest_embed") and not message.author.bot:
+    for message_wanted in await message.channel.history(limit=100).flatten():
+      if len(message_wanted.embeds) != 0:
+        for embed in message_wanted.embeds:
+          await message.channel.send(embed=embed)
+        return
+    await message.channel.send("couldn't find any embeds")
+    return
+
+  if message.content.startswith(discordprefix+"emoji_check") and not message.author.bot:
+    from PIL import Image
+    from io import BytesIO
+    obj = client.get_emoji(749442292045185084)
+    img = await obj.url.read()
+    check_time=Image.open(BytesIO(img))
+    image_format=str(check_time.format).lower()
+    width, height=(check_time.size)
+    image_mode = (check_time.mode)
+    byte_size = (len(img)/1000)
+    size_used=(f"{byte_size} KB")
+    divide_rate = (byte_size/256)
+    new_width = int(width/divide_rate)
+    new_height = int(height/divide_rate)
+    dimensions=(new_width,new_height)
+    file_name = (f"{obj.name}.{image_format}")
+    check_time.resize(dimensions)
+    buffer = BytesIO()
+    check_time.save(buffer,format = image_format,save_all=True)
+    buffer.seek(0)
+    file=discord.File(buffer, filename=file_name)
+    embed_message=discord.Embed(title=f"Emoji name : {obj.name}",timestamp=(message.created_at),color=random.randint(0, 16777215))
+    embed_message.set_author(name=f"{message.author}",icon_url=(message.author.avatar_url))
+    embed_message.add_field(name="Byte Size:",value=size_used)
+    embed_message.add_field(name="PIL Image mode:",value=f"{image_mode}")
+    embed_message.add_field(name="Width:",value=width)
+    embed_message.add_field(name="Height:",value=height)
+    embed_message.add_field(name="Image type:",value=image_format)
+    embed_message.add_field(name="New Width:",value=new_width)
+    embed_message.add_field(name="New Height:",value=new_height)
+    #embed_message.add_field(name="New Byte Size:",value=f"{new_bytes} KB")
+    embed_message.set_image(url=f"attachment://{file_name}")
+    embed_message.set_thumbnail(url=obj.url)
+    embed_message.set_footer(text = f"{message.author.id}")
+    await message.channel.send(embed=embed_message,file=file)
+    guild_1 = client.get_guild(748753645138608239)
+    #await guild_1.create_custom_emoji(name = str(obj.name),image=emoji_bytes)
+    return
 
   if message.content.startswith(discordprefix+"backup_emojis") and message.author.id in admins  and not message.author.bot:
-
-    import requests
-
     guild_search = client.get_guild(736422329399246990)
-    
     guild_1 = client.get_guild(748753645138608239)
-
     guild_2 = client.get_guild(748753770476732499)
-
     guild_emoji_fetch = guild_search.emojis
     i = -1
     for obj in guild_emoji_fetch:
-      
-      response = requests.get(str(obj.url))
-      img = response.content
-    
+      img = await obj.url.read()
+      if (len(img)/1000) > 255:
+        await message.channel.send("too large")
+        return
       if(i<50):
-        if str(obj.animated) == "True":
+        if obj.animated == True:
           await guild_1.create_custom_emoji(name = str(obj.name),image=img)
-        if str(obj.animated) == "False":
+        if obj.animated == False:
           i = i-1
       if(i>=50):
-        if str(obj.animated) == "False":
+        if obj.animated == False:
           await guild_2.create_custom_emoji(name = str(obj.name),image=img)
-        if str(obj.animated) == "True":
+        if str(obj.animated) == True:
           i =  i-1
-
     return
 
   if message.content.startswith(discordprefix+"delete_emojis") and message.author.id in admins and not message.author.bot:
@@ -2334,7 +2411,6 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"emoji_add") and not message.author.bot and user.guild_permissions.manage_emojis == True:
-
     emote_collect = []
 
     from PIL import Image
@@ -2984,10 +3060,8 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"insult") and not message.author.bot:
-    import time
-
     await message.channel.send("Preparing insult......")
-    time.sleep(1)
+    await asyncio.sleep(1)
 
     insultt = random.choice(random_response.insult)
 
@@ -3391,8 +3465,11 @@ async def on_message(message):
       await message.channel.send("unknown format: '%s'" % convert_to)
       return
 
-    embed = discord.Embed(title = "The conversion has been completed!",color=random.randint(0, 16777215))
-    embed.add_field(name = f"Converted from {convert_from}, to:", value = f"{convert_to}: {converted_value}")
+    if triple == [255,255,255]:
+      triple = [255,254,255]
+    color_embed = (discord.Colour.from_rgb(*triple))
+    embed = discord.Embed(title = "The conversion has been completed!",description=f"Converted from {convert_from} to {convert_to}:",color=color_embed)
+    embed.add_field(name = f"{convert_to}:", value = f"{converted_value}")
     await message.channel.send(embed=embed)
 
     return
@@ -3577,7 +3654,14 @@ async def on_message(message):
     await message.channel.send(embed=embed)
 
     return
+  
+  if message.content.startswith(discordprefix+"os") and not message.author.bot:
+    if client.os_user == "None":
+      client.os_user = message.author.id
 
+      await jdjg_os.os(message)
+    
+    return
 
   if message.content.startswith(discordprefix) and not message.author.bot:
 
@@ -3683,7 +3767,6 @@ async def on_error(name,*arguments,**karguments):
   except:
 
     print("\n can't DM them")
-
   await client.get_channel(738912143679946783).send(embed=embed_message)
 
 @client.event
@@ -3723,7 +3806,7 @@ async def on_invite_create(invite):
   invite.id
   invite.url
   invite.uses
-  creation_date = (i.created_at).strftime('%m/%d/%Y %H:%M:%S')
+  creation_date = (invite.created_at).strftime('%m/%d/%Y %H:%M:%S')
 
 @client.event
 async def on_invite_delete(invite):
@@ -3735,7 +3818,7 @@ async def on_invite_delete(invite):
   print(invite.id)
   print(invite.url)
   print(invite.uses)
-  creation_date = (i.created_at).strftime('%m/%d/%Y %H:%M:%S')
+  creation_date = (invite.created_at).strftime('%m/%d/%Y %H:%M:%S')
   print(creation_date)
 
 @client.event
@@ -3839,6 +3922,7 @@ https://discord.gg/sHUQCch - for another support center"""
 token_grab = os.environ['Discordtoken']
 
 B.b()
+client.loop.create_task(startup())
 client.run(token_grab)
 
 
