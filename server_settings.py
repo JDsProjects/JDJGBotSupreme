@@ -23,7 +23,7 @@ def setup_server(guild):
   try:
     slur = doc["slur"]
   except:
-    slur = [0,0,0,0,0,0]
+    slur = []
   try:
     pfix = doc["pfix"]
   except:
@@ -64,9 +64,13 @@ def change_setting(guild,setting,args):
   if(setting==2):
     doc["safe"] = toggle_bool(doc["safe"])
   if(setting==3):
-    doc["slur"][args] = toggle_bool(doc["slur"][args])
+    for arg in args:
+      if not (arg in doc["slur"]):
+        doc["slur"][arg] = doc["slur"].append(arg)
+      else:
+        doc["slur"][arg] = doc["slur"].remove(arg)
   if(setting==4):
-    doc["pfix"] = toggle_bool(doc["pfix"])
+    doc["pfix"] = args
   if(setting==5):
     doc["admins"].append(args)
   if(setting==6):

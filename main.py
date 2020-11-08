@@ -6,16 +6,19 @@ import asyncio
 import random
 import B
 import random_response
+import imghdr
 import aiohttp
-#from itertools import cycle # this import is only really used for really complex math, which you aren't doing.
-import datetime # don't double import
+import aiodns
+import chardet
+#from itertools import cycle
 import requests #do not use unless you know why your doing
+import datetime
 from pytz import timezone #all good
 import pymongo
 import discord_webhook
 from difflib import SequenceMatcher
 import tweepy
-#import youtube_dl
+import lavalink
 #import itertools
 import functools
 #import math
@@ -28,18 +31,19 @@ import UpdateNotify
 import DatabaseConfig
 import urllib3
 import numpy as np
+import logging
+import emojis
 from bs4 import BeautifulSoup
 import GetPfp
 import emote
 import color_code
 import userinfo
 import jdjg_os
+import mystbin
 today = datetime.date.today()
 day = today.strftime('%m/%d/%Y %H:%M:%S')
-
-import logging
 logging.basicConfig(level=logging.WARNING)
-ratelimit_detection=logging.Filter(name='ratelimit')
+ratelimit_detection=logging.Filter(name='WARNING:discord.http:We are being rate limited.')
 
 #don't delete any import statements - some things might be not used
 
@@ -237,7 +241,6 @@ url_collection = []
 
 #this is used for the order command
 
-
 #jdjg's id only(don't add any more)
 
 async def status_task():
@@ -274,6 +277,8 @@ guild_prefixes = {}
 async def startup():
   await client.wait_until_ready()
   client.os_user = "None"
+  client.check_users = {}
+  #client.lavalink=await asyncio.create_subprocess_shell('java -jar Lavalink.jar')
   await status_task()
 
 @client.event
@@ -303,8 +308,6 @@ async def help(message):
     await message.author.dm_channel.send(embed=embedVar1)
 
   return
-
-   
     
 
 admins = [
@@ -333,6 +336,8 @@ safe_servers = [736422329399246990, 736966204606120007,736051343185412296]
 
 slur_okay = [736051343185412296,745559622856998953]
 
+from_to_channel={}
+
 @client.event
 async def on_guild_join(guild_fetched):
 
@@ -359,63 +364,38 @@ waitMessage = 0
 @client.event
 async def on_message(message):
   #await client.user.edit(username="JDJG Bot")
-
   global url_collection
-
   global safe_servers
-
   global waitMessage
-  
   user = message.author
 
   if client.user in message.mentions and not message.author.bot:
-    
     embed = discord.Embed(title="Mention info:",description="Tip: you can disable level up messages with JDBot*toggle level_msg \nNow converting mention into a command.",color=random.randint(0, 16777215))
     await message.channel.send(embed=embed)
-
     replace_value = (f"<@!{client.user.id}> ")
-
     message.content=message.content.replace(replace_value, discordprefix)
-
     message.mentions.remove(client.user)
-
-
 
   if client.user in message.mentions and not message.author.bot and "shut up " in (message.content.lower()+" "):
     await message.channel.send("I try to help you know")
-  
+
   if message.content.startswith(discordprefix+" ") and not message.author.bot:
-
     message_info=message.content.split(" ")
-
     while '' in message_info:
-
       message_info.remove('')
-  
-
     if len(message_info) > 0:
-
       x = 2
-      
       message.content = message_info[0]+message_info[1]
-
       while x < (len(message_info)):
-
         if x == (len(message_info)-1):
-
           message.content = (message.content+" "+message_info[-1])
-
         else:
-
          message.content = (message.content+" "+message_info[x])
-
         x = x + 1
-
       
       x = 0
 
   if message.guild is None and not message.author.bot and not message.content.startswith(discordprefix):
-
     import re
     punc = [' ','.','!','?']
     tmpStr = message.content.lower()
@@ -543,8 +523,6 @@ async def on_message(message):
       embed_message.set_thumbnail(url = "https://media.discordapp.net/attachments/556242984241201167/763866804359135292/inbox.png?width=677&height=677")
 
       channel_usage=client.get_channel(738912143679946783)
-
-
       embed_message.add_field(name="Sent To:",value=str(channel_usage))
  
       await channel_usage.send(embed=embed_message)
@@ -564,7 +542,6 @@ async def on_message(message):
         print(message.content)
 
     if message.guild.id in safe_servers and not message.author.bot:
-
       import re
       punc = [' ','.','!','?']
       tmpStr = message.content.lower()
@@ -572,37 +549,31 @@ async def on_message(message):
       for pun in punc:
         tmpStr = tmpStr.replace("sus"+pun,"")
       check_sus = (len(message.content)!=len(tmpStr))
-
       tmpStr = message.content.lower()
       tmpStr = tmpStr.replace("hello","")
       for pun in punc:
         tmpStr = tmpStr.replace("hello"+pun,"")
       hello_check = (len(message.content)!=len(tmpStr))
-
       tmpStr = message.content.lower()
       tmpStr = tmpStr.replace("hi","")
       for pun in punc:
         tmpStr = tmpStr.replace("hi"+pun,"")
       hi_check = (len(message.content)!=len(tmpStr))
-
       tmpStr = message.content.lower()
       tmpStr = tmpStr.replace("reverse","")
       for pun in punc:
         tmpStr = tmpStr.replace("reverse"+pun,"")
       reverse_check = (len(message.content)!=len(tmpStr))
-
       tmpStr = message.content.lower()
       tmpStr = tmpStr.replace("hey all","")
       for pun in punc:
         tmpStr = tmpStr.replace("hey all"+pun,"")
       hey_all_check = (len(message.content)!=len(tmpStr))
-
       tmpStr = message.content.lower()
       tmpStr = tmpStr.replace("sup","")
       for pun in punc:
         tmpStr = tmpStr.replace("sup"+pun,"")
       sup_check = (len(message.content)!=len(tmpStr))
-
       tmpStr = message.content.lower()
       tmpStr = tmpStr.replace("chips","")
       for pun in punc:
@@ -614,7 +585,6 @@ async def on_message(message):
       for pun in punc:
         tmpStr = tmpStr.replace("what's up"+pun,"")
       what_up_check = (len(message.content)!=len(tmpStr))
-
       tmpStr = message.content.lower()
       tmpStr = tmpStr.replace("sup","")
       for pun in punc:
@@ -678,12 +648,62 @@ async def on_message(message):
         except:
           pass
 
+  if message.content.startswith(discordprefix+"verify") and not message.author.bot:
+    if message.guild != None:
+      if message.guild.id == 736422329399246990:
+        if message.channel.id == 736432046821343322:
+          await message.channel.send("Vertification time...")
+          member_role = message.guild.get_role(736423134449893428)
+          await message.author.add_roles(member_role,reason="User Vertification by Bot.")
+          return
+
+  if message.content.startswith(discordprefix+"text_backup") and not message.author.bot:
+    if len(message.attachments) > 0:
+      if (message.attachments[0].url).endswith(".txt"):
+        info=await message.attachments[0].read()
+        if len(info) > 0:
+          the_encoding = chardet.detect(info)['encoding']
+          text=info.decode(the_encoding)
+          mystbin_client = mystbin.MystbinClient()
+          paste = await mystbin_client.post(text, syntax="python")
+          await message.channel.send("added text file to mystbin")
+          await message.channel.send(paste.url)
+          await mystbin_client.close()
+        if len(info) == 0:
+          await message.channel.send("it's not going to work with 0 bytes.")
+      if not (message.attachments[0].url).endswith(".txt"):
+        await message.channel.send("That's not a .txt file.")
+    if len(message.attachments) == 0:
+      await message.channel.send("Please try actually uploading a text file.")
+    return
+  
+  if message.content.startswith(discordprefix+"CRAP_BACKUP") and not message.author.bot:
+    await message.channel.send("Crap ok...ill back them up real quick")
+    guild_search = client.get_guild(736422329399246990)
+    guild_emoji_fetch = guild_search.emojis
+    for obj in guild_emoji_fetch:
+      img = await obj.url.read()
+      from PIL import Image
+      import io
+      print(obj.name)
+      image_data = img
+      image = Image.open(io.BytesIO(image_data))
+      if(str(obj.url).replace(".png","")!=str(obj.url)):
+        image.save("./backup/"+obj.name+".png","png");
+      if(str(obj.url).replace(".gif","")!=str(obj.url)):
+        from PIL import Image, ImageSequence
+        index = 1
+        frames = []
+        for frame in ImageSequence.Iterator(image):
+          frames.append(frame)
+        frames[0].save("./backup/"+obj.name+".gif", format='GIF', append_images=frames[1:], save_all=True)
+      #
+    await message.channel.send("That was close but it is all backed up to disk :)")
+    return
+
   if message.content.startswith(discordprefix+"ping") and not message.author.bot:
-
     await message.channel.send("Pong")
-
     await message.channel.send(f"Response time: {client.latency*1000}")
-
     return
 
   if message.content.startswith(discordprefix+"save_image") and not message.author.bot and message.author.id in jdjg_id:
@@ -694,30 +714,19 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"console") and not message.author.bot and message.author.id in jdjg_id:
-
     command=message.content.replace(discordprefix+"console","")
-
     run_command=eval(command)
-
     embed_message = discord.Embed(title=f"{command}",color=random.randint(0, 16777215))
-
     embed_message.set_author(name=f"Command ran by {message.author}:",icon_url=(message.author.avatar_url))
-
     embed_message.set_footer(text = f"{message.author.id}")
-
     embed_message.add_field(name="result:",value=run_command)
-
     if (message.author.dm_channel is None):
       await message.author.create_dm()
-
     await message.author.send(embed=embed_message)
-
     return
 
   if message.content.startswith(discordprefix+"mention") and not message.author.bot and user.guild_permissions.administrator == True and message.guild.id in safe_servers:
-
     user_id=await GetPfp.get_username(message)
-
     if not user_id == 0:
       pass
     if user_id == 0:
@@ -726,27 +735,19 @@ async def on_message(message):
         user_id=int(user_id)
       except:
         user_id = message.author.id
-    
     user_there=client.get_user(user_id)
-
     if user_there == None:
-
       user_there = message.author
-
     await message.channel.send(f"{user_there.mention}")
     
     return
 
   if message.content.startswith(discordprefix+"safe") and not message.author.bot and user.guild_permissions.administrator == True:
-
     safe_servers.append(message.guild.id)
-
     return
 
   if message.content.startswith(discordprefix+"unsafe") and not message.author.bot and user.guild_permissions.administrator == True:
-
     safe_servers.remove(message.guild.id)
-
     return
 
 
@@ -883,21 +884,15 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"random_message") and not message.author.bot:
-
     message_generator = random.choice(random_response.random_message)
-    embed = discord.Embed(title = "Random Message Time...",color=random.randint(0, 16777215))
-    embed.add_field(name = f"{message_generator}", value = "_ _")
+    embed = discord.Embed(title = "Random Message Time...",description=f"**{message_generator}**",color=random.randint(0, 16777215))
     await message.channel.send(embed=embed)
     return
 
   if message.content.startswith(discordprefix+"closest_channel") and not message.author.bot:
-
     user_wanted = message.content.replace(discordprefix+"closest_channel","")
-
     channel_used=sorted(message.guild.channels, key=lambda x: SequenceMatcher(None, x.name, user_wanted).ratio())[-1]
-
     await message.channel.send(channel_used.mention)
-
     return
 
   if message.content.startswith(discordprefix+"closest_user") and not message.author.bot:
@@ -929,14 +924,10 @@ async def on_message(message):
     await message.channel.send(userNearest_server_nick)
     return
 
-
   if message.content.startswith(discordprefix+"owner") and not message.author.bot:
-
     user99 = client.get_user(168422909482762240)
-
     guild_used=message.guild
 
-    
     user99_plus=guild_used.get_member(user99.id)
 
     avatar99 = user99.avatar_url
@@ -1063,7 +1054,7 @@ async def on_message(message):
 
     channels = [channel for channel in guild_fetched.channels]
 
-    roles = roles= [role for role in guild_fetched.roles]
+    roles = [role for role in guild_fetched.roles]
 
 
     embed = discord.Embed(title="Guild Info", color=random.randint(0, 16777215))
@@ -1078,7 +1069,6 @@ async def on_message(message):
     embed.add_field(name='Amount of Channels:',value=f"{len(channels)}")
     embed.add_field(name='Amount of Roles:',value=f"{len(roles)}")
     await message.channel.send(embed=embed)
-
     return
 
   if message.content.startswith(discordprefix+"dice_roll20") and not message.author.bot:
@@ -1123,8 +1113,6 @@ async def on_message(message):
     embed_message.set_image(url=dice_gif)
 
     await message.channel.send(embed=embed_message)
-
-
     return
 
   if message.content.startswith(discordprefix+"dice_roll4") and not message.author.bot:
@@ -1157,7 +1145,6 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"dice_roll8") and not message.author.bot:
-
     pfp=message.author.avatar_url
 
     type_dice = "d8"
@@ -1273,7 +1260,6 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"cc_") and not message.author.bot:
-    import color_code
     from PIL import Image
     import Pixman
     new_cmd = message.content.replace(discordprefix+"cc_","").split(" ")[0]
@@ -1363,68 +1349,40 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"file") and not message.author.bot:
-
     await message.channel.send(message.attachments)
-
     if message.attachments == []:
-
       await message.channel.send("\n No file submitted")
-
     if len(message.attachments) > 0:
-
       await message.channel.send("\n That's good")
-
     return
   
   if message.content.startswith(discordprefix+"nick") and  user.guild_permissions.manage_nicknames == True and not message.author.bot:
-
     nick_name=message.content.replace(discordprefix+"nick ","")
-
     if nick_name == "":
-
       nick_name = None
-
     guild_used=message.guild
-
-    
-    member_used=guild_used.get_member(message.author.id)
-
-    bot_permissions = guild_used.get_member(client.user.id) 
-
+    bot_permissions = message.guild.me
     if bot_permissions.guild_permissions.manage_nicknames == True:
-
       try: 
-
-        await member_used.edit(nick=nick_name)
-
-      except:
-
+        await message.author.edit(nick=nick_name)
+      except discord.errors.Forbidden:
         await message.channel.send("Try moving the bot's role over the user.")
-
     if bot_permissions.guild_permissions.manage_nicknames == False:
-
       await message.channel.send("sadly the bot doesn't have permissions")
 
     return
 
   if message.content.startswith(discordprefix+"user info") and not message.author.bot or message.content.startswith(discordprefix+"user_info") and not message.author.bot or message.content.startswith(discordprefix+"user-info") and not message.author.bot or message.content.startswith(discordprefix+"userinfo") and not message.author.bot:
-
     valid_command_test = message.content.replace(discordprefix,"")
-
     if(valid_command_test != valid_command_test.replace("user info","")):
-
       pass
 
     if(valid_command_test != valid_command_test.replace("user_info","")):
-
       pass
 
     if(valid_command_test != valid_command_test.replace("user-info","")):
-
       pass
-
     if(valid_command_test != valid_command_test.replace("userinfo","")):
-
       pass
 
       
@@ -1527,10 +1485,7 @@ async def on_message(message):
 
 
   if message.content.startswith(discordprefix+"order_tenor shuffle") and not message.author.bot:
-
     urls = []
-
-    import requests
 
     order_wanted = message.content.replace(discordprefix+"order_tenor shuffle","")
 
@@ -1538,18 +1493,20 @@ async def on_message(message):
     
     limit = 5
 
-    response = requests.get(
-    "https://api.tenor.com/v1/search?q=%s&key=%s&limit=%s" % (order_wanted, apikey, limit))
+    url = "https://api.tenor.com/v1/search?q=%s&key=%s&limit=%s" % (order_wanted, apikey, limit)
 
-    if response.status_code == 200:
-
-      data_used=response.json()
-
-      for i in range(len(data_used['results'])):
-        url = data_used['results'][i]['media'][0]['gif']['url']
-
-        urls.append(url)
-
+    async with aiohttp.ClientSession() as cs:
+      try:
+        async with cs.get(url) as response:
+          if response.status == 200:
+            data_used= await response.json()
+            for i in range(len(data_used['results'])):
+              url = data_used['results'][i]['media'][0]['gif']['url']
+              urls.append(url)
+      except aiohttp.ClientConnectorError:
+        await message.channel.send("Bot ran into an error please try again a bit later.\n Please DM the Bot owner about this")
+        return
+      
       value_grabber=random.randint(0,len(urls))
 
       order_image = urls[value_grabber]
@@ -1587,9 +1544,6 @@ async def on_message(message):
 
         await image_channel.send(url)
 
-
-      
-
       return
     
     if not response.status_code == 200:
@@ -1604,26 +1558,27 @@ async def on_message(message):
 
     urls_dictionary = {}
 
-    import requests
-
     order_wanted = message.content.replace(discordprefix+"order_tenor","")
 
     apikey =  os.environ["tenor_key"]
     
     limit = 5
 
-    response = requests.get(
-    "https://api.tenor.com/v1/search?q=%s&key=%s&limit=%s" % (order_wanted, apikey, limit))
+    url = "https://api.tenor.com/v1/search?q=%s&key=%s&limit=%s" % (order_wanted, apikey, limit)
 
-    if response.status_code == 200:
-
-      data_used=response.json()
-
-      for i in range(len(data_used['results'])):
-        url = data_used['results'][i]['media'][0]['gif']['url']
-        title = data_used['results'][i]["itemurl"]
-
-        urls_dictionary[title]=url
+    async with aiohttp.ClientSession() as cs:
+      try:
+        async with cs.get(url) as response:
+          if response.status == 200:
+            data_used= await response.json()
+            for i in range(len(data_used['results'])):
+              url = data_used['results'][i]['media'][0]['gif']['url']
+              title = data_used['results'][i]["itemurl"]
+              urls_dictionary[title]=url       
+      except aiohttp.ClientConnectorError:
+        await message.channel.send("Bot ran into an error please try again a bit later.\n Please DM the Bot owner about this")
+        await message.channel.send("if you did this on purpose, just stop.")
+        return
 
       gifNearest = sorted(urls_dictionary, key=lambda x: SequenceMatcher(None, x, order_wanted).ratio())[-1]
 
@@ -1740,47 +1695,27 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"order_giphy") and not message.author.bot:
-
     order_wanted = message.content.replace(discordprefix+"order_giphy ","")
-
     import giphy_client
     from giphy_client.rest import ApiException
-
     giphy_usage = giphy_client.DefaultApi()
-
     try:
       api_response = giphy_usage.gifs_search_get(api_key=os.environ["giphy_token"],limit=5,rating="g",q=order_wanted)
-
       lst = list(api_response.data)
-
       if len(lst) > 0:
-
         gifNearest = sorted(lst, key=lambda x: SequenceMatcher(None, x.url, order_wanted).ratio())[-1]
-
         order_image = (f"https://media3.giphy.com/media/{gifNearest.id}/giphy.gif")
-
         await message.delete()
-
         order_description = (f"{message.author} ordered a {order_wanted}")
-
         pfp = message.author.avatar_url
-
         order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
         order_info = (f"order for {message.author}:")
-
         embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
-
         embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time}")
-
         embed_info.set_author(name=order_info,icon_url=(pfp))
-
         embed_info.add_field(name="Powered by:",value="GIPHY")
-
         embed_info.set_image(url=order_image)
-
         await message.channel.send(embed=embed_info)
-
         await client.get_channel(738912143679946783).send(embed=embed_info)
 
         image_channel = client.get_channel(764543893118648342)
@@ -1806,16 +1741,9 @@ async def on_message(message):
   if message.content.startswith(discordprefix+"order_shuffle") and not message.author.bot:
 
     from google_images_search import GoogleImagesSearch
-    from io import BytesIO
     from PIL import Image
-
-    import requests
-
     order_wanted = message.content.replace(discordprefix+"order_shuffle ","")
-
     def my_progressbar(url, progress):
-
-      global url_collection
 
       url_collection.append(url)
 
@@ -1828,46 +1756,26 @@ async def on_message(message):
      'fileType': 'jpg|gif|png|jpeg',
      'safe': 'medium',
      }
-
-
+     
     try:
 
       gis.search(search_params = safe_search)
-
     except:
-
       await message.channel.send("Please wait for a while so the api key gets regenerated")
-
-    my_bytes_io = BytesIO()
-
     for image_check in gis.results():
-
-      my_bytes_io.seek(0)
-
-
       try:
-
         raw_image_data = image_check.get_raw_data()
-
-        image_check.copy_to(my_bytes_io, raw_image_data)
-
-        temp_img = Image.open(my_bytes_io)
-
+        discord.utils._get_mime_type_for_image(raw_image_data)
       except:
-
         gis.results().remove(image_check)
-
+    
     for x in url_collection:
-      
-      response = requests.get(x)
-
-      try:
-
-        img = Image.open(BytesIO(response.content))
-
-      except:
-
-        url_collection.remove(x)
+      async with aiohttp.ClientSession() as cs:
+         async with cs.get(x) as response:
+            try:
+              img = Image.open(await response.read())
+            except:
+              url_collection.remove(x)
     
     await message.delete()
 
@@ -1888,12 +1796,9 @@ async def on_message(message):
     image_channel = client.get_channel(764543893118648342)
 
     if len(url_collection) > 0:
-
       embed_info.add_field(name="Powered by:",value="Google Images Api")
-
       max_number=len(url_collection)
-
-      spinner=random.randint(0,max_number)
+      spinner=random.randint(0,max_number-1)
 
       emoji_image = url_collection[spinner]
 
@@ -1920,22 +1825,25 @@ async def on_message(message):
    
 
     url_collection = []
-
-
-
     return
 
   if message.content.startswith(discordprefix+"image_check") and not message.author.bot:
     from PIL import Image
-    import requests
-    from io import BytesIO
-
     check_image = message.content.replace(discordprefix+"image_check ","")
+    async with aiohttp.ClientSession() as cs:
+      try:
+        async with cs.get(check_image) as response:
+          valid_image = await response.read()
+      except aiohttp.ClientConnectorError:
+        await message.channel.send("Not a valid url")
+        return
+      except aiohttp.InvalidURL:
+        await message.channel.send("seriously a fake url?")
+        return
     try:
-      response=requests.get(check_image)
-      img = Image.open(BytesIO(response.content))
-      await message.channel.send(img)
-    except:
+      valid_image=discord.utils._get_mime_type_for_image(valid_image)
+      await message.channel.send(valid_image)
+    except discord.errors.InvalidArgument:
       await message.channel.send("Not a valid image")
     return
 
@@ -1944,18 +1852,11 @@ async def on_message(message):
     from google_images_search import GoogleImagesSearch
     from io import BytesIO
     from PIL import Image
-    import requests
 
     order_wanted = message.content.replace(discordprefix+"order ","")
-    
     time_before=time.process_time() 
-
     def my_progressbar(url, progress):
-
-      global url_collection
-
       url_collection.append(url)
-
     gis = GoogleImagesSearch(os.environ['image_api_key'],os.environ['google_image_key'], validate_images=False,progressbar_fn=my_progressbar)
 
     safe_search = {
@@ -1969,7 +1870,6 @@ async def on_message(message):
     try:
 
       gis.search(search_params = safe_search)
-
     except:
 
       await message.channel.send("Please wait for a while so the api key gets regenerated")
@@ -1977,52 +1877,31 @@ async def on_message(message):
     my_bytes_io = BytesIO()
 
     for image_check in gis.results():
-
       my_bytes_io.seek(0)
-
-
       try:
-
         raw_image_data = image_check.get_raw_data()
-
         image_check.copy_to(my_bytes_io, raw_image_data)
-
         temp_img = Image.open(my_bytes_io)
 
       except:
-
         gis.results().remove(image_check)
 
     for x in url_collection:
-      
-      response = requests.get(x)
-
-      try:
-
-        img = Image.open(BytesIO(response.content))
-
-      except:
-
-        url_collection.remove(x)
-
+      async with aiohttp.ClientSession() as cs:
+        async with cs.get(x) as response:
+          try:
+            img = Image.open(await response.read())
+          except:
+            url_collection.remove(x)
 
     time_after=time.process_time()
-
-
     time_spent = int((time_after - time_before)*1000)
-
     await message.delete()
-
     order_description = (f"{message.author} ordered a {order_wanted}")
-
     pfp = message.author.avatar_url
-
     order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
     order_info = (f"order for {message.author}:")
-
     embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
-
     embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time} \nCopyright: Public Domain")
 
     embed_info.add_field(name="Time Spent:",value=f"{time_spent} MS")
@@ -2057,11 +1936,7 @@ async def on_message(message):
 
     await client.get_channel(738912143679946783).send(embed=embed_info)
 
-   
-
     url_collection = []
-
-
 
     return
 
@@ -2093,7 +1968,6 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"server_icon") and not message.author.bot:
-
     await message.channel.send(GetPfp.GetServerPfp(message))
 
     return
@@ -2122,7 +1996,6 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"leave guild") and message.author.id in admins and not message.author.bot:
-
     guild_info = client.get_guild(int(message.content.split(" ")[2]))
 
     await guild_info.leave()
@@ -2309,7 +2182,6 @@ async def on_message(message):
     await message.channel.send(embed=embed,file=file)
     return
 
-  
 
   if message.content.startswith(discordprefix+"closest_embed") and not message.author.bot:
     for message_wanted in await message.channel.history(limit=100).flatten():
@@ -2383,17 +2255,11 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"delete_emojis") and message.author.id in admins and not message.author.bot:
-
     guild_1 = client.get_guild(748753645138608239)
-
     guild_2 = client.get_guild(748753770476732499)
-
     for x in guild_1.emojis:
-
       await x.delete()
-
     for y in guild_2.emojis:
-
       await y.delete()
 
     return
@@ -2412,72 +2278,45 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"emoji_add") and not message.author.bot and user.guild_permissions.manage_emojis == True:
     emote_collect = []
-
     from PIL import Image
-    from io import BytesIO
-    import requests
-
     id_used = (message.guild.id)
-
     dump_server = client.get_guild(id_used)
-
     animated_amount = 0
-
     static_amount = 0
 
     for e in dump_server.emojis:
-
       if e.animated == "yes":
-
         animated_amount = animated_amount + 1
-
       if e.animated == "no":
-
         static_amount = static_amount + 1
 
     emoji_url = []
-
     emoji_name = []
 
-    for em in emote.get(message):
-
+    for em in (await emote.get(message)):
       emoji_url.append(em)
 
-    for name in emote.get2(message):
-
+    for name in await emote.get2(message):
       emoji_name.append(name)
-
     e = 0
 
     while e < len(emoji_name):
-
       img_link = emoji_url[e]
-
       emoji_name_grabbed = emoji_name[e]
-
-      response=requests.get(img_link)
-
       try:
-
-        img = Image.open(BytesIO(response.content))
-
+        async with aiohttp.ClientSession() as cs:
+          async with cs.get(img_link) as response:
+            img = Image.open(await response.read())
       except:
-
         await message.channel.send("Don't use emojis with webhooks or bots.")
-
         return
 
-
       if img.is_animated == True:
-
         if animated_amount < 50:
-
           pass_value = "yes"
-
-          emote_data = await dump_server.create_custom_emoji(name = emoji_name_grabbed,image=response.content)
-
+          image = await response.read()
+          emote_data = await dump_server.create_custom_emoji(name = emoji_name_grabbed,image=image)
           emote_collect.append(emote_data)
-
           animated_amount = animated_amount + 1
 
         if animated_amount >=50:
@@ -2487,19 +2326,13 @@ async def on_message(message):
           await message.channel.send("That's why too many emojis")
       
       if img.is_animated == False:
-
         if static_amount < 50:
-
-          emote_data = await dump_server.create_custom_emoji(name = emoji_name_grabbed,image=response.content)
-
+          image = await response.read()
+          emote_data = await dump_server.create_custom_emoji(name = emoji_name_grabbed,image=image)
           emote_collect.append(emote_data)
-
           pass_value = "yes"
-
           static_amount = static_amount+1
-        
         if static_amount >=50:
-
           pass_value = "no"
 
           await message.channel.send("That's why too many emojis") 
@@ -2521,44 +2354,24 @@ async def on_message(message):
     if pass_value == "yes":
 
       for emote_data in emote_collect:
-
         time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
         emoji_embed=discord.Embed(title=f"Added Emote: {emote_data.name}",description=time_used,color=random.randint(0, 16777215))
-
         emoji_embed.set_author(name=f"{message.author} Added an emoji.",icon_url=(pfp))
-
         emoji_embed.add_field(name=f"Emoji Type:",value=f"{animated_value}")
-
         emoji_embed.set_image(url=emote_data.url)
-
         emoji_embed.set_footer(text = f"{message.author.id}\n Emoji in {dump_server.name}\n ID: {dump_server.id}")
-
         channel_used=client.get_channel(738912143679946783)
         await channel_used.send(embed=emoji_embed)
-
         await message.channel.send(embed=emoji_embed)
-
-
-
     return
 
   if message.content.startswith(discordprefix+"emoji_save") and not message.author.bot:
-
     emote_collect = []
-
     from PIL import Image
-    from io import BytesIO
-    import requests
-
     id_used = (763857844440268842)
-
     dump_server = client.get_guild(id_used)
-
     animated_amount = 0
-
     static_amount = 0
-
     for e in dump_server.emojis:
 
       if e.animated == "yes":
@@ -2573,7 +2386,7 @@ async def on_message(message):
 
     emoji_name = []
 
-    for em in emote.get(message):
+    for em in (await emote.get(message)):
 
       emoji_url.append(em)
 
@@ -2589,10 +2402,9 @@ async def on_message(message):
 
       emoji_name_grabbed = emoji_name[e]
 
-      response=requests.get(img_link)
-
-      img = Image.open(BytesIO(response.content))
-
+      async with aiohttp.ClientSession() as cs:
+        async with cs.get(img_link) as response:
+          img = Image.open(await response.read())
 
       if img.is_animated == True:
 
@@ -2600,7 +2412,7 @@ async def on_message(message):
 
           pass_value = "yes"
 
-          emote_data = await dump_server.create_custom_emoji(name = emoji_name_grabbed,image=response.content)
+          emote_data = await dump_server.create_custom_emoji(name = emoji_name_grabbed,image=await response.read())
 
           emote_collect.append(emote_data)
 
@@ -2616,7 +2428,7 @@ async def on_message(message):
 
         if static_amount < 50:
 
-          emote_data = await dump_server.create_custom_emoji(name = emoji_name_grabbed,image=response.content)
+          emote_data = await dump_server.create_custom_emoji(name = emoji_name_grabbed,image=await response.read())
 
           emote_collect.append(emote_data)
 
@@ -2664,14 +2476,57 @@ async def on_message(message):
         await channel_used.send(embed=emoji_embed)
 
         await message.channel.send(embed=emoji_embed)
+    return
+  
+  if message.content.startswith(discordprefix+"default_emoji") and not message.author.bot:
+    emojis_return = []
+    emoji_count=emojis.count(message.content,unique=True)
+    if emoji_count > 0:
+      emojis_return = emojis.get(message.content)
+    if emoji_count == 0:
+      for message_wanted in await message.channel.history(limit=100).flatten():
+          emoji_count=emojis.count(message_wanted.content,unique=True)
+          if emoji_count != 0:
+            emojis_return = emojis.get(message_wanted.content) 
 
-
-
+    if len(emojis_return) == 0:
+      await message.channel.send("no default emoji found")
+    for x in emojis_return:
+      emojis_used=emojis.decode(x)
+      emojis_used=emojis_used.replace(":","")
+      digit = f"{ord(x):x}"
+      unicode = f"\\U{digit:>08}"
+      unicode_site = f"http://www.fileformat.info/info/unicode/char/{digit}"
+      embed=discord.Embed(title="Default Emote:",url=unicode_site,color=random.randint(0, 16777215))
+      embed.add_field(name="Name:",value=emojis_used)
+      embed.add_field(name="Unicode:",value=unicode)
+      embed.add_field(name="unicode url",value=f"[site]({unicode_site})")
+      embed.add_field(name="Credit:",value=f"[[Site 1]](https://emojis.readthedocs.io/en/latest/api.html) [[Site 2]](https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/meta.py#L250-L264)")
+      embed.set_image(url=f"https://raw.githubusercontent.com/astronautlevel2/twemoji/gh-pages/128x128/{digit}.png")
+      embed.set_footer(text=f"click the title for more unicode data")
+      await message.channel.send(embed=embed)
+    return
+  
+  if message.content.startswith(discordprefix+"emoji_id") and not message.author.bot:
+    emoji_id=message.content.replace(discordprefix+"emoji_id ","")
+    try:
+      int(emoji_id)
+    except:
+      await message.channel.send("make sure you pass actual emoji ids and not text.")
+      return
+    url_speacil=await emote.get_emoji_id(emoji_id)
+    for url in url_speacil:
+      embed = discord.Embed(description=f" Emoji ID: {emoji_id}",color=random.randint(0, 16777215))
+      embed.set_image(url=url)
+      await message.channel.send(embed=embed)
     return
   
   if message.content.startswith(discordprefix+"emoji") and not message.author.bot:
-    for em in emote.get(message):
-      await message.channel.send(em)
+    for em in (await emote.get(message)):
+      for name in emote.get2(message):
+        embed=discord.Embed(title=f"Emoji: **{name}**",color=random.randint(0, 16777215))
+        embed.set_image(url=em)
+        await message.channel.send(embed=embed)
     return
 
   if message.content.startswith(discordprefix+"log off") and message.author.id in admins and not message.author.bot:
@@ -2732,9 +2587,6 @@ async def on_message(message):
   if message.content.startswith(discordprefix+"webhook_create") and not message.author.bot and user.guild_permissions.manage_webhooks == True:
 
     valid_image = ["PNG",".GIF",".JPG","JPEG"]
-
-    import requests
-    from io import BytesIO
     from PIL import Image
 
     try:
@@ -2763,13 +2615,19 @@ async def on_message(message):
 
       image_used = message.attachments[0]
 
-      response = requests.get(image_used.url)
+      async with aiohttp.ClientSession() as cs:
+        try:
+          async with cs.get(image_used.url) as response:
+            img = Image.open(await response.read())
+        except aiohttp.ClientConnectorError:
+          await message.channel.send("somehow you got pass the system") 
 
-      img = Image.open(BytesIO(response.content))
+        except aiohttp.InvalidURL:
+          await message.channel.send("seriously a fake url?")
+          return
 
       if (img.format).upper() in valid_image:
-
-        webhook=await message.channel.create_webhook(name=webhook_name,reason=content_message,avatar=response.content)
+        webhook=await message.channel.create_webhook(name=webhook_name,reason=content_message,avatar=await response.read())
 
       if not (img.format).upper() in valid_image:
 
@@ -2809,86 +2667,57 @@ async def on_message(message):
     webhook.add_embed(embed)
     
     webhook.execute()
-
-
-
     return
 
   if message.content.startswith(discordprefix+"webhook_delete") and not message.author.bot:
-
     url_used=message.content.split(" ")[1]
-
     await message.delete()
-
-    import requests
-
-    response=requests.get(url_used)
-
-
-    if str(response) =="<Response [200]>":
-
-      json_data=response.json()
-
-      used_id = int(json_data["id"])
-
-      guild_id = int(json_data["guild_id"])
-
-      guild_used = client.get_guild(guild_id)
-
-      permission_check=guild_used.get_member(user.id)
-
-      webhook_name=json_data["name"]
-
-      check_bool=permission_check.guild_permissions.manage_webhooks
-
-      if check_bool == True:
-
-    
-        webhook_used=await client.fetch_webhook(used_id)
-
-        await webhook_used.delete()
-
-        full_message="Successfully delete the webhook with the name of "+str(webhook_name)
-
-        await message.channel.send(full_message)
-
-      if check_bool == False:
-
-        await message.channel.send("You can't use that.")
-
-    if not str(response) =="<Response [200]>":
-
-      await message.channel.send("Not a valid link")
-
+    async with aiohttp.ClientSession() as cs:
+      try:
+        async with cs.get(url_used) as response:
+          if response.status != 200:
+            await message.channel.send("Not a valid link")
+          if response.status == 200:
+            json_data= await response.json()
+            used_id = int(json_data["id"])
+            guild_id = int(json_data["guild_id"])
+            guild_used = client.get_guild(guild_id)
+            permission_check=guild_used.get_member(user.id)
+            webhook_name=json_data["name"]
+            check_bool=permission_check.guild_permissions.manage_webhooks
+            if check_bool == True:
+              webhook_used=await client.fetch_webhook(used_id)
+              await webhook_used.delete()
+              full_message="Successfully delete the webhook with the name of "+str(webhook_name)
+              await message.channel.send(full_message)
+            if check_bool == False:
+              await message.channel.send("You can't use that.")
+      except aiohttp.ClientConnectorError:
+        await message.channel.send("Not a valid link at all") 
     return
 
   if message.content.startswith(discordprefix+"webhook_avatar") and not message.author.bot:
 
     url_used=message.content.split(" ")[1]
-
     await message.delete()
 
-    import requests
-
-    response=requests.get(url_used)
-
-    if str(response) =="<Response [200]>":
-
-      json_data=response.json()
-
-      used_id = int(json_data["id"])
-
-      webhook_fetched=await client.fetch_webhook(used_id)
-
-      webhook_avatar=webhook_fetched.avatar_url
-
-      full_info=("The webhook avatar is: \n "+str(webhook_avatar))
-
-      await message.channel.send(full_info)
-
-    if not str(response) =="<Response [200]>":
-
-      await message.channel.send("Not a valid link")
+    async with aiohttp.ClientSession() as cs:
+      try:
+        async with cs.get(url_used) as response:
+          if response.status == 200:
+            json_data=await response.json()
+            used_id = int(json_data["id"])
+            webhook_fetched=await client.fetch_webhook(used_id)
+            webhook_avatar=webhook_fetched.avatar_url
+            full_info=("The webhook avatar is: \n "+str(webhook_avatar))
+            await message.channel.send(full_info)
+          if not response.status == 200:
+            await message.channel.send("Not a valid link")
+      except aiohttp.ClientConnectorError:
+        await message.channel.send("Bot ran into an error please try again a bit later.\n Please DM the Bot owner about this")
+        
+        return
+      
 
     return
 
@@ -3209,65 +3038,38 @@ async def on_message(message):
       x = x + 1
 
     x = 0
-
-
-
     return
 
 
   if message.content.startswith(discordprefix+"webhook") and not message.author.bot:
-
     try:
-
       webhook_url = message.content.split(" ")[1]
-
     except:
-
       await message.channel.send("\n not a valid usage")
-
       return
-
-    import requests
-
-    response=requests.get(webhook_url)
-
     try:
      message_info = message.content.split(" ")[2]
-
     except:
-
       message_info = "No content"
 
-    if not str(response) =="<Response [200]>":
-
-      await message.channel.send("Not a valid link")
-
-      return
-
-    if str(response) =="<Response [200]>":
-      
-      json_data=response.json() 
-       
-      webhook_name = (json_data["name"])
+    async with aiohttp.ClientSession() as cs:
+      async with cs.get(webhook_url) as response:
+        if not response.status == 200:
+          await message.channel.send("Not a valid link")
+          return
+        if response.status == 200:
+          json_data= await response.json() 
+          webhook_name = (json_data["name"])
     
 
     await message.delete()
-
     webhook = discord_webhook.DiscordWebhook(url=webhook_url)
-
     embed = discord_webhook.DiscordEmbed(title=f"Webhook {webhook_name}'s Message:",color=random.randint(0, 16777215))
-
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
     embed.add_embed_field(name=f"{message_info}", value=time_used)
-
     embed.set_timestamp()
-
     webhook.add_embed(embed)
-    
     webhook.execute()
-
     return
 
   if message.content.startswith(discordprefix+"apply bloopers") and not message.author.bot:
@@ -3277,7 +3079,6 @@ async def on_message(message):
     application_user = [
     708167737381486614,
     168422909482762240,
-
     ]
 
     await message.delete()
@@ -3515,10 +3316,8 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"mail") and not message.author.bot:
-    
     try:
       user = message.mentions[0]
-
     except:
       try:
         user = client.get_user(int(message.content.split(" ",2)[1]))
@@ -3531,36 +3330,23 @@ async def on_message(message):
     if user is None:
       user = message.author
       await message.channel.send("\n User Not Found, defaulting to you.")
-    
     await message.channel.send("Sending mail....")
-    #i just want a way to seperate the id or possible mention and see if the bot can decide between both ones
-    #will be able to select which user to go to id or mention like JDBot*mail <user id or mention> <message> - user command
     pfp = message.author.avatar_url
-
     user_id22=str(user.id)
-    
     replace_info="<@!"+str(user.id)+">"
     mail_msg2 = message.content.replace(discordprefix+"mail","")
     mail_msg2 =  mail_msg2.replace(replace_info,"")
     mail_msg2 = mail_msg2.replace(user_id22,"")
-
     mail_msg2 = mail_msg2.split(" ",2)[-1]
-
-    
     embed_message = discord.Embed(title=mail_msg2, description=day, color=random.randint(0, 16777215))
     embed_message.set_author(name=f"Mail from: {message.author}",icon_url=(pfp))
     embed_message.set_footer(text = f"{message.author.id}")
     embed_message.set_thumbnail(url = "https://cdn.discordapp.com/attachments/752527845519130696/763390502317326346/459285aabe618b3d3e215676c97b689c.png")
-
     if (user.dm_channel is None):
       await user.create_dm()
     await user.send(embed=embed_message)
-
     embed_message.add_field(name="Sent To:",value=str(user))
-
     await client.get_channel(738912143679946783).send(embed=embed_message)
-
-
     return
 
   if message.content.lower().startswith('fooz'):
@@ -3602,8 +3388,6 @@ async def on_message(message):
       await message.channel.purge(limit = amount)
     return
 
-  #case for if all other commands did not work
-
   if message.content.startswith(discordprefix+"compliment") and not message.author.bot:
     
     complimentt = random.choice(random_response.compliment)
@@ -3611,7 +3395,6 @@ async def on_message(message):
     embed = discord.Embed(title = "Here is a compliment, for you!",color=random.randint(0, 16777215))
     embed.add_field(name = "I hope you like it!", value=complimentt)
     await message.channel.send(embed=embed)
-
     return
 
   if message.content.startswith(discordprefix+"Arithmetic") and not message.author.bot:
@@ -3652,7 +3435,10 @@ async def on_message(message):
     embed.set_thumbnail(url=bot_pfp)
 
     await message.channel.send(embed=embed)
+    return
 
+  if message.content.startswith(discordprefix+"suspend") and message.author.id in admins and not message.author.bot:
+    await message.channel.send("suspending bot")
     return
   
   if message.content.startswith(discordprefix+"os") and not message.author.bot:
@@ -3662,34 +3448,119 @@ async def on_message(message):
       await jdjg_os.os(message)
     
     return
+  
+  if message.content.startswith(discordprefix+"classic_delink") and not message.author.bot:
+    channel = int(message.content.split(" ")[-1])
+    if channel in from_to_channel:
+      del from_to_channel[channel]
+      await message.channel.send("Linked deleted")
+    else:
+      await message.channel.send("\n Not a valid Channel.")
+    return
+  
+  if message.content.startswith(discordprefix+"classic_link") and not message.author.bot:
+      channel_one = int(message.content.split(" ")[1])
+      channel_two = int(message.content.split(" ")[2])
+      from_to_channel[channel_one] = channel_two
+      try:
+        channel_msg = message.content.split(" ", 3)[3]  # everything after the 3rd space is all one string
+      except:
+        channel_msg = ""
+      if channel_msg == "":
+        await message.channel.send("Linker set up")
+      else:
+        await message.channel.send("Message setup message for the link is: "+channel_msg)
+      return
+    
+  if message.content.startswith(discordprefix+"settings") and not message.author.bot:
+    import server_settings
+    arg = message.content.split(" ")
+    #for obj in arg:
+    #  print(obj)
+    message_return = 0
+    print("arg1: "+arg[1]+" arg2: "+arg[2])
+    if(arg[1]=="level" and arg[2]=="up" and arg[3]=="message"):
+      server_settings.change_setting(message.guild,1,"NULL")
+      message_return = 1
+    if(arg[1]=="safe" and arg[2]=="server"):
+      server_settings.change_setting(message.guild,2,"NULL")
+      message_return = 2
+    if(arg[1]=="slur" and arg[2]=="ok"):
+      args = arg[3:]
+      server_settings.change_setting(message.guild,3,args)
+      message_return = 3
+    if(arg[1]=="prefix" and arg[2]=="change"):
+      print(arg[3])
+      server_settings.change_setting(message.guild,4,arg[3])
+      message_return = 4
+    if(arg[1]=="admin" and arg[2]=="add"):
+      args = arg[3:]
+      server_settings.change_setting(message.guild,5,args)
+      message_return = 5
+    if(arg[1]=="ban" and arg[2]=="users"):
+      args = arg[3:]
+      server_settings.change_setting(message.guild,6,args)
+      message_return = 6
+    if(arg[1]=="test"):
+      args = arg[2:]
+      mess=""
+      for word in args:
+        if(len(mess)!=0):
+          mess = mess+" "+word
+        else:
+          mess = mess + word 
+      print(mess)
+      import swear_checker
+      await message.channel.send(swear_checker.censor_message(mess,message.guild.id))
+      return
+    message_return = message_return -1
+    messages = ["Level Up Message","Safe Server","Slur Ok","Prefix","Admin Add","Ban List"]
+    if(message_return <5-1):
+      await message.channel.send(messages[message_return]+" Toggled!")
+    else:
+      await message.channel.send(messages[message_return]+ " Added To Database")
+    if(message_return==-1):
+      await message.channel.send("Invalid Arguments!")
+      em = discord.Embed(title="Vaild Commands")
+      em.add_field(name="level up", value=".")
+      em.add_field(name="safe server", value=".")
+      em.add_field(name="slur ok <args>", value=".")
+      em.add_field(name="prefix change <new prefix>", value=".")
+      em.add_field(name="admin add <admin id>", value=".")
+      em.add_field(name="ban users <args>", value=".")
+      await message.channel.send(embed=em)
+    
+    #   1 - Level Up Messages
+    #   2 - Safe Server
+    #   3 - Slur Ok [args]
+    #   4 - prefix change
+    #   5 - admin add
+    #   6 - Ban List
+    #server_settings.change_setting(message.guild,1,"a")
+    return
 
   if message.content.startswith(discordprefix) and not message.author.bot:
-
     pfp = message.author.avatar_url
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
     embed_message = discord.Embed(title=f" {message.content}", description=time_used,color=random.randint(0, 16777215))
-
     embed_message.set_author(name=f"{message.author} tried to excute invalid command:",icon_url=(pfp))
     embed_message.set_footer(text = f"{message.author.id}")
-
     embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763873708908478474/Warning.png")
-
     await client.get_channel(738912143679946783).send(embed=embed_message)
-
     if (message.author.dm_channel is None):
       await message.author.create_dm()
-
     embed_message = discord.Embed(title=f" {message.content}", description=time_used,color=random.randint(0, 16777215))
-
     embed_message.set_author(name=f"You tried to excute invalid command:",icon_url=(pfp))
     embed_message.set_footer(text = f"{message.author.id}")
     embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763873708908478474/Warning.png")
-    
     await message.author.dm_channel.send(embed=embed_message)
-
     return
+
+  for channel_x in from_to_channel:
+    if message.channel.id == channel_x:
+      channel_id = from_to_channel[channel_x]
+      if not message.author.bot:
+        await client.get_channel(channel_id).send(message.content)
 
 #RENDEV'S CODE...NO TOUCH
 @client.event
@@ -3699,6 +3570,8 @@ async def on_message_delete(message):
       #import LinkerPort
       #LinkerPort.port()
     em =discord.Embed(title=str(message.author.name)+" Deleted a Message",color=random.randint(0, 16777215))
+    if(len(message.content)==0):
+      message.content = "NULL"
     em.add_field(name="Message: ",value=message.content)
     await client.get_channel(738912143679946783).send(embed=em)
     try:
@@ -3734,6 +3607,8 @@ async def on_message_edit(before,after):
   if(before.content!=after.content):
     embedVar = discord.Embed(title=before.author.name+" Edited a Message",color=random.randint(0, 16777215))
     embedVar.add_field(name="Before:",value=str(before.content))
+    if(len(after.content)==0):
+      after.content = "NULL"
     embedVar.add_field(name="After:",value=str(after.content))
     logs = client.get_channel(738912143679946783)
     await logs.send(embed=embedVar)
@@ -3753,42 +3628,56 @@ async def on_error(name,*arguments,**karguments):
   import termcolor
   import traceback
   idle_error=traceback.format_exc()
-  embed_message = discord.Embed(title="Error:",description=idle_error,color=random.randint(0, 16777215))
-  embed_message.add_field(name="More Details:",value=karguments)
-  embed_message.set_footer(text=f"Discord details: \n{arguments}")
-  idle_error=termcolor.colored(idle_error,"red")
-  print(f"\n{idle_error} \n{arguments}")
-  try:
-    for adID in admin_contact:
-      admin_user = client.get_user(adID)
-      if (admin_user.dm_channel is None):
-        await admin_user.create_dm()
-      await admin_user.send(embed=embed_message)
-  except:
+  if len(idle_error) < 2049:
+    embed_message = discord.Embed(title="Error:",description=idle_error,color=random.randint(0, 16777215))
+    embed_message.add_field(name="More Details:",value=karguments)
+    embed_message.set_footer(text=f"Discord details: \n{arguments}")
+    idle_error=termcolor.colored(idle_error,"red")
+    print(f"\n{idle_error} \n{arguments}")
+    try:
+      for adID in admin_contact:
+        admin_user = client.get_user(adID)
+        if (admin_user.dm_channel is None):
+          await admin_user.create_dm()
+        await admin_user.send(embed=embed_message)
+    except:
+      print("\n can't DM them")
+    await client.get_channel(738912143679946783).send(embed=embed_message)
+  if len(idle_error) > 2049:
+    idle_error=termcolor.colored(idle_error,"red")
+    print(f"\n{idle_error} \n{arguments}")
+    print("\n message was way too big for discord")
 
-    print("\n can't DM them")
-  await client.get_channel(738912143679946783).send(embed=embed_message)
+  a=os.sys.exc_info()
+  message_error=arguments[0]
+  if isinstance(message_error, discord.Message):
+    try:
+      member_permissions=message_error.channel.permissions_for(message_error.guild.me)
+      if member_permissions.send_messages == True:
+        if(isinstance(a[1],discord.errors.HTTPException)):
+          await message_error.channel.send("Error occuried(please try shorterning your messages)") 
+        if(isinstance(a[1],discord.errors.Forbidden)):
+          await message_error.channel.send("Either you didn't setup the bot right(a.k.a missing permissions) or the bot fell into a cricital error")
+    except discord.errors.Forbidden:
+      pass
+    
 
 @client.event
 async def on_member_join(member):
-
+  no_invite = False
   fetched_guild = member.guild
-
-  invites = await fetched_guild.invites()
-
-  for i in invites:
-
-    invite_code=i.code
-
-    invite_inverter = i.inviter
-
-    invite_id = i.id
-    
-    invite_url = i.url
-
-    invite_uses = i.uses
-    
-    creation_date = (i.created_at).strftime('%m/%d/%Y %H:%M:%S')
+  try:  
+    invites = await fetched_guild.invites()
+  except discord.errors.Forbidden:
+    no_invite = True
+  if no_invite != True:
+    for i in invites:
+      invite_code=i.code
+      invite_inverter = i.inviter
+      invite_id = i.id
+      invite_url = i.url
+      invite_uses = i.uses
+      creation_date = (i.created_at).strftime('%m/%d/%Y %H:%M:%S')
 
   embed_message=discord.Embed(title=f"{member} just joined {member.guild.name}",timestamp=datetime.datetime.utcnow(),color=random.randint(0, 16777215))
 
@@ -3798,36 +3687,40 @@ async def on_member_join(member):
 
 @client.event
 async def on_invite_create(invite):
-  invite.revoked
-  invite.guild
-  invite.max_age
-  invite.code
-  invite.inviter
-  invite.id
-  invite.url
-  invite.uses
-  creation_date = (invite.created_at).strftime('%m/%d/%Y %H:%M:%S')
+  try:
+    invite.revoked
+    invite.guild
+    invite.max_age
+    invite.code
+    print(invite.inviter)
+    invite.id
+    invite.url
+    invite.uses
+    creation_date = (invite.created_at).strftime('%m/%d/%Y %H:%M:%S')
+  except discord.errors.Forbidden:
+    pass
 
 @client.event
 async def on_invite_delete(invite):
-  print(invite.revoked)
-  print(invite.guild)
-  print(invite.max_age)
-  print(invite.code)
-  print(invite.inviter)
-  print(invite.id)
-  print(invite.url)
-  print(invite.uses)
-  creation_date = (invite.created_at).strftime('%m/%d/%Y %H:%M:%S')
-  print(creation_date)
+  try:
+    print(invite.revoked)
+    print(invite.guild)
+    print(invite.max_age)
+    print(invite.code)
+    print(invite.inviter)
+    print(invite.id)
+    print(invite.url)
+    print(invite.uses)
+    creation_date = (invite.created_at).strftime('%m/%d/%Y %H:%M:%S')
+    print(creation_date)
+  except discord.errors.Forbidden:
+    pass
+
 
 @client.event
 async def on_member_remove(member):
-
   embed_message=discord.Embed(title=f"{member} just left {member.guild.name}",timestamp=datetime.datetime.utcnow(),color=random.randint(0, 16777215))
-
   embed_message.set_footer(text=f"User ID: {member.id}")
-
   await client.get_channel(738912143679946783).send(embed=embed_message)
 
 @client.event
@@ -3836,23 +3729,14 @@ async def on_user_update(before,after):
   embed_message = discord.Embed(description=f"{before.mention} **updated their profile!**",color=random.randint(0, 16777215),timestamp=datetime.datetime.utcnow())
   embed_message.set_author(name=f"{before}",icon_url=(after.avatar_url))
   embed_message.set_footer(text=f"User ID: {before.id}")
-
   if not before.name==after.name:
-
     embed_message.add_field(name="Username",value=f"{before.name} -> {after.name}")
-
   if not before.avatar_url == after.avatar_url:
-
     embed_message.add_field(name="Avatar",value=f"[[before]]({before.avatar_url}) -> [[after]]({after.avatar_url})")
-
     embed_message.set_thumbnail(url=after.avatar_url)
-    
     embed_message.set_image(url=after.avatar_url)
-
   if not before.discriminator == after.discriminator:
-
     embed_message.add_field(name="Discriminator",value=f"#{before.discriminator} -> {after.discriminator}")
-
   await client.get_channel(738912143679946783).send(embed=embed_message)
 
 @client.event
