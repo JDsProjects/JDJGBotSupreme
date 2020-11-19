@@ -40,6 +40,7 @@ import color_code
 import userinfo
 import jdjg_os
 import mystbin
+import spy_co
 today = datetime.date.today()
 day = today.strftime('%m/%d/%Y %H:%M:%S')
 logging.basicConfig(level=logging.WARNING)
@@ -334,13 +335,12 @@ send_channel = [
 
 safe_servers = [736422329399246990, 736966204606120007,736051343185412296]
 
-slur_okay = [736051343185412296,745559622856998953]
+slur_okay = [736051343185412296,745559622856998953,643960606998790154]
 
 from_to_channel={}
 
 @client.event
 async def on_guild_join(guild_fetched):
-
   channels = [channel for channel in guild_fetched.channels]
 
   roles = roles= [role for role in guild_fetched.roles]
@@ -665,7 +665,7 @@ async def on_message(message):
           the_encoding = chardet.detect(info)['encoding']
           text=info.decode(the_encoding)
           mystbin_client = mystbin.MystbinClient()
-          paste = await mystbin_client.post(text, syntax="python")
+          paste = await mystbin_client.post(text)
           await message.channel.send("added text file to mystbin")
           await message.channel.send(paste.url)
           await mystbin_client.close()
@@ -902,22 +902,13 @@ async def on_message(message):
     user_wanted = message.content.replace(discordprefix+"closest_user","")
     userNearest = sorted(client.users, key=lambda x: SequenceMatcher(None, x.name, user_wanted).ratio())[-1]
     await message.channel.send(userNearest)
-
     userNearest_nick = sorted(client.users, key=lambda x: SequenceMatcher(None, x.display_name,user_wanted).ratio())[-1]
-
     await message.channel.send(userNearest_nick)
-
     clean_member_list = []
-
-
     for x in guild_fetch.members:
-
       if x.nick == None:
-
         pass
-
       if not x.nick == None:
-
         clean_member_list.append(x)
 
     userNearest_server_nick = sorted(clean_member_list, key=lambda x: SequenceMatcher(None, x.nick,user_wanted).ratio())[-1]
@@ -1014,11 +1005,8 @@ async def on_message(message):
     except:
       await message.channel.send("User not in Rank System")
     #turn these into embed info stuff. hash check will just an embed image(so feel free to delete hash_check i-tself, but keep avatar99, or at least the stuff to get it.)
-
     return
-
     return
-
   if message.content.startswith(discordprefix+"fetch_guild"):
 
     id_used = message.content.replace(discordprefix+"fetch_guild ","")
@@ -1053,10 +1041,7 @@ async def on_message(message):
       guild_fetched = client.get_guild(message.guild.id)
 
     channels = [channel for channel in guild_fetched.channels]
-
     roles = [role for role in guild_fetched.roles]
-
-
     embed = discord.Embed(title="Guild Info", color=random.randint(0, 16777215))
     embed.set_thumbnail(url = guild_fetched.icon_url)
     embed.add_field(name='Server Name:',value=f'{guild_fetched.name}')
@@ -1068,6 +1053,63 @@ async def on_message(message):
     embed.add_field(name='Member Count:',value=f'{guild_fetched.member_count}')
     embed.add_field(name='Amount of Channels:',value=f"{len(channels)}")
     embed.add_field(name='Amount of Roles:',value=f"{len(roles)}")
+    await message.channel.send(embed=embed)
+    return
+
+  if message.content.startswith(discordprefix+"add_game") and message.channel.id ==778687920424353802 and not message.author.bot :
+    game_name=message.content.replace(discordprefix+"add_game","")
+    if game_name == discordprefix+"add_game": 
+      await message.channel.send("Please try making an orginal name")
+      return
+    new_id=spy_co.game_add(game_name)
+    print(new_id)
+    return
+
+  if message.content.startswith(discordprefix+"order_item") and not message.author.bot:
+    product=message.content.replace(discordprefix+"order_item ","")
+    if product == discordprefix+"order_item": 
+      await message.channel.send("Pick a product please.")
+      return
+    send_to=client.get_channel(778649083991949372)
+    send_to = client.get_channel(778575980935118860)
+    embed = discord.Embed(title="Order:",color=random.randint(0, 16777215),timestamp=(message.created_at))
+    embed.add_field(name="Product",value=f"**{product}**")
+    embed.add_field(name="Channel id:",value=message.channel.id)
+    embed.set_footer(text=message.author.id)
+    embed.set_author(name=message.author,icon_url=(message.author.avatar_url))
+    await send_to.send(embed=embed)
+    await message.channel.send("Order sent.")
+    def check(message_channel):
+      return message_channel.channel.id == 778575980935118860
+    while True:
+      reply_function=await client.wait_for("message",check=check)
+      print(reply_function.content)
+      if reply_function.content.startswith("exit") and not reply_function.author.bot:
+          break 
+      if reply_function.content.startswith("send:") and not reply_function.author.bot:
+        new_information=reply_function.content.replace("send: ","")
+        if len(new_information.split(" ")) > 1:
+          try:
+            channel_id = new_information.split(" ")[0]
+            new_id=int(channel_id)
+            game = new_information.split(" ")[1]
+            if len(new_information.split(" ")) > 2:
+              extra_info = new_information.split(" ")[2:]
+          except:
+            return
+            await reply_function.channel.send("Not valid arguments")
+          game_found=spy_co.game_finder(game)
+          channel_wanted=client.get_channel(new_id)
+          print(game_found)
+          #embed = 
+          #await channel_wanted.send(embed=embed)
+         
+    return
+
+  if message.content.startswith(discordprefix+"milk") and not message.author.bot:
+    embed = discord.Embed(title="You have summoned the milkman",color=random.randint(0, 16777215))
+    embed.set_image(url="https://media.discordapp.net/attachments/700506169243861202/778118626350989312/pillow_imagedraw1.gif")
+    embed.set_footer(text="his milk is delicious")
     await message.channel.send(embed=embed)
     return
 
@@ -1614,7 +1656,6 @@ async def on_message(message):
 
       for i in range(len(data_used['results'])):
         url = data_used['results'][i]['media'][0]['gif']['url']
-
         await image_channel.send(url)
 
       return
@@ -1689,7 +1730,6 @@ async def on_message(message):
     except ApiException as e:
 
       await message.channel.send("Either the rate limit was reached or you didn't insert anything")
-
       print(e)
 
     return
@@ -3423,7 +3463,6 @@ async def on_message(message):
       await message.channel.send("Either you forgot the values needed or you used text after the Arithmetic")
     return
 
-
   if message.content.startswith(discordprefix+"invite") and not message.author.bot:
     
     embed  = discord.Embed(title = "The Invite Links!", value = "One is for testing, one is the normal bot.",color=random.randint(0, 16777215))
@@ -3579,7 +3618,6 @@ async def on_message_delete(message):
      for obj in can:
         channel = client.get_channel(int(obj["chan_id"]))
         msg= await channel.fetch_message(obj["mes_id"].id)
-        print(msg.id)
         await msg.delete()
     except:
       banana = 0
@@ -3607,6 +3645,8 @@ async def on_message_edit(before,after):
   if(before.content!=after.content):
     embedVar = discord.Embed(title=before.author.name+" Edited a Message",color=random.randint(0, 16777215))
     embedVar.add_field(name="Before:",value=str(before.content))
+    if(len(before.content)==0):
+      before.content = "NULL"
     if(len(after.content)==0):
       after.content = "NULL"
     embedVar.add_field(name="After:",value=str(after.content))
@@ -3647,19 +3687,25 @@ async def on_error(name,*arguments,**karguments):
     idle_error=termcolor.colored(idle_error,"red")
     print(f"\n{idle_error} \n{arguments}")
     print("\n message was way too big for discord")
-
   a=os.sys.exc_info()
   message_error=arguments[0]
   if isinstance(message_error, discord.Message):
-    try:
-      member_permissions=message_error.channel.permissions_for(message_error.guild.me)
-      if member_permissions.send_messages == True:
-        if(isinstance(a[1],discord.errors.HTTPException)):
-          await message_error.channel.send("Error occuried(please try shorterning your messages)") 
-        if(isinstance(a[1],discord.errors.Forbidden)):
-          await message_error.channel.send("Either you didn't setup the bot right(a.k.a missing permissions) or the bot fell into a cricital error")
-    except discord.errors.Forbidden:
-      pass
+    jdjg = client.get_user(168422909482762240)
+    if (jdjg.dm_channel is None):
+      await jdjg.create_dm()
+    mystbin_client = mystbin.MystbinClient()
+    paste = await mystbin_client.post(message_error.content)
+    await jdjg.send(f"Error: {paste.url}")
+    await mystbin_client.close()
+    #try:
+      #member_permissions=message_error.channel.permissions_for(message_error.guild.me)
+      #if member_permissions.send_messages == True:
+        #if(isinstance(a[1],discord.errors.HTTPException)):
+          #await message_error.channel.send("Error occuried(please try shorterning your messages)") 
+        #if(isinstance(a[1],discord.errors.Forbidden)):
+          #await message_error.channel.send("Either you didn't setup the bot right(a.k.a missing permissions) or the bot fell into a cricital error")
+    #except discord.errors.Forbidden:
+      #pass
     
 
 @client.event

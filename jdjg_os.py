@@ -18,5 +18,3 @@ async def os(message):
   if info.content.startswith("ver") or info.content.startswith("version"):
 
     await info.channel.send(f" Version: {version_info}")
-
-  

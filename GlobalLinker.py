@@ -29,14 +29,13 @@ async def SendMessage(message):
               #  print(client.get_guild(gChan['ser_id']).name)
               #except:
               #  print("Error " + str(gChan['ser_id']))
-              embedVar = discord.Embed(title=message.guild.name)
+              embedVar = discord.Embed(title=message.guild.name,description=str(FilterMessage(message)),inline=True)
               embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)
               embedVar.set_thumbnail(url = GetPfp.GetServerPfp(message))
-              embedVar.add_field(name=str(message.author),value=str(FilterMessage(message)),inline=True)
               try:
                 await client.get_channel(gChan['chan_id']).send(embed=embedVar)
               except:
-                banana = 1
+                print(gChan['chan_id'])
 async def TestGLink(message):
   embedVar = discord.Embed(title=message.guild.name)
   embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)            
