@@ -10,6 +10,7 @@ import imghdr
 import aiohttp
 import aiodns
 import chardet
+import re
 #from itertools import cycle
 import requests #do not use unless you know why your doing
 import datetime
@@ -395,8 +396,13 @@ async def on_message(message):
       
       x = 0
 
+  message_check=re.findall(rf"{discordprefix}[{discordprefix}]",message.content, flags=re.IGNORECASE)
+  if len(message_check) > 0:
+    check_time=message_check[0]
+    if check_time.lower() == discordprefix.lower():
+      message.content = message.content.replace(check_time,discordprefix)
+
   if message.guild is None and not message.author.bot and not message.content.startswith(discordprefix):
-    import re
     punc = [' ','.','!','?']
     tmpStr = message.content.lower()
     tmpStr = tmpStr.replace("sus","")
@@ -542,7 +548,6 @@ async def on_message(message):
         print(message.content)
 
     if message.guild.id in safe_servers and not message.author.bot:
-      import re
       punc = [' ','.','!','?']
       tmpStr = message.content.lower()
       tmpStr = tmpStr.replace("sus","")
@@ -1528,7 +1533,6 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"order_tenor shuffle") and not message.author.bot:
     urls = []
-
     order_wanted = message.content.replace(discordprefix+"order_tenor shuffle","")
 
     apikey =  os.environ["tenor_key"]
