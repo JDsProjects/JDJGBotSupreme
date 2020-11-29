@@ -20,7 +20,16 @@ def FilterMessage(message):
   for men in message.mentions:
     tmp_msg = tmp_msg.replace(str("<@!"+str(men.id)+">"),men.name)
   return tmp_msg
+banned_list = [
+629060550525190145,
+523461693846716416,
+691713870238187530,
+573593846772924418
+
+]
 async def SendMessage(message):
+  if message.author.id in banned_list:
+    return
   for gChan in DatabaseConfig.db.g_link_testing.find():
         if message.channel.id == gChan['chan_id']:
           for gChan in DatabaseConfig.db.g_link_testing.find():
@@ -82,3 +91,25 @@ def GetGlobalEmbed(message):
   embedVar.add_field(name=str(message.author),value=val,inline=True)
   return embedVar
 
+async def extend(message):
+  gChan = DatabaseConfig.db.g_link_testing.find_one({"ser_id":message.guild.id})
+  if gChan == None:
+    return
+  global_channel=gChan["chan_id"]
+  if global_channel == None:
+    return
+    print(global_channel)
+  if(global_channel==message.channel.id):
+    await client.get_channel(782123846781370368).send(embed = GetGlobalEmbed(message))
+  return
+
+async def respond(message):
+  return
+  if message.author.bot:
+    if(702238592725942374!=message.author.id):
+      for gChan in DatabaseConfig.db.g_link_testing.find():
+        if message.guild.id != gChan['ser_id']:
+          try:
+            await client.get_channel(gChan['chan_id']).send(embed=message.embeds[0])
+          except:
+              print(gChan['chan_id'])

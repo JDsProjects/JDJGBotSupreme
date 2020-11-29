@@ -364,7 +364,7 @@ waitMessage = 0
 #commands with embed: help, mail, support, about, update(will soon)
 @client.event
 async def on_message(message):
-  #await client.user.edit(username="JDJG Bot")
+  #await GlobalLinker.respond(message)
   global url_collection
   global safe_servers
   global waitMessage
@@ -538,13 +538,9 @@ async def on_message(message):
   if not message.guild is None and not message.author.bot:
 
     if message.guild.id in guild_prefixes and not message.author.bot:
-
       server_prefix=guild_prefixes[message.guild.id]
-
       if message.content.startswith(server_prefix):
-
         message.content = message.content.replace(server_prefix,discordprefix)
-
         print(message.content)
 
     if message.guild.id in safe_servers and not message.author.bot:
@@ -661,6 +657,14 @@ async def on_message(message):
           member_role = message.guild.get_role(736423134449893428)
           await message.author.add_roles(member_role,reason="User Vertification by Bot.")
           return
+      if message.guild.id == 748631738908934211:
+        if message.channel.id == 779407591511818303:
+          await message.channel.send("Vertification time...")
+          member_role = message.guild.get_role(748654102040412291)
+          await message.author.add_roles(member_role,reason="User Vertification by Bot.")
+          member_role = message.guild.get_role(748640407201644624)
+          await message.author.add_roles(member_role,reason="User Vertification by Bot.")
+          return
 
   if message.content.startswith(discordprefix+"text_backup") and not message.author.bot:
     if len(message.attachments) > 0:
@@ -680,6 +684,15 @@ async def on_message(message):
         await message.channel.send("That's not a .txt file.")
     if len(message.attachments) == 0:
       await message.channel.send("Please try actually uploading a text file.")
+    return
+  
+  if message.content.startswith(discordprefix+"look_at") and not message.author.bot:
+    emoji_list=message.guild.emojis
+    message_emojis = ""
+    for x in emoji_list:
+      if x.animated == True:
+        message_emojis = message_emojis+" "+str(x)
+    await message.channel.send(message_emojis)
     return
   
   if message.content.startswith(discordprefix+"CRAP_BACKUP") and not message.author.bot:
@@ -765,6 +778,7 @@ async def on_message(message):
         waitMessage = 0
       await RankSystem.UpdateScore(message) #For the rank 
       await GlobalLinker.SendMessage(message)
+      await GlobalLinker.extend(message)
       for chanId in DatabaseControl.GetLinkedChannelsList(message.channel.id):
         await client.get_channel(chanId).send(embed=GlobalLinker.GetGlobalEmbed(message))
   if message.content.startswith(discordprefix+"GetChannelId") and not message.author.bot:
@@ -920,73 +934,70 @@ async def on_message(message):
     await message.channel.send(userNearest_server_nick)
     return
 
+  if message.content.startswith(discordprefix+"team") and not message.author.bot:
+    information=await client.application_info()
+    if information.team == None:
+      true_owner=information.owner
+      team_members = []
+    if information.team != None:
+      true_owner = information.team.owner
+      team_members = information.team.members
+    embed=discord.Embed(title=information.name,color=random.randint(0, 16777215))
+    embed.add_field(name="Owner",value=true_owner)
+    embed.set_footer(text=f"ID: {true_owner.id}")
+    embed.set_image(url=(information.icon_url))
+    for x in team_members:
+      embed.add_field(name=x,value=x.id)
+    await message.channel.send(embed=embed)
+    return
+
   if message.content.startswith(discordprefix+"owner") and not message.author.bot:
-    user99 = client.get_user(168422909482762240)
+    information=await client.application_info()
+    if information.team == None:
+      true_owner=information.owner.id
+    if information.team != None:
+      true_owner = information.team.owner_id
+    user99 = client.get_user(true_owner)
+    if user99 == None:
+      await client.fetch_user(true_owner)
     guild_used=message.guild
-
     user99_plus=guild_used.get_member(user99.id)
-
     avatar99 = user99.avatar_url
-
     bot_decide = user99.bot
-
     #if it's a bot(bool expression)
-
     if bot_decide == True:
-
       user_type = "Bot"
-
     if bot_decide==False:
-
       user_type = "User"
-
-    
     #user_type will become useful later.
-
     user_id=str(user99.id)
-    
     try:
-
       joined_guild = user99_plus.joined_at.strftime('%m/%d/%Y %H:%M:%S')
-
     except:
-
       joined_guild = "N/A"
-
-      
-
     user_create = user99.created_at.strftime('%m/%d/%Y %H:%M:%S')
-    
     try:
       user_status=str(user99.status)
     except:
       user_status = "NULL"
-
     user_status = user_status.upper()
-
     try:
       nickname = str(user99_plus.nick)
     except:
       nickname = "None"
-
-
     x = 0
     try:
-
       while x < len(user99_plus.roles):
-
         x = x + 1
-
       highest_role=user99_plus.roles[x-1]
-    
     except:
-
       highest_role = "N/A"
-
     guild_list = " "
     for guild in client.guilds:
       if user99 in guild.members:
         guild_list+=(", "+guild.name)
+    if guild_list == " ":
+      guild_list = "Null"
 
     #user_level = int(DatabaseConfig.db.users_testing.find_one({"user_id":user99.id})["level"])
     #user_local_rank = RankSystem.GetRank(user99,message.guild)
@@ -1416,92 +1427,57 @@ async def on_message(message):
         await message.channel.send("Try moving the bot's role over the user.")
     if bot_permissions.guild_permissions.manage_nicknames == False:
       await message.channel.send("sadly the bot doesn't have permissions")
-
     return
 
   if message.content.startswith(discordprefix+"user info") and not message.author.bot or message.content.startswith(discordprefix+"user_info") and not message.author.bot or message.content.startswith(discordprefix+"user-info") and not message.author.bot or message.content.startswith(discordprefix+"userinfo") and not message.author.bot:
     valid_command_test = message.content.replace(discordprefix,"")
     if(valid_command_test != valid_command_test.replace("user info","")):
       pass
-
     if(valid_command_test != valid_command_test.replace("user_info","")):
       pass
-
     if(valid_command_test != valid_command_test.replace("user-info","")):
       pass
     if(valid_command_test != valid_command_test.replace("userinfo","")):
       pass
-
-      
     user99=await userinfo.user_grab(message)
-
     guild_used=message.guild
-
-    
     user99_plus=guild_used.get_member(user99.id)
-
     avatar99 = user99.avatar_url
-
     bot_decide = user99.bot
-
     #if it's a bot(bool expression)
-
     if bot_decide == True:
-
       user_type = "Bot"
-
     if bot_decide==False:
-
       user_type = "User"
-
-    
     #user_type will become useful later.
-
     user_id=str(user99.id)
-    
     try:
-
       joined_guild = user99_plus.joined_at.strftime('%m/%d/%Y %H:%M:%S')
-
     except:
-
       joined_guild = "N/A"
-
-      
-
     user_create = user99.created_at.strftime('%m/%d/%Y %H:%M:%S')
-    
     try:
       user_status=str(user99_plus.status)
     except:
       user_status = "NULL"
-
     user_status = user_status.upper()
-
     try:
       nickname = str(user99_plus.nick)
     except:
       nickname = "None"
-
-
     x = 0
     try:
-
       while x < len(user99_plus.roles):
-
         x = x + 1
-
       highest_role=user99_plus.roles[x-1]
-    
     except:
-
       highest_role = "N/A"
-
     guild_list = " "
     for guild in client.guilds:
       if user99 in guild.members:
         guild_list+=(", "+guild.name)
-
+    if guild_list == " ":
+      guild_list = "Null"
     #user_level = int(DatabaseConfig.db.users_testing.find_one({"user_id":user99.id})["level"])
     #user_local_rank = RankSystem.GetRank(user99,message.guild)
     #user_global_rank = RankSystem.GetRank(user99)
@@ -1521,13 +1497,11 @@ async def on_message(message):
     await message.channel.send(embed=embedVar)
     #try:
     print("USERNAME: "+user99.name)
-    await RankSystem.GetStatus(message,user99 )
+    await RankSystem.GetStatus(message,user99)
    # except:
       #await message.channel.send("User not in Rank System")
     #turn these into embed info stuff. hash check will just an embed image(so feel free to delete hash_check i-tself, but keep avatar99, or at least the stuff to get it.)
-
     return
-
     #please make this into an embed
 
 
@@ -1732,7 +1706,6 @@ async def on_message(message):
 
 
     except ApiException as e:
-
       await message.channel.send("Either the rate limit was reached or you didn't insert anything")
       print(e)
 
@@ -1989,37 +1962,114 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"fetch_content") and message.author.id in admins and not message.author.bot:
-
     data_here=message.content.replace(discordprefix+"fetch_content ","")
-
-    print(data_here)
-
+    await message.channel.send(f"\{data_here}")
     return
 
   if message.content.startswith(discordprefix+"guild_get") and not message.author.bot:
-
-    current_guild = message.guild
-    
-
-    #Just add more features I guess? - like being able to disable the owner id like the Mee6 serverinfo command?
-
-    #Example here: https://discord.com/channels/736422329399246990/736424228026450021/739518057768026147
-
-    #https://discordpy.readthedocs.io/en/latest/api.html#guild
-
-    await message.channel.send(current_guild)
-
-    return
+      if message.guild != None:
+        await message.channel.send(message.guild.id)
+      if message.guild == None:
+          await message.channel.send("This doesn't work in Dms.")
+      return
+  
+  if message.content.startswith(discordprefix+"guild_info") and not message.author.bot:
+      server = message.content.replace(discordprefix+"guild_info","")
+      try:
+          server = int(server)
+      except:
+          server = message.guild.id
+      server = client.get_guild(server)
+      if server != None:
+        bots = 0
+        real_members = 0
+        for x in server.members:
+          if x.bot == True:
+              bots=bots + 1
+          if x.bot == False:
+              real_members = real_members + 1
+        emojis_static = 0
+        emojis_animated = 0
+        for x in server.emojis:
+            if x.animated == False:
+                emojis_static = emojis_static + 1
+            if x.animated == True:
+                emojis_animated = emojis_animated + 1
+        embed = discord.Embed(title="Guild Info:",color=random.randint(0, 16777215))
+        embed.add_field(name="Server Name:",value=server.name)
+        embed.add_field(name="Server ID:",value=server.id)
+        embed.add_field(name="Server region",value=server.region)
+        embed.add_field(name="Server created at:",value=f"{server.created_at} UTC")
+        embed.add_field(name="Server Owner:",value=server.owner)
+        embed.add_field(name="Member Count:",value=server.member_count)
+        embed.add_field(name="Users:",value=real_members)
+        embed.add_field(name="Bots:",value=bots)
+        embed.add_field(name="Channel Count:",value=len(server.channels))
+        embed.add_field(name="Role Count:",value=len(server.roles))
+        embed.set_thumbnail(url=str(server.icon_url))
+        embed.add_field(name="Emoji Limit:",value=server.emoji_limit)
+        embed.add_field(name="Max File Size:",value=f"{server.filesize_limit/1000000} MB")
+        embed.add_field(name="Shard ID:",value=server.shard_id)
+        embed.add_field(name="Animated Icon",value=server.is_icon_animated())
+        embed.add_field(name="Static Emojis",value=emojis_static)
+        embed.add_field(name="Animated Emojis",value=emojis_animated)
+        embed.add_field(name="Total Emojis:",value=f"{len(server.emojis)}/{server.emoji_limit*2}")
+        await message.channel.send(embed=embed)
+      if server == None:
+          await message.channel.send("Bot can't see this guild.")
+      return
+  if message.content.startswith(discordprefix+"server_info") and not message.author.bot:
+      server = message.content.replace(discordprefix+"server_info","")
+      try:
+          server = int(server)
+      except:
+          server = message.guild.id
+      server = client.get_guild(server)
+      if server != None:
+        bots = 0
+        real_members = 0
+        for x in server.members:
+          if x.bot == True:
+              bots=bots + 1
+          if x.bot == False:
+              real_members = real_members + 1
+        emojis_static = 0
+        emojis_animated = 0
+        for x in server.emojis:
+            if x.animated == False:
+                emojis_static = emojis_static + 1
+            if x.animated == True:
+                emojis_animated = emojis_animated + 1
+        embed = discord.Embed(title="Guild Info:",color=random.randint(0, 16777215))
+        embed.add_field(name="Server Name:",value=server.name)
+        embed.add_field(name="Server ID:",value=server.id)
+        embed.add_field(name="Server region",value=server.region)
+        embed.add_field(name="Server created at:",value=f"{server.created_at} UTC")
+        embed.add_field(name="Server Owner:",value=server.owner)
+        embed.add_field(name="Member Count:",value=server.member_count)
+        embed.add_field(name="Users:",value=real_members)
+        embed.add_field(name="Bots:",value=bots)
+        embed.add_field(name="Channel Count:",value=len(server.channels))
+        embed.add_field(name="Role Count:",value=len(server.roles))
+        embed.set_thumbnail(url=str(server.icon_url))
+        embed.add_field(name="Emoji Limit:",value=server.emoji_limit)
+        embed.add_field(name="Max File Size:",value=f"{server.filesize_limit/1000000} MB")
+        embed.add_field(name="Shard ID:",value=server.shard_id)
+        embed.add_field(name="Animated Icon",value=server.is_icon_animated())
+        embed.add_field(name="Static Emojis",value=emojis_static)
+        embed.add_field(name="Animated Emojis",value=emojis_animated)
+        embed.add_field(name="Total Emojis:",value=f"{len(server.emojis)}/{server.emoji_limit*2}")
+        await message.channel.send(embed=embed)
+      if server == None:
+          await message.channel.send("Bot can't see this guild.")
+      return
 
   if message.content.startswith(discordprefix+"server_icon") and not message.author.bot:
     await message.channel.send(GetPfp.GetServerPfp(message))
-
     return
 
   if message.content.startswith(discordprefix+"pfp") and not message.author.bot:
-    
     await message.channel.send((await GetPfp.GetUserPfp(message)).avatar_url)
-    
     return
 
   if message.content.startswith(discordprefix+"avatar") and not message.author.bot:
@@ -2162,36 +2212,7 @@ async def on_message(message):
 
       channel_used = client.get_channel(738912143679946783)
       await channel_used.send(embed=embed_message)
-      
       return
-
-  if message.content.startswith(discordprefix+"old_servers") and not message.author.bot:
-    try:
-      server_1= await client.fetch_guild(762393253114150912)
-    except:
-      server_1 = "Couldn't find the guild."
-    try:
-      server_2 = await client.fetch_guild(743639558855327895)
-    except:
-      server_2 = "Couldn't find the guild."
-    try:
-      server_test = await client.fetch_guild(362679932670705667)
-    except:
-      server_test = "Couldn't find the guild."
-    try:
-      channel_1 = await client.fetch_channel(762393253114150915)
-    except:
-      channel_1 = "Couldn't find the channel"
-    try:
-      channel_2 = await client.fetch_channel(762097801474998272)
-    except:
-      channel_2 = "Couldn't find the channel"
-    await message.channel.send(server_1)
-    await message.channel.send(server_2)
-    await message.channel.send(channel_1)
-    await message.channel.send(channel_2)
-    await message.channel.send(server_test)
-    return
 
   if message.content.startswith(discordprefix+"invert") and not message.author.bot:
     from PIL import Image
@@ -2455,7 +2476,6 @@ async def on_message(message):
         if animated_amount < 50:
 
           pass_value = "yes"
-
           emote_data = await dump_server.create_custom_emoji(name = emoji_name_grabbed,image=await response.read())
 
           emote_collect.append(emote_data)
@@ -3345,11 +3365,7 @@ async def on_message(message):
     await message.author.dm_channel.send("\n Servers:")
 
     for i in send_list:
-
-      await message.author.dm_channel.send(i)
-
-      
-      
+      await message.author.dm_channel.send(i) 
     return
 
   if message.content.startswith(discordprefix+"message time") and not message.author.bot:
@@ -3666,6 +3682,53 @@ async def on_message_edit(before,after):
         await msg.edit(embed = newEmbed)
     except:
       banana = 0
+
+@client.event
+async def on_guild_emojis_update(guild, before, after):
+  if emoji_added := [x for x in before if x not in after]:
+     for different_emoji in emoji_added:
+      logs=client.get_channel(738912143679946783)
+      embed = discord.Embed(title=guild.name,color=random.randint(0, 16777215),timestamp=different_emoji.created_at)
+      embed.add_field(name=f"{different_emoji.name} deleted",value=f"Animated: {different_emoji.animated}")
+      embed.add_field(name="Emojii ID:",value=different_emoji.id)
+      embed.set_image(url=different_emoji.url)
+      await logs.send(embed=embed)
+  if emoji_added := [x for x in after if x not in before]:
+    for different_emoji in emoji_added:
+      logs=client.get_channel(738912143679946783)
+      embed = discord.Embed(title=guild.name,color=random.randint(0, 16777215),timestamp=different_emoji.created_at)
+      try:
+        emoji=await guild.fetch_emoji(different_emoji.id)
+        emoji = emoji.user
+      except discord.HTTPException:
+          emoji = "Unknown"
+      embed.add_field(name=f"{different_emoji.name} added",value=f"Animated: {different_emoji.animated}")
+      embed.add_field(name="Emojii ID:",value=different_emoji.id)
+      embed.add_field(name="Emote Creator:",value=emoji)
+      embed.set_image(url=different_emoji.url)
+      await logs.send(embed=embed)
+  
+  if len(before) == len(after):
+    logs=client.get_channel(738912143679946783)
+    for x in before:
+      for y in after:
+        if x.id == y.id:
+          if x.name != y.name:
+            embed = discord.Embed(title=guild.name,color=random.randint(0, 16777215),timestamp=y.created_at)
+            try:
+              emoji=await guild.fetch_emoji(x.id)
+              emoji = emoji.user
+            except discord.HTTPException:
+              emoji = "Unknown"
+            embed.add_field(name=f"{x.name} edited",value=f"Animated: {y.animated}")
+            embed.add_field(name="Emojii ID:",value=y.id)
+            embed.add_field(name="Emote Creator",value=emoji)
+            embed.add_field(name="New name:",value=y.name)
+            embed.set_image(url=y.url)
+            await logs.send(embed=embed)
+      
+          
+
 
 @client.event
 async def on_error(name,*arguments,**karguments):
