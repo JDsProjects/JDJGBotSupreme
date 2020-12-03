@@ -401,7 +401,10 @@ async def on_message(message):
     check_time=message_check[0]
     if check_time.lower() == discordprefix.lower():
       message.content = message.content.replace(check_time,discordprefix)
-
+    
+  if message.reference != None and not message.content.startswith(discordprefix) and not message.author.bot:
+    return
+    
   if message.guild is None and not message.author.bot and not message.content.startswith(discordprefix):
     punc = [' ','.','!','?']
     tmpStr = message.content.lower()
@@ -823,7 +826,21 @@ async def on_message(message):
         body = "<#"+str(obj["chan_id"])+">"
       embedVar.add_field(name = header,value = body)
     await message.channel.send(embed = embedVar)
-
+    return
+  if message.content.startswith(discordprefix+"global_mention") and not message.author.bot:
+    i=0
+    embedVar = discord.Embed(title = "Gobal Channels List",color=random.randint(0, 16777215))
+    for obj in DatabaseConfig.db.g_link_testing.find():
+      i=i+1
+      header = str(i) + ": "
+      try:
+        header = header +str(client.get_guild(obj["ser_id"]).name)
+        body  = str(client.get_channel(obj["chan_id"]).mention)
+      except:
+        header = header + "Cannot Connect"
+        body = "<#"+str(obj["chan_id"])+">"
+      embedVar.add_field(name = header,value = body)
+    await message.channel.send(embed = embedVar)
     return
 #RANK SYSTEM COMMANDS
   if message.content.startswith(discordprefix+"rank") and not message.author.bot:
@@ -1484,6 +1501,7 @@ async def on_message(message):
     embedVar = discord.Embed(title=str(user99),description=user_type, color=random.randint(0, 16777215))
     embedVar.set_image(url=avatar99)
     embedVar.add_field(name="Username: ", value = user99.name)
+    embedVar.add_field(name="Discriminator:",value=user99.discriminator)
     embedVar.add_field(name="Nickname: ", value = nickname)
     embedVar.add_field(name="Joined Discord: ",value = user_create)
     embedVar.add_field(name="Joined Guild: ",value = joined_guild)
@@ -3503,7 +3521,6 @@ async def on_message(message):
   if message.content.startswith(discordprefix+"os") and not message.author.bot:
     if client.os_user == "None":
       client.os_user = message.author.id
-
       await jdjg_os.os(message)
     
     return
