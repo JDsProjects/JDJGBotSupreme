@@ -247,24 +247,26 @@ url_collection = []
 
 async def status_task():
     while True:
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.playing, name=" JDBot*help"))
-        await asyncio.sleep(20)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.playing, name="with Repl.it"))
-        await asyncio.sleep(20)
+        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name=" JDBot*help"))
+        await asyncio.sleep(30)
+        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(client.guilds)} servers | {len(client.users)} users"))
+        await asyncio.sleep(30)
+        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="with Repl.it"))
+        await asyncio.sleep(30)
         await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="the creators:"))
-        await asyncio.sleep(20)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.playing, name="Nomic Zorua"))
-        await asyncio.sleep(20)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.playing, name="JDJG and Shadi"))
-        await asyncio.sleep(20)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.playing, name="RenDev and LinuxTerm"))
-        await asyncio.sleep(20)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.playing, name="JDJG Bot will DM you two servers join if you want help from the bot makers - from about command or help command"))
-        await asyncio.sleep(20)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.playing, name="(the first one is the support server), though the blooper server will tend to do it now - second one"))
-        await asyncio.sleep(20)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.playing, name="use JDBot!help for the test commands"))
-        await asyncio.sleep(20)
+        await asyncio.sleep(30)
+        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="Nomic Zorua"))
+        await asyncio.sleep(30)
+        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="JDJG and Shadi"))
+        await asyncio.sleep(30)
+        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="RenDev and LinuxTerm"))
+        await asyncio.sleep(30)
+        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="JDJG Bot will DM you two servers join if you want help from the bot makers - from about command or help command"))
+        await asyncio.sleep(30)
+        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="(the first one is the support server), though the blooper server will tend to do it now - second one"))
+        await asyncio.sleep(30)
+        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="use JDBot!help for the test commands"))
+        await asyncio.sleep(30)
         
 
 #be careful not to have a * anywhere else,
@@ -932,9 +934,7 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"closest_user") and not message.author.bot:
-
     guild_fetch = client.get_guild(message.guild.id)
-
     user_wanted = message.content.replace(discordprefix+"closest_user","")
     userNearest = sorted(client.users, key=lambda x: SequenceMatcher(None, x.name, user_wanted).ratio())[-1]
     await message.channel.send(userNearest)
@@ -1135,8 +1135,7 @@ async def on_message(message):
           channel_wanted=client.get_channel(new_id)
           print(game_found)
           #embed = 
-          #await channel_wanted.send(embed=embed)
-         
+          #await channel_wanted.send(embed=embed)   
     return
 
   if message.content.startswith(discordprefix+"milk") and not message.author.bot:
@@ -1163,33 +1162,20 @@ async def on_message(message):
     return
   
   if message.content.startswith(discordprefix+"dice_roll6") and not message.author.bot:
-
     pfp=message.author.avatar_url
-
     type_dice = "d6"
-
     dice_gif = "https://media1.tenor.com/images/2fcf7e0bdb5ed04fcb5092cf2479907e/tenor.gif"
-
-
     dice_roll6=random.randint(1,6)
-
     dice_roll6 = str(dice_roll6)
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
     embed_message = discord.Embed(title=f" Rolled a {dice_roll6}", description=time_used, color=random.randint(0, 16777215))
-
     embed_message.set_footer(text = f"{message.author.id}")
-
     embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
-
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
-
     embed_message.set_image(url=dice_gif)
-
     await message.channel.send(embed=embed_message)
     return
-
+  
   if message.content.startswith(discordprefix+"dice_roll4") and not message.author.bot:
 
     pfp=message.author.avatar_url
@@ -1774,12 +1760,10 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"order_shuffle") and not message.author.bot:
-
     from google_images_search import GoogleImagesSearch
     from PIL import Image
     order_wanted = message.content.replace(discordprefix+"order_shuffle ","")
     def my_progressbar(url, progress):
-
       url_collection.append(url)
 
     gis = GoogleImagesSearch(os.environ['image_api_key'],os.environ['google_image_key'], validate_images=False,progressbar_fn=my_progressbar)
@@ -1979,9 +1963,41 @@ async def on_message(message):
     GetPfp.DownloadAllPfp(message)
     return
 
-  if message.content.startswith(discordprefix+"fetch_content") and message.author.id in admins and not message.author.bot:
+  if message.content.startswith(discordprefix+"fetch_content") and not message.author.bot:
     data_here=message.content.replace(discordprefix+"fetch_content ","")
-    await message.channel.send(f"\{data_here}")
+    if data_here == discordprefix+"fetch_content":
+      await message.channel.send("please send actual text")
+      return
+    data_here=discord.utils.escape_mentions(data_here)
+    data_here=discord.utils.escape_markdown(data_here,as_needed=False,ignore_links=False)
+    for x in message.channel_mentions:
+      data_here = data_here.replace(x.mention,f"\{x.mention}")
+    emojis_return = emojis.get(data_here)
+    for x in emojis_return:
+      data_here = data_here.replace(x,f"\{x}")
+    await message.channel.send(f"{data_here}")
+    return
+
+  if message.content.startswith(discordprefix+"random_history") and not message.author.bot:
+    amount = message.content.replace(discordprefix+"random_history","")
+    try:
+      amount = int(amount)
+      if amount > 1 and amount < 51:
+        url=f"https://history.geist.ga/api/many?amount={amount}"
+      if amount > 50 or amount < 2:
+        url = "https://history.geist.ga/api/one"
+    except ValueError:
+      url = "https://history.geist.ga/api/one"
+    async with aiohttp.ClientSession() as cs:
+      async with cs.get(url) as r:
+        history = await r.json()
+    for x in history:
+      results=history[x]
+    if type(results) is list:
+      for x in results:
+        await message.channel.send(f":earth_africa: {x}")
+    if type(results) is str:
+      await message.channel.send(f":earth_africa: {results}")
     return
 
   if message.content.startswith(discordprefix+"guild_get") and not message.author.bot:
@@ -2174,14 +2190,25 @@ async def on_message(message):
     return
     
   if message.content.startswith(discordprefix+"say") and not message.author.bot:
-
     current_message = message.content.replace(discordprefix+"say","")
-
     if current_message == "":
       return
-
-    await message.delete()
-    await message.channel.send(current_message)
+    current_message = current_message.lstrip()
+    if len(message.channel_mentions) > 0:
+      target=message.channel_mentions[0]
+      if current_message.startswith(target.mention):
+        await message.delete()
+        current_message = current_message.replace(target.mention," ")
+        try:
+          await target.send(current_message)
+        except:
+          await message.channel.send(current_message)
+      elif not current_message.startswith(target.mention):
+        await message.delete()
+        await message.channel.send(current_message)
+    if len(message.channel_mentions) == 0:
+      await message.delete()
+      await message.channel.send(current_message)
     return
 
   if message.content.startswith(discordprefix+"support DM ") and not message.author.bot:
@@ -2558,36 +2585,7 @@ async def on_message(message):
         await channel_used.send(embed=emoji_embed)
 
         await message.channel.send(embed=emoji_embed)
-    return
-  
-  if message.content.startswith(discordprefix+"default_emoji") and not message.author.bot:
-    emojis_return = []
-    emoji_count=emojis.count(message.content,unique=True)
-    if emoji_count > 0:
-      emojis_return = emojis.get(message.content)
-    if emoji_count == 0:
-      for message_wanted in await message.channel.history(limit=100).flatten():
-          emoji_count=emojis.count(message_wanted.content,unique=True)
-          if emoji_count != 0:
-            emojis_return = emojis.get(message_wanted.content) 
-
-    if len(emojis_return) == 0:
-      await message.channel.send("no default emoji found")
-    for x in emojis_return:
-      emojis_used=emojis.decode(x)
-      emojis_used=emojis_used.replace(":","")
-      digit = f"{ord(x):x}"
-      unicode = f"\\U{digit:>08}"
-      unicode_site = f"http://www.fileformat.info/info/unicode/char/{digit}"
-      embed=discord.Embed(title="Default Emote:",url=unicode_site,color=random.randint(0, 16777215))
-      embed.add_field(name="Name:",value=emojis_used)
-      embed.add_field(name="Unicode:",value=unicode)
-      embed.add_field(name="unicode url",value=f"[site]({unicode_site})")
-      embed.add_field(name="Credit:",value=f"[[Site 1]](https://emojis.readthedocs.io/en/latest/api.html) [[Site 2]](https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/meta.py#L250-L264)")
-      embed.set_image(url=f"https://raw.githubusercontent.com/astronautlevel2/twemoji/gh-pages/128x128/{digit}.png")
-      embed.set_footer(text=f"click the title for more unicode data")
-      await message.channel.send(embed=embed)
-    return
+    retur
   
   if message.content.startswith(discordprefix+"emoji_id") and not message.author.bot:
     emoji_id=message.content.replace(discordprefix+"emoji_id ","")
@@ -2609,6 +2607,7 @@ async def on_message(message):
         embed=discord.Embed(title=f"Emoji: **{name}**",color=random.randint(0, 16777215))
         embed.set_image(url=em)
         await message.channel.send(embed=embed)
+    await emote.default_emojis(message)
     return
 
   if message.content.startswith(discordprefix+"log off") and message.author.id in admins and not message.author.bot:
@@ -2734,20 +2733,12 @@ async def on_message(message):
     await message.channel.send(f"Now testing... with {content_message}")
 
     webhook_url = webhook.url
-
     webhook = discord_webhook.DiscordWebhook(url=webhook_url)
-
     embed = discord_webhook.DiscordEmbed(title=f"{message.author}'s Message:",color=random.randint(0, 16777215))
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
-
     embed.add_embed_field(name=content_message, value=time_used)
-
     embed.set_timestamp()
-
     webhook.add_embed(embed)
-    
     webhook.execute()
     return
 
@@ -2937,49 +2928,30 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"webhook_update") and not message.author.bot and message.author.id in jdjg_id:
-
     update_color = 35056
-
     await message.delete()
-
     url_grab = str(os.environ['webhook1'])
-
     url_grab2 = str(os.environ['webhook99'])
-
     message_info = message.content.replace(discordprefix+"webhook_update ","")
-
     url_grab_ultra = [url_grab,url_grab2]
-
     webhook = discord_webhook.DiscordWebhook(url=url_grab_ultra)
-
     embed = discord_webhook.DiscordEmbed(title='Update',color=update_color)
-
     speacil_icon = 'https://media.discordapp.net/attachments/491419169842135059/732821876488798249/fisheye.png'
-
     embed.add_embed_field(name='Update Info:', value=message_info)
-
     embed.set_timestamp()
-
     embed.set_author(name="JDJG's Update",icon_url=speacil_icon)
-
     embed.set_footer(text="JDJG's Updates")
-
     webhook.add_embed(embed)
-
     webhook.execute()
-
     return
 
   if message.content.startswith(discordprefix+"insult") and not message.author.bot:
     await message.channel.send("Preparing insult......")
     await asyncio.sleep(1)
-
     insultt = random.choice(random_response.insult)
-
     embed = discord.Embed(title = "Here is an insult (at your request)",color=random.randint(0, 16777215))
     embed.add_field(name = "Don't know why you want to insult yourself though?", value = f"{insultt}")
     await message.channel.send(embed=embed)
-
     return
   
   if message.content.startswith(discordprefix+"send_tweet") and message.author.id == 168422909482762240 and not message.author.bot:
@@ -3522,7 +3494,6 @@ async def on_message(message):
     if client.os_user == "None":
       client.os_user = message.author.id
       await jdjg_os.os(message)
-    
     return
   
   if message.content.startswith(discordprefix+"classic_delink") and not message.author.bot:
