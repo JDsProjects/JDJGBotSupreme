@@ -801,6 +801,10 @@ async def on_message(message):
     await message.channel.send(math.pi)
     return
 
+  if message.content.startswith(discordprefix+"test") and not message.author.bot:
+    return 
+
+
   if message.content.startswith(discordprefix+"email") and not message.author.bot:
     return
   
