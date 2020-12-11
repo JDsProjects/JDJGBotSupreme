@@ -2,7 +2,6 @@ import ClientConfig
 import GlobalLinker
 import DatabaseConfig
 def GetServerPfp(message):
-  
   contents = message.content.split(" ")
   
   id_bit = 0

@@ -9,8 +9,10 @@ import random_response
 import imghdr
 import aiohttp
 import aiodns
+from PIL import Image
 import chardet
 import re
+from io import BytesIO
 #from itertools import cycle
 import requests #do not use unless you know why your doing
 import datetime
@@ -22,7 +24,7 @@ import tweepy
 import lavalink
 #import itertools
 import functools
-#import math
+import math
 from async_timeout import timeout
 from clear_code import clear
 import DatabaseControl
@@ -42,6 +44,7 @@ import userinfo
 import jdjg_os
 import mystbin
 import spy_co
+import json
 today = datetime.date.today()
 day = today.strftime('%m/%d/%Y %H:%M:%S')
 logging.basicConfig(level=logging.WARNING)
@@ -463,6 +466,31 @@ async def on_message(message):
       tmpStr = tmpStr.replace("reverse"+pun,"")
     reverse_check = (len(message.content)!=len(tmpStr))
 
+    tmpStr = message.content.lower()
+    tmpStr = tmpStr.replace("spam","")
+    for pun in punc:
+      tmpStr = tmpStr.replace("spam"+pun,"")
+    spam_check = (len(message.content)!=len(tmpStr))
+
+    tmpStr = message.content.lower()
+    tmpStr = tmpStr.replace("paradox","")
+    for pun in punc:
+      tmpStr = tmpStr.replace("paradox"+pun,"")
+    paradox_check = (len(message.content)!=len(tmpStr))
+
+     
+    if (spam_check):
+      try:
+        await message.channel.send("https://tenor.com/view/shoot-spam-gif-11220664")
+      except:
+        pass
+    
+    if (paradox_check):
+      try:
+        await message.channel.send("https://tenor.com/view/nasa-nasa-gifs-black-hole-nasagif-gif-10093312")
+      except:
+        pass
+
 
     if (check_sus):
       await message.channel.send("You sus for saying sus.")
@@ -548,7 +576,22 @@ async def on_message(message):
         message.content = message.content.replace(server_prefix,discordprefix)
         print(message.content)
 
-    if message.guild.id in safe_servers and not message.author.bot:
+    if message.guild.id == 736422329399246990 and not message.author.bot:
+      punc = [' ','.','!','?']
+      tmpStr = message.content.lower()
+      tmpStr = tmpStr.replace("yoshicake","")
+      for pun in punc:
+        tmpStr = tmpStr.replace("yoshicake"+pun,"")
+      yoshicake_check = (len(message.content)!=len(tmpStr))
+
+      if (yoshicake_check):
+        try:
+          await message.channel.send("https://tenor.com/view/birthday-faded-marion-cartoons-cake-gif-4878378")
+        except:
+          pass
+
+
+    if message.guild.id in safe_servers and not message.author.bot and not message.content.startswith(discordprefix):
       punc = [' ','.','!','?']
       tmpStr = message.content.lower()
       tmpStr = tmpStr.replace("sus","")
@@ -596,6 +639,31 @@ async def on_message(message):
       for pun in punc:
         tmpStr = tmpStr.replace("sup"+pun,"")
       sup_check = (len(message.content)!=len(tmpStr))
+
+      tmpStr = message.content.lower()
+      tmpStr = tmpStr.replace("spam","")
+      for pun in punc:
+        tmpStr = tmpStr.replace("spam"+pun,"")
+      spam_check = (len(message.content)!=len(tmpStr))
+
+      tmpStr = message.content.lower()
+      tmpStr = tmpStr.replace("paradox","")
+      for pun in punc:
+        tmpStr = tmpStr.replace("paradox"+pun,"")
+      paradox_check = (len(message.content)!=len(tmpStr))
+
+      if (paradox_check):
+        try:
+          await message.channel.send("https://tenor.com/view/nasa-nasa-gifs-black-hole-nasagif-gif-10093312")
+        except:
+          pass
+     
+
+      if (spam_check):
+        try:
+          await message.channel.send("https://tenor.com/view/shoot-spam-gif-11220664")
+        except:
+          pass
 
       if (check_sus):
         try:
@@ -727,6 +795,178 @@ async def on_message(message):
   if message.content.startswith(discordprefix+"ping") and not message.author.bot:
     await message.channel.send("Pong")
     await message.channel.send(f"Response time: {client.latency*1000}")
+    return
+
+  if message.content.startswith(discordprefix+"pi") and not message.author.bot:
+    await message.channel.send(math.pi)
+    return
+
+  if message.content.startswith(discordprefix+"email") and not message.author.bot:
+    return
+  
+  if message.content.startswith(discordprefix+"triggered") and not message.author.bot:
+    if len(message.attachments) > 0:
+      if message.attachments[0].filename.endswith(".png"):
+        url = message.attachments[0].url
+      else:
+        url = message.author.avatar_url
+    
+    if len(message.attachments) == 0:
+      url = message.author.avatar_url_as(format="png")
+    
+    async with aiohttp.ClientSession() as cs:
+      async with cs.get(f"https://some-random-api.ml/canvas/triggered?avatar={url}") as anime:
+        image= BytesIO(await anime.read())
+      file=discord.File(image, "triggered.gif")
+      await message.channel.send(file=file)
+    return
+
+  if message.content.startswith(discordprefix+"mchistory") and not message.author.bot:
+    username = message.content.replace(discordprefix+"mchistory","")
+    if username == (""):
+      username = "JDJG_IncOfficial"
+    async with aiohttp.ClientSession() as cs:
+      async with cs.get(f'https://some-random-api.ml/mc?username={username}') as anime:
+        res = await anime.json()
+    for x in res:
+      if x == "error":
+        await message.channel.send(res[x])
+        return
+
+    minecraft_uuid = res["uuid"]
+    minecraft_username = res["username"]
+    embed=discord.Embed(title=f"Minecraft Username: {minecraft_username}",color=random.randint(0, 16777215))
+    embed.set_footer(text=f"Minecraft UUID: {minecraft_uuid}")
+    value = 0
+    for x in(res["name_history"]):
+      if value > 0:
+        username = (x["name"])
+        date_happened = x["changedToAt"]
+        embed.add_field(name=f"Username:\n{username}",value=f"Date Changed:\n{date_happened}")
+      if value == 0:
+        info=x["changedToAt"]
+        embed.add_field(name=f"{info}:",value=x["name"])
+      value = value + 1
+
+    embed.set_author(name=f"Requested by {message.author}",icon_url=(message.author.avatar_url))
+    await message.channel.send(embed=embed)
+    return
+
+  if message.content.startswith(discordprefix+"wink") and not message.author.bot:
+    wink = message.content.replace(discordprefix+"wink","")
+
+    if wink == (""):
+      person = client.user
+      target = message.author
+      
+    if len(message.mentions) > 0:
+      target = message.mentions[0]
+      person = message.author
+
+    if len(message.mentions) == 0:
+      person = message.author
+      target=await userinfo.user_grab(message)
+
+    if target.id == person.id:
+      person = client.user
+      target = message.author
+
+    async with aiohttp.ClientSession() as cs:
+      async with cs.get('https://some-random-api.ml/animu/wink') as anime:
+        res = await anime.json()
+
+    for x in res:
+      embed=discord.Embed(color=random.randint(0, 16777215))
+      embed.set_author(name=f"{person} winked at you",icon_url=(person.avatar_url))
+      embed.set_image(url=res[x])
+      await message.channel.send(content=target.mention,embed=embed)
+    return
+
+  if message.content.startswith(discordprefix+"facepalm") and not message.author.bot:
+    facepalm = message.content.replace(discordprefix+"facepalm","")
+    if facepalm == (""):
+      person = client.user
+      target = message.author
+      
+    if len(message.mentions) > 0:
+      target = message.mentions[0]
+      person = message.author
+
+    if len(message.mentions) == 0:
+      person = message.author
+      target=await userinfo.user_grab(message)
+
+    if target.id == person.id:
+      person = client.user
+      target = message.author
+
+    async with aiohttp.ClientSession() as cs:
+      async with cs.get('https://some-random-api.ml/animu/face-palm') as anime:
+        res = await anime.json()
+
+    for x in res:
+      embed=discord.Embed(color=random.randint(0, 16777215))
+      embed.set_author(name=f"{person} facepalmmed to an action from you",icon_url=(person.avatar_url))
+      embed.set_image(url=res[x])
+      await message.channel.send(content=target.mention,embed=embed)
+    return
+
+  
+  if message.content.startswith(discordprefix+"head_pat") and not message.author.bot:
+    head_pat = message.content.replace(discordprefix+"head_pat","")
+    if head_pat == (""):
+      person = client.user
+      target = message.author
+      
+    if len(message.mentions) > 0:
+      target = message.mentions[0]
+      person = message.author
+
+    if len(message.mentions) == 0:
+      person = message.author
+      target=await userinfo.user_grab(message)
+
+    if target.id == person.id:
+      person = client.user
+      target = message.author
+
+    async with aiohttp.ClientSession() as cs:
+      async with cs.get('https://some-random-api.ml/animu/pat') as anime:
+        res = await anime.json()
+
+    for x in res:
+      embed=discord.Embed(color=random.randint(0, 16777215))
+      embed.set_author(name=f"{person} patted you",icon_url=(person.avatar_url))
+      embed.set_image(url=res[x])
+      await message.channel.send(content=target.mention,embed=embed)
+    return
+
+  if message.content.startswith(discordprefix+"hug") and not message.author.bot:
+    hug = message.content.replace(discordprefix+"hug","")
+    if hug == (""):
+      person = client.user
+      target = message.author
+    
+    if len(message.mentions) > 0:
+      target = message.mentions[0]
+      person = message.author
+    
+    if len(message.mentions) == 0:
+      person = message.author
+      target=await userinfo.user_grab(message)
+
+    if target.id == person.id:
+      person = client.user
+      target = message.author
+
+    async with aiohttp.ClientSession() as cs:
+      async with cs.get('https://some-random-api.ml/animu/hug') as anime:
+        res = await anime.json()
+    for x in res:
+      embed=discord.Embed(color=random.randint(0, 16777215))
+      embed.set_author(name=f"{person} hugged you",icon_url=(person.avatar_url))
+      embed.set_image(url=res[x])
+      await message.channel.send(content=target.mention,embed=embed)
     return
 
   if message.content.startswith(discordprefix+"save_image") and not message.author.bot and message.author.id in jdjg_id:
@@ -1761,13 +2001,12 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"order_shuffle") and not message.author.bot:
     from google_images_search import GoogleImagesSearch
-    from PIL import Image
+    import time
     order_wanted = message.content.replace(discordprefix+"order_shuffle ","")
+    time_before=time.process_time() 
     def my_progressbar(url, progress):
       url_collection.append(url)
-
     gis = GoogleImagesSearch(os.environ['image_api_key'],os.environ['google_image_key'], validate_images=False,progressbar_fn=my_progressbar)
-
     safe_search = {
       'q': order_wanted,
       'num': 5,
@@ -1777,7 +2016,6 @@ async def on_message(message):
      }
      
     try:
-
       gis.search(search_params = safe_search)
     except:
       await message.channel.send("Please wait for a while so the api key gets regenerated")
@@ -1792,26 +2030,26 @@ async def on_message(message):
       async with aiohttp.ClientSession() as cs:
          async with cs.get(x) as response:
             try:
-              img = Image.open(await response.read())
+              img = discord.utils._get_mime_type_for_image(await response.read())
             except:
               url_collection.remove(x)
+              print(x)
     
     await message.delete()
 
     order_description = (f"{message.author} ordered a {order_wanted}")
-
     pfp = message.author.avatar_url
-
     order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
     order_info = (f"order for {message.author}:")
 
     embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
 
     embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time} \nCopyright: Public Domain")
-
     embed_info.set_author(name=order_info,icon_url=(pfp))
 
+    time_after=time.process_time()
+    time_spent = int((time_after - time_before)*1000)
+    embed_info.add_field(name="Time Spent:",value=f"{time_spent} MS")  
     image_channel = client.get_channel(764543893118648342)
 
     if len(url_collection) > 0:
@@ -1841,13 +2079,10 @@ async def on_message(message):
 
     await client.get_channel(738912143679946783).send(embed=embed_info)
 
-   
-
     url_collection = []
     return
 
   if message.content.startswith(discordprefix+"image_check") and not message.author.bot:
-    from PIL import Image
     check_image = message.content.replace(discordprefix+"image_check ","")
     async with aiohttp.ClientSession() as cs:
       try:
@@ -1869,15 +2104,11 @@ async def on_message(message):
   if message.content.startswith(discordprefix+"order") and not message.author.bot:
     import time
     from google_images_search import GoogleImagesSearch
-    from io import BytesIO
-    from PIL import Image
-
     order_wanted = message.content.replace(discordprefix+"order ","")
     time_before=time.process_time() 
     def my_progressbar(url, progress):
       url_collection.append(url)
     gis = GoogleImagesSearch(os.environ['image_api_key'],os.environ['google_image_key'], validate_images=False,progressbar_fn=my_progressbar)
-
     safe_search = {
       'q': order_wanted,
       'num': 5,
@@ -1900,7 +2131,7 @@ async def on_message(message):
       try:
         raw_image_data = image_check.get_raw_data()
         image_check.copy_to(my_bytes_io, raw_image_data)
-        temp_img = Image.open(my_bytes_io)
+        temp_img = discord.utils._get_mime_type_for_image(my_bytes_io)
 
       except:
         gis.results().remove(image_check)
@@ -1909,7 +2140,7 @@ async def on_message(message):
       async with aiohttp.ClientSession() as cs:
         async with cs.get(x) as response:
           try:
-            img = Image.open(await response.read())
+            img = discord.utils._get_mime_type_for_image(await response.read())
           except:
             url_collection.remove(x)
 
@@ -1922,13 +2153,9 @@ async def on_message(message):
     order_info = (f"order for {message.author}:")
     embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
     embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time} \nCopyright: Public Domain")
-
     embed_info.add_field(name="Time Spent:",value=f"{time_spent} MS")
-
     embed_info.set_author(name=order_info,icon_url=(pfp))
-
     image_channel = client.get_channel(764543893118648342)
-
     if len(url_collection) > 0:
 
       embed_info.add_field(name="Powered by:",value="Google Images Api")
@@ -2261,7 +2488,6 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"invert") and not message.author.bot:
     from PIL import Image
-    from io import BytesIO
     import inverter
     if len(message.attachments) == 0:
       for message_wanted in await message.channel.history(limit=100).flatten():
@@ -2304,7 +2530,6 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"emoji_check") and not message.author.bot:
     from PIL import Image
-    from io import BytesIO
     obj = client.get_emoji(749442292045185084)
     img = await obj.url.read()
     check_time=Image.open(BytesIO(img))
@@ -2954,132 +3179,72 @@ async def on_message(message):
     await message.channel.send(embed=embed)
     return
   
-  if message.content.startswith(discordprefix+"send_tweet") and message.author.id == 168422909482762240 and not message.author.bot:
+  if message.content.startswith(discordprefix+"send_tweet") and message.author.id in admins and not message.author.bot:
 
     consumer_key= os.environ['tweet_key']
-
     consumer_secret=os.environ['tweet_secret']
-
     access_token=os.environ['tweet_access']
-
     access_token_secret=os.environ['tweet_token']
-
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-
     auth.set_access_token(access_token, access_token_secret)
-
     twitter_api = tweepy.API(auth)
-
     tweet_send=message.content.replace(discordprefix+"send_tweet ","")
-
     twitter_api.update_status(status = tweet_send)
-
     return
 
   if message.content.startswith(discordprefix+"tweet") and not message.author.bot:
-
     tweet_username = message.content.replace(discordprefix+"tweet ","")
-
     tweet_number = (tweet_username.split(" ")[-1])
-
     tweet_username = (tweet_username.split(" ")[0])
-
     value_before=tweet_number.replace(tweet_username+" ","")
-
     try:
-
       value_here = int(value_before)
-
     except:
-
       value_here = 20
     
-
-    
-  
-
     if value_here > 60:
       value_here = 60
       await message.channel.send("are you insane? Trust me I can DM a lot of tweets... swapping to 60")
 
-
-
     consumer_key= os.environ['tweet_key']
-
     consumer_secret=os.environ['tweet_secret']
-
     access_token=os.environ['tweet_access']
-
     access_token_secret=os.environ['tweet_token']
-
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-
     auth.set_access_token(access_token, access_token_secret)
-
     api = tweepy.API(auth)
-
     tweets = api.user_timeline(screen_name=tweet_username,count=value_here,tweet_mode="extended")
-
     tweepy_fetch_user=api.get_user(tweet_username)
-
     profile_url = str(tweepy_fetch_user.url)
-
     tweet_info = []
-
     tweet_urls = []
-
     for info in tweets:
       tweet_content = info.full_text
-
       tweet_url = "https://twitter.com/twitter/statuses/"+str(info.id)
-
       tweet_urls.append(tweet_url)
-
       tweet_info.append(tweet_content)
 
     x = 0
-
     tweet_message_details = ""
-
     while x < len(tweet_info):
-
       tweet_url_grab = tweet_urls[x]
-
       tweet_speacil= tweet_info[x]
-
       tweet_message_details = tweet_message_details+tweet_speacil+"\n"+str(tweet_url_grab)+"\n"
-
       x = x + 1
 
     n = 2000
-    
     split_strings = [tweet_message_details[index : index + n] for index in range(0, len(tweet_message_details), n)]
-
-
     x = 0
-
-
     pfp = str(tweepy_fetch_user.profile_image_url)
-
-
     if (message.author.dm_channel is None):
         await message.author.create_dm()
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
     embed_info = discord.Embed(title=f"User Requested: {value_here} messages", description= time_used,color=random.randint(0, 16777215))
-
     embed_info.set_author(name=f"Tweets from @{tweet_username}",icon_url=(pfp))
-
     embed_info.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763902909158391858/Twitter.png")
-
     embed_info.add_field(name="Profile url",value=profile_url)
-
     embed_info.set_footer(text = f"{message.author.id}")
-
     await message.author.dm_channel.send(embed=embed_info)
-
-    
 
     while x < len(split_strings):
 
@@ -3496,6 +3661,10 @@ async def on_message(message):
       await jdjg_os.os(message)
     return
   
+  if message.content.startswith(discordprefix+"spam") and not message.author.bot:
+    await message.channel.send("https://tenor.com/view/shoot-spam-gif-11220664")
+    return
+  
   if message.content.startswith(discordprefix+"classic_delink") and not message.author.bot:
     channel = int(message.content.split(" ")[-1])
     if channel in from_to_channel:
@@ -3765,21 +3934,6 @@ async def on_error(name,*arguments,**karguments):
 
 @client.event
 async def on_member_join(member):
-  no_invite = False
-  fetched_guild = member.guild
-  try:  
-    invites = await fetched_guild.invites()
-  except discord.errors.Forbidden:
-    no_invite = True
-  if no_invite != True:
-    for i in invites:
-      invite_code=i.code
-      invite_inverter = i.inviter
-      invite_id = i.id
-      invite_url = i.url
-      invite_uses = i.uses
-      creation_date = (i.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
   embed_message=discord.Embed(title=f"{member} just joined {member.guild.name}",timestamp=datetime.datetime.utcnow(),color=random.randint(0, 16777215))
 
   embed_message.set_footer(text=f"User ID: {member.id}")
