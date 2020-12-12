@@ -563,9 +563,7 @@ async def on_message(message):
 
       channel_usage=client.get_channel(738912143679946783)
       embed_message.add_field(name="Sent To:",value=str(channel_usage))
- 
       await channel_usage.send(embed=embed_message)
-
     return
 
   if not message.guild is None and not message.author.bot:
@@ -576,7 +574,7 @@ async def on_message(message):
         message.content = message.content.replace(server_prefix,discordprefix)
         print(message.content)
 
-    if message.guild.id == 736422329399246990 and not message.author.bot:
+    if message.guild.id == 731732168602288199 and not message.author.bot:
       punc = [' ','.','!','?']
       tmpStr = message.content.lower()
       tmpStr = tmpStr.replace("yoshicake","")
@@ -589,7 +587,6 @@ async def on_message(message):
           await message.channel.send("https://tenor.com/view/birthday-faded-marion-cartoons-cake-gif-4878378")
         except:
           pass
-
 
     if message.guild.id in safe_servers and not message.author.bot and not message.content.startswith(discordprefix):
       punc = [' ','.','!','?']
@@ -804,8 +801,17 @@ async def on_message(message):
   if message.content.startswith(discordprefix+"test") and not message.author.bot:
     return 
 
+  if message.content.startswith(discordprefix+"pat") and not message.author.bot:
+    return
 
   if message.content.startswith(discordprefix+"email") and not message.author.bot:
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    if len(message.content.split(" ")) == 1:
+      await message.channel.send("Not enough arguments")
+      return
+
     return
   
   if message.content.startswith(discordprefix+"triggered") and not message.author.bot:
@@ -916,8 +922,8 @@ async def on_message(message):
     return
 
   
-  if message.content.startswith(discordprefix+"head_pat") and not message.author.bot:
-    head_pat = message.content.replace(discordprefix+"head_pat","")
+  if message.content.startswith(discordprefix+"headpat") and not message.author.bot:
+    head_pat = message.content.replace(discordprefix+"headpat","")
     if head_pat == (""):
       person = client.user
       target = message.author
@@ -1421,147 +1427,78 @@ async def on_message(message):
     return
   
   if message.content.startswith(discordprefix+"dice_roll4") and not message.author.bot:
-
     pfp=message.author.avatar_url
-
     type_dice = "d4"
-
     dice_gif = "https://cdn.discordapp.com/emojis/626236311539286016.gif"
-
-
     dice_roll4=random.randint(1,4)
-
     dice_roll4 = str(dice_roll4)
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
     embed_message = discord.Embed(title=f" Rolled a {dice_roll4}", description=time_used, color=random.randint(0, 16777215))
-
     embed_message.set_footer(text = f"{message.author.id}")
-
     embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
-
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
-
     embed_message.set_image(url=dice_gif)
-
     await message.channel.send(embed=embed_message)
-
     return
 
   if message.content.startswith(discordprefix+"dice_roll8") and not message.author.bot:
     pfp=message.author.avatar_url
-
     type_dice = "d8"
-
     dice_gif = "https://cdn.discordapp.com/emojis/626236311539286016.gif"
-
-
     dice_roll8=random.randint(1,8)
-
     dice_roll8 = str(dice_roll8)
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
     embed_message = discord.Embed(title=f" Rolled a {dice_roll8}", description=time_used, color=random.randint(0, 16777215))
-
     embed_message.set_footer(text = f"{message.author.id}")
-
     embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
-
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
-
     embed_message.set_image(url=dice_gif)
-
     await message.channel.send(embed=embed_message)
-
     return
 
   if message.content.startswith(discordprefix+"dice_roll12") and not message.author.bot:
-
     pfp=message.author.avatar_url
-
     type_dice = "d12"
-
     dice_gif = "https://cdn.discordapp.com/emojis/626236311539286016.gif"
-
-
     dice_roll12=random.randint(1,12)
-
     dice_roll12 = str(dice_roll12)
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
     embed_message = discord.Embed(title=f" Rolled a {dice_roll12}", description=time_used, color=random.randint(0, 16777215))
-
     embed_message.set_footer(text = f"{message.author.id}")
-
     embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
-
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
-
     embed_message.set_image(url=dice_gif)
-
     await message.channel.send(embed=embed_message)
-
     return
 
   if message.content.startswith(discordprefix+"dice_roll100") and not message.author.bot:
-
     pfp=message.author.avatar_url
-
     type_dice = "d100"
-
     dice_gif = "https://cdn.discordapp.com/emojis/626236311539286016.gif"
-
-
     dice_roll100=random.randint(1,100)
-
     dice_roll100 = str(dice_roll100)
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
     embed_message = discord.Embed(title=f" Rolled a {dice_roll100}", description=time_used, color=random.randint(0, 16777215))
-
     embed_message.set_footer(text = f"{message.author.id}")
-
     embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
-
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
-
     embed_message.set_image(url=dice_gif)
-
     await message.channel.send(embed=embed_message)
-
     return
 
   if message.content.startswith(discordprefix+"dice_roll10") and not message.author.bot:
-
     pfp=message.author.avatar_url
-
     type_dice = "d10"
-
     dice_gif = "https://cdn.discordapp.com/emojis/626236311539286016.gif"
-
-
     dice_roll10=random.randint(1,10)
-
     dice_roll10 = str(dice_roll10)
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
     embed_message = discord.Embed(title=f" Rolled a {dice_roll10}", description=time_used, color=random.randint(0, 16777215))
-
     embed_message.set_footer(text = f"{message.author.id}")
-
     embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
-
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
-
     embed_message.set_image(url=dice_gif)
-
     await message.channel.send(embed=embed_message)
-
     return
 
   if message.content.startswith(discordprefix+"cc_") and not message.author.bot:
@@ -1753,15 +1690,12 @@ async def on_message(message):
     #please make this into an embed
 
 
-  if message.content.startswith(discordprefix+"order_tenor shuffle") and not message.author.bot:
+  if message.content.startswith(discordprefix+"tenor shuffle") and not message.author.bot:
     urls = []
-    order_wanted = message.content.replace(discordprefix+"order_tenor shuffle","")
-
+    order_wanted = message.content.replace(discordprefix+"tenor shuffle","")
     apikey =  os.environ["tenor_key"]
-    
     limit = 5
-
-    url = "https://api.tenor.com/v1/search?q=%s&key=%s&limit=%s" % (order_wanted, apikey, limit)
+    url = f"https://api.tenor.com/v1/search?q={order_wanted}&key={apikey}&limit={limit}&contentfilter=medium"
 
     async with aiohttp.ClientSession() as cs:
       try:
@@ -1776,63 +1710,36 @@ async def on_message(message):
         return
       
       value_grabber=random.randint(0,len(urls))
-
       order_image = urls[value_grabber]
-
       await message.delete()
-
       order_description = (f"{message.author} ordered a {order_wanted}")
-
       pfp = message.author.avatar_url
-
       order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
       order_info = (f"order for {message.author}:")
-
       embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
-
       embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time}")
-
       embed_info.set_author(name=order_info,icon_url=(pfp))
-
       embed_info.add_field(name="Powered by:",value="Tenor")
-
       embed_info.set_image(url=order_image)
-
       await message.channel.send(embed=embed_info)
-
       await client.get_channel(738912143679946783).send(embed=embed_info)
-
       image_channel = client.get_channel(764543893118648342)
-
       await image_channel.send("let's see the best result")
-
       for i in range(len(data_used['results'])):
         url = data_used['results'][i]['media'][0]['gif']['url']
-
         await image_channel.send(url)
-
       return
     
     if not response.status_code == 200:
-
       await message.channel.send("Failed searching for the gif")
-
-
-
     return
 
-  if message.content.startswith(discordprefix+"order_tenor") and not message.author.bot:
-
+  if message.content.startswith(discordprefix+"tenor") and not message.author.bot:
     urls_dictionary = {}
-
-    order_wanted = message.content.replace(discordprefix+"order_tenor","")
-
+    order_wanted = message.content.replace(discordprefix+"tenor","")
     apikey =  os.environ["tenor_key"]
-    
     limit = 5
-
-    url = "https://api.tenor.com/v1/search?q=%s&key=%s&limit=%s" % (order_wanted, apikey, limit)
+    url = f"https://api.tenor.com/v1/search?q={order_wanted}&key={apikey}&limit={limit}&contentfilter=medium"
 
     async with aiohttp.ClientSession() as cs:
       try:
@@ -1849,109 +1756,61 @@ async def on_message(message):
         return
 
       gifNearest = sorted(urls_dictionary, key=lambda x: SequenceMatcher(None, x, order_wanted).ratio())[-1]
-
       order_image = urls_dictionary[gifNearest]
-
       await message.delete()
-
       order_description = (f"{message.author} ordered a {order_wanted}")
-
       pfp = message.author.avatar_url
-
       order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
       order_info = (f"order for {message.author}:")
-
       embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
-
       embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time}")
-
       embed_info.set_author(name=order_info,icon_url=(pfp))
-
       embed_info.add_field(name="Powered by:",value="Tenor")
-
       embed_info.set_image(url=order_image)
-
       await message.channel.send(embed=embed_info)
-
       await client.get_channel(738912143679946783).send(embed=embed_info)
-
       image_channel = client.get_channel(764543893118648342)
-
       await image_channel.send("let's see the best result")
-
       for i in range(len(data_used['results'])):
         url = data_used['results'][i]['media'][0]['gif']['url']
         await image_channel.send(url)
-
       return
     
     if not response.status_code == 200:
-
       await message.channel.send("Failed searching for the gif")
-
-
-
     return  
 
-  if message.content.startswith(discordprefix+"order_giphy shuffle") and not message.author.bot:
-
-    order_wanted = message.content.replace(discordprefix+"order_giphy shuffle","")
-
+  if message.content.startswith(discordprefix+"giphy shuffle") and not message.author.bot:
+    order_wanted = message.content.replace(discordprefix+"giphy shuffle","")
     import giphy_client
     from giphy_client.rest import ApiException
-
     giphy_usage = giphy_client.DefaultApi()
-
     try:
       api_response = giphy_usage.gifs_search_get(api_key=os.environ["giphy_token"],limit=5,rating="g",q=order_wanted)
-
       lst = list(api_response.data)
-
       if len(lst) > 0:
-
         gif_number = random.randint(0,len(lst))
-
         gifNearest = lst[gif_number]
-
         order_image = (f"https://media3.giphy.com/media/{gifNearest.id}/giphy.gif")
-
         await message.delete()
-
         order_description = (f"{message.author} ordered a {order_wanted}")
-
         pfp = message.author.avatar_url
-
         order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
         order_info = (f"order for {message.author}:")
-
         embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
-
         embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time}")
-
         embed_info.set_author(name=order_info,icon_url=(pfp))
-
         embed_info.add_field(name="Powered by:",value="GIPHY")
-
         embed_info.set_image(url=order_image)
-
         await message.channel.send(embed=embed_info)
-
         await client.get_channel(738912143679946783).send(embed=embed_info)
-
         image_channel = client.get_channel(764543893118648342)
-
         await image_channel.send("let's see the best result")
-
         for x in lst:
-
           await image_channel.send(x.url)
       
       if len(lst) == 0:
-
         await message.channel.send("search failed... \n Error: No gifs found.")
-
 
     except ApiException as e:
       await message.channel.send("Either the rate limit was reached or you didn't insert anything")
@@ -1959,8 +1818,8 @@ async def on_message(message):
 
     return
 
-  if message.content.startswith(discordprefix+"order_giphy") and not message.author.bot:
-    order_wanted = message.content.replace(discordprefix+"order_giphy ","")
+  if message.content.startswith(discordprefix+"giphy") and not message.author.bot:
+    order_wanted = message.content.replace(discordprefix+"giphy ","")
     import giphy_client
     from giphy_client.rest import ApiException
     giphy_usage = giphy_client.DefaultApi()
@@ -1982,23 +1841,16 @@ async def on_message(message):
         embed_info.set_image(url=order_image)
         await message.channel.send(embed=embed_info)
         await client.get_channel(738912143679946783).send(embed=embed_info)
-
         image_channel = client.get_channel(764543893118648342)
-
         await image_channel.send("let's see the best result")
-
         for x in lst:
-
           await image_channel.send(x.url)
 
       if len(lst) == 0:
-
         await message.channel.send("search failed... \n Error: No gifs found.")
 
     except ApiException as e:
-
       await message.channel.send("Either the rate limit was reached or you didn't insert anything")
-
       print(e)
 
     return
@@ -2845,84 +2697,50 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"voice_create") and not message.author.bot and user.guild_permissions.manage_channels == True:
-  
     link_data="https://discordapp.com/"+str(message.guild.id)
-
     try:
-
       channel_name = message.content.split(" ")[1]
-
     except:
-
       await message.channel.send("That's not a valid function")
-
       return
-
     voice_channel=await message.guild.create_voice_channel(channel_name)
-
     link_data = link_data+str(voice_channel.id)
-
     data_send = "The channel link exists at: "+str(link_data)
-    
     await message.channel.send(data_send)
-
     return
 
   if message.content.startswith(discordprefix+"channel_create") and not message.author.bot and user.guild_permissions.manage_channels == True:
-
     try:
-
       channel_name = message.content.split(" ")[1]
-
     except:
-
       await message.channel.send("That's not a valid function")
-
       return
 
     channel_info = await message.guild.create_text_channel(channel_name)
-
     channel_mention=channel_info.mention
-
     channel_name = channel_info.name
-
     typical_message = "the channel "+str(channel_name)+" has just been created, link to it is here: "+str(channel_mention)
-
     await message.channel.send(typical_message)
-    
     await message.delete()
-
     return
   
   if message.content.startswith(discordprefix+"webhook_create") and not message.author.bot and user.guild_permissions.manage_webhooks == True:
-
     valid_image = ["PNG",".GIF",".JPG","JPEG"]
     from PIL import Image
-
     try:
-
       webhook_name = message.content.split(" ")[1]
-
     except:
-
       webhook_name = "Webhook"
-
     try:
-
       content_message = message.content.split(" ")[2]
-    
     except:
-
       content_message = "test"
 
     if content_message == "" or content_message == " ":
-
       content_message = "test"
-       
     await message.channel.send("Making Webhooks with your manage permissions(safety reasons)")
 
     if len(message.attachments) > 0:
-
       image_used = message.attachments[0]
 
       async with aiohttp.ClientSession() as cs:
@@ -2938,29 +2756,18 @@ async def on_message(message):
 
       if (img.format).upper() in valid_image:
         webhook=await message.channel.create_webhook(name=webhook_name,reason=content_message,avatar=await response.read())
-
       if not (img.format).upper() in valid_image:
-
         await message.channel.send("Not in the right format, defaulting to no avatar")
-
         webhook=await message.channel.create_webhook(name=webhook_name,reason=content_message)
-
     if message.attachments == []:
-
       webhook=await message.channel.create_webhook(name=webhook_name,reason=content_message)
-
     if (message.author.dm_channel is None):
       await message.author.create_dm()
-
     await message.delete()
 
-    
     await message.author.dm_channel.send("The link to use a webhook url is coming right now.")
-
     await message.author.dm_channel.send(webhook.url)
-
     await message.channel.send(f"Now testing... with {content_message}")
-
     webhook_url = webhook.url
     webhook = discord_webhook.DiscordWebhook(url=webhook_url)
     embed = discord_webhook.DiscordEmbed(title=f"{message.author}'s Message:",color=random.randint(0, 16777215))
@@ -3984,7 +3791,6 @@ async def on_member_remove(member):
 
 @client.event
 async def on_user_update(before,after):
-  
   embed_message = discord.Embed(description=f"{before.mention} **updated their profile!**",color=random.randint(0, 16777215),timestamp=datetime.datetime.utcnow())
   embed_message.set_author(name=f"{before}",icon_url=(after.avatar_url))
   embed_message.set_footer(text=f"User ID: {before.id}")
@@ -4068,7 +3874,5 @@ B.b()
 client.loop.create_task(startup())
 client.run(token_grab)
 
-
 #token_grab uses Discordtoken - for 24/7 bot and Discordtoken2 for testing purposes
-
 #(nightly bot - current open source code)
