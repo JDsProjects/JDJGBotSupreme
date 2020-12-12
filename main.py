@@ -43,7 +43,6 @@ import color_code
 import userinfo
 import jdjg_os
 import mystbin
-import spy_co
 import json
 today = datetime.date.today()
 day = today.strftime('%m/%d/%Y %H:%M:%S')
@@ -1337,55 +1336,6 @@ async def on_message(message):
     embed.add_field(name='Amount of Channels:',value=f"{len(channels)}")
     embed.add_field(name='Amount of Roles:',value=f"{len(roles)}")
     await message.channel.send(embed=embed)
-    return
-
-  if message.content.startswith(discordprefix+"add_game") and message.channel.id ==778687920424353802 and not message.author.bot :
-    game_name=message.content.replace(discordprefix+"add_game","")
-    if game_name == discordprefix+"add_game": 
-      await message.channel.send("Please try making an orginal name")
-      return
-    new_id=spy_co.game_add(game_name)
-    print(new_id)
-    return
-
-  if message.content.startswith(discordprefix+"order_item") and not message.author.bot:
-    product=message.content.replace(discordprefix+"order_item ","")
-    if product == discordprefix+"order_item": 
-      await message.channel.send("Pick a product please.")
-      return
-    send_to=client.get_channel(778649083991949372)
-    send_to = client.get_channel(778575980935118860)
-    embed = discord.Embed(title="Order:",color=random.randint(0, 16777215),timestamp=(message.created_at))
-    embed.add_field(name="Product",value=f"**{product}**")
-    embed.add_field(name="Channel id:",value=message.channel.id)
-    embed.set_footer(text=message.author.id)
-    embed.set_author(name=message.author,icon_url=(message.author.avatar_url))
-    await send_to.send(embed=embed)
-    await message.channel.send("Order sent.")
-    def check(message_channel):
-      return message_channel.channel.id == 778575980935118860
-    while True:
-      reply_function=await client.wait_for("message",check=check)
-      print(reply_function.content)
-      if reply_function.content.startswith("exit") and not reply_function.author.bot:
-          break 
-      if reply_function.content.startswith("send:") and not reply_function.author.bot:
-        new_information=reply_function.content.replace("send: ","")
-        if len(new_information.split(" ")) > 1:
-          try:
-            channel_id = new_information.split(" ")[0]
-            new_id=int(channel_id)
-            game = new_information.split(" ")[1]
-            if len(new_information.split(" ")) > 2:
-              extra_info = new_information.split(" ")[2:]
-          except:
-            return
-            await reply_function.channel.send("Not valid arguments")
-          game_found=spy_co.game_finder(game)
-          channel_wanted=client.get_channel(new_id)
-          print(game_found)
-          #embed = 
-          #await channel_wanted.send(embed=embed)   
     return
 
   if message.content.startswith(discordprefix+"milk") and not message.author.bot:
