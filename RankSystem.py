@@ -31,7 +31,7 @@ async def UpdateScore(message):
         if doc2['st']==1:
           await message.channel.send("Congrats "+str(user)+" You have just leveled up to level "+str(level)+"!")
       except:
-        await message.channel.send("Congrats "+str(user)+" You have just leveled up to level "+str(level)+"!")
+          banana= 1
     DatabaseConfig.db.users_testing.delete_one(doc)
     doc['exp'] = exp
     doc['level'] = level

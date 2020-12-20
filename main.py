@@ -812,7 +812,10 @@ async def on_message(message):
       return
 
     return
-  
+  if message.content.startswith(discordprefix+"petpet") and not message.author.bot:
+    import petpet.Pet
+    await petpet.Pet.get_pet(message,message.channel)
+    return
   if message.content.startswith(discordprefix+"triggered") and not message.author.bot:
     if len(message.attachments) > 0:
       if message.attachments[0].filename.endswith(".png"):
