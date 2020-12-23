@@ -14,7 +14,6 @@ import chardet
 import re
 from io import BytesIO
 #from itertools import cycle
-import requests #do not use unless you know why your doing
 import datetime
 from pytz import timezone #all good
 import pymongo
@@ -253,8 +252,6 @@ async def status_task():
         await asyncio.sleep(30)
         await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(client.guilds)} servers | {len(client.users)} users"))
         await asyncio.sleep(30)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="with Repl.it"))
-        await asyncio.sleep(30)
         await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="the creators:"))
         await asyncio.sleep(30)
         await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="Nomic Zorua"))
@@ -373,13 +370,14 @@ async def on_message(message):
   global safe_servers
   global waitMessage
   user = message.author
+  mention = False
 
   if client.user in message.mentions and not message.author.bot:
     embed = discord.Embed(title="Mention info:",description="Tip: you can disable level up messages with JDBot*toggle level_msg \nNow converting mention into a command.",color=random.randint(0, 16777215))
     await message.channel.send(embed=embed)
     replace_value = (f"<@!{client.user.id}> ")
     message.content=message.content.replace(replace_value, discordprefix)
-    message.mentions.remove(client.user)
+    mention = True
 
   if client.user in message.mentions and not message.author.bot and "shut up " in (message.content.lower()+" "):
     await message.channel.send("I try to help you know")
@@ -399,6 +397,17 @@ async def on_message(message):
         x = x + 1
       
       x = 0
+    
+    if mention:
+      message.mentions.remove(client.user)
+  
+  extras = ["jd*"]
+  comp = re.compile("^(" + "|".join(map(re.escape, extras)) + ").*", flags=re.I)
+  match = comp.match(message.content)
+  if match:
+    extras.append(match.group(1))
+  for x in extras:
+    message.content=message.content.replace(x,discordprefix)
 
   message_check=re.findall(rf"{discordprefix}[{discordprefix}]",message.content, flags=re.IGNORECASE)
   if len(message_check) > 0:
@@ -480,13 +489,13 @@ async def on_message(message):
      
     if (spam_check):
       try:
-        await message.channel.send("https://tenor.com/view/shoot-spam-gif-11220664")
+        await message.add_reaction("<a:ShootSpam:791438124999901224>")
       except:
         pass
     
     if (paradox_check):
       try:
-        await message.channel.send("https://tenor.com/view/nasa-nasa-gifs-black-hole-nasagif-gif-10093312")
+        await message.add_reaction("<a:BlackHole:791439913861382184>")
       except:
         pass
 
@@ -650,14 +659,14 @@ async def on_message(message):
 
       if (paradox_check):
         try:
-          await message.channel.send("https://tenor.com/view/nasa-nasa-gifs-black-hole-nasagif-gif-10093312")
+          await message.add_reaction("<a:BlackHole:791439913861382184>")
         except:
           pass
      
 
       if (spam_check):
         try:
-          await message.channel.send("https://tenor.com/view/shoot-spam-gif-11220664")
+          await message.add_reaction("<a:ShootSpam:791438124999901224>")
         except:
           pass
 
@@ -801,6 +810,8 @@ async def on_message(message):
     return 
 
   if message.content.startswith(discordprefix+"pat") and not message.author.bot:
+    import petpet.Pet
+    await petpet.Pet.get_pet(message,message.channel)
     return
 
   if message.content.startswith(discordprefix+"email") and not message.author.bot:
@@ -812,10 +823,7 @@ async def on_message(message):
       return
 
     return
-  if message.content.startswith(discordprefix+"petpet") and not message.author.bot:
-    import petpet.Pet
-    await petpet.Pet.get_pet(message,message.channel)
-    return
+  
   if message.content.startswith(discordprefix+"triggered") and not message.author.bot:
     if len(message.attachments) > 0:
       if message.attachments[0].filename.endswith(".png"):
@@ -1114,6 +1122,12 @@ async def on_message(message):
     await RankSystem.GetTop10(client,message)
     return
   if message.content.startswith(discordprefix+"toggle") and not message.author.bot:
+    if not message.guild:
+      return
+    if not user.guild_permissions.administrator:
+      await message.channel.send("You can't use that.")
+      return
+
     args = message.content.split(" ")[1]
     if args == "level_msg":
       await message.channel.send(RankSystem.ToggleLevelUpMsg(message))
@@ -1588,6 +1602,7 @@ async def on_message(message):
       user_type = "User"
     #user_type will become useful later.
     user_id=str(user99.id)
+
     try:
       joined_guild = user99_plus.joined_at.strftime('%m/%d/%Y %H:%M:%S')
     except:
@@ -3730,8 +3745,6 @@ async def on_invite_delete(invite):
     print(invite.id)
     print(invite.url)
     print(invite.uses)
-    creation_date = (invite.created_at).strftime('%m/%d/%Y %H:%M:%S')
-    print(creation_date)
   except discord.errors.Forbidden:
     pass
 

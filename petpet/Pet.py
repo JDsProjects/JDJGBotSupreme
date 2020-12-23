@@ -107,7 +107,10 @@ from io import BytesIO
 #response = requests.get(url)
 #img = Image.open(BytesIO(response.content))
 async def get_pet(message,channel):
-  _img = message.attachments[0]
+  if message.attachments:
+    _img = message.attachments[0]
+  if not message.attachments:
+    _img = message.author.avatar_url
   byteBufferThing = await  _img.read()
   f = open("./petpet/tmp.png", "wb")
   f.write(byteBufferThing)
