@@ -20,7 +20,6 @@ import pymongo
 import discord_webhook
 from difflib import SequenceMatcher
 import tweepy
-import lavalink
 #import itertools
 import functools
 import math
@@ -842,34 +841,45 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"mchistory") and not message.author.bot:
-    username = message.content.replace(discordprefix+"mchistory","")
+    username = message.content.replace(discordprefix+"mchistory ","")
     if username == (""):
       username = "JDJG_IncOfficial"
+    
     async with aiohttp.ClientSession() as cs:
-      async with cs.get(f'https://some-random-api.ml/mc?username={username}') as anime:
-        res = await anime.json()
-    for x in res:
-      if x == "error":
-        await message.channel.send(res[x])
-        return
+      async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{username}') as r:
+        if r.status == 200:
+          user_dict=await r.json()
+          minecraft_uuid=user_dict["id"]
+          async with aiohttp.ClientSession() as cs:
+            async with cs.get(f"https://api.mojang.com/user/profiles/{minecraft_uuid}/names") as r:
+              if r.status == 200:
+                user_history=await r.json()
 
-    minecraft_uuid = res["uuid"]
-    minecraft_username = res["username"]
-    embed=discord.Embed(title=f"Minecraft Username: {minecraft_username}",color=random.randint(0, 16777215))
-    embed.set_footer(text=f"Minecraft UUID: {minecraft_uuid}")
-    value = 0
-    for x in(res["name_history"]):
-      if value > 0:
-        username = (x["name"])
-        date_happened = x["changedToAt"]
-        embed.add_field(name=f"Username:\n{username}",value=f"Date Changed:\n{date_happened}")
-      if value == 0:
-        info=x["changedToAt"]
-        embed.add_field(name=f"{info}:",value=x["name"])
-      value = value + 1
+                y = 0
+                for x in user_history:
+                  if y == 0:
+                    minecraft_username = x["name"]
+                    embed=discord.Embed(title=f"Minecraft Username: {username}",color=random.randint(0, 16777215))
+                    embed.set_footer(text=f"Minecraft UUID: {minecraft_uuid}")
+                    embed.add_field(name="Orginal Name:",value=minecraft_username)
 
-    embed.set_author(name=f"Requested by {message.author}",icon_url=(message.author.avatar_url))
-    await message.channel.send(embed=embed)
+                  if y > 0:
+                    username = (x["name"])
+                    date_changed=datetime.datetime.utcfromtimestamp(int(x["changedToAt"])/1000).strftime("%m/%d/%Y")
+                    time_changed=datetime.datetime.utcfromtimestamp(int(x["changedToAt"])/1000).strftime("%H:%M:%S")
+                    embed.add_field(name=f"Username:\n{username}",value=f"Date Changed:\n{date_changed}\n  \nTime Changed: \n {time_changed}")
+
+                  y = y + 1
+                
+                embed.set_author(name=f"Requested by {message.author}",icon_url=(message.author.avatar_url))
+                await message.channel.send(embed=embed)
+
+              if r.status == 500:
+                await message.channel.send.send("Internal server error occured at Mojang. We're sorry :( ")
+                     
+        if not r.status == 200:
+          await message.channel.send("It doesn't like it didn't find the user.")
+
     return
 
   if message.content.startswith(discordprefix+"wink") and not message.author.bot:
@@ -3567,7 +3577,9 @@ async def on_message_delete(message):
     em =discord.Embed(title=str(message.author.name)+" Deleted a Message",color=random.randint(0, 16777215))
     if(len(message.content)==0):
       message.content = "NULL"
-    em.add_field(name="Message: ",value=message.content)
+    
+    if len(message.content) < 1025:
+      em.add_field(name="Message: ",value=message.content)
     await client.get_channel(738912143679946783).send(embed=em)
     try:
      can = await GlobalLinker.FindGlobal(message)
