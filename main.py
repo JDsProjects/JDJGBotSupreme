@@ -17,7 +17,6 @@ from io import BytesIO
 import datetime
 from pytz import timezone #all good
 import pymongo
-import discord_webhook
 from difflib import SequenceMatcher
 import tweepy
 #import itertools
@@ -3015,34 +3014,41 @@ async def on_message(message):
 
 
   if message.content.startswith(discordprefix+"webhook") and not message.author.bot:
-    try:
-      webhook_url = message.content.split(" ")[1]
-    except:
-      await message.channel.send("\n not a valid usage")
-      return
-    try:
-     message_info = message.content.split(" ")[2]
-    except:
-      message_info = "No content"
-
-    async with aiohttp.ClientSession() as cs:
-      async with cs.get(webhook_url) as response:
-        if not response.status == 200:
-          await message.channel.send("Not a valid link")
-          return
-        if response.status == 200:
-          json_data= await response.json() 
-          webhook_name = (json_data["name"])
+    if len(message.content.split(" ")) < 2:
+      args = None
     
+    if len(message.content.split(" ")) > 1:
+      value = len(message.content.split(" "))
+      args = message.content.split(" ")[1:value]
+      blank = " "
+      args = blank.join(args)
 
-    await message.delete()
-    webhook = discord_webhook.DiscordWebhook(url=webhook_url)
-    embed = discord_webhook.DiscordEmbed(title=f"Webhook {webhook_name}'s Message:",color=random.randint(0, 16777215))
-    time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-    embed.add_embed_field(name=f"{message_info}", value=time_used)
-    embed.set_timestamp()
-    webhook.add_embed(embed)
-    webhook.execute()
+
+    if args is None:
+      await message.channel.send("You didn't send anything")
+
+    if args:
+      check=re.match(r"https://discord(?:app)?.com/api/webhooks/(?P<id>[0-9]{17,21})/(?P<token>[A-Za-z0-9\.\-\_]{60,68})",args)
+      if check:
+        args = args.replace(f"{check.group()} ","")
+        if args == check.group():
+          args = "No Content"
+
+        async with aiohttp.ClientSession() as session:
+          async with session.get(check.group()) as response:
+            if response.status == 200:
+              webhook=discord.Webhook.from_url(check.group(), adapter=discord.AsyncWebhookAdapter(session))
+              
+              embed = discord.Embed(title=f"Webhook {webhook.name}'s Message",color=random.randint(0, 16777215),timestamp=(message.created_at))
+              embed.add_field(name="Content:",value=args)
+              await webhook.execute(embed=embed)
+
+            if response.status != 200:
+              await message.channel.send("Not a valid link or an error occured")
+
+        if isinstance(message.channel, discord.TextChannel):
+          await message.delete()
+
     return
 
   if message.content.startswith(discordprefix+"apply bloopers") and not message.author.bot:
