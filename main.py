@@ -566,7 +566,7 @@ async def on_message(message):
       embed_message.set_author(name=f"Direct Message From {message.author}:",icon_url=(pfp))
       embed_message.set_footer(text = f"{message.author.id}")
 
-      embed_message.set_thumbnail(url = "https://media.discordapp.net/attachments/556242984241201167/763866804359135292/inbox.png?width=677&height=677")
+      embed_message.set_thumbnail(url = "https://i.imgur.com/ugKZ7lW.png")
 
       channel_usage=client.get_channel(738912143679946783)
       embed_message.add_field(name="Sent To:",value=str(channel_usage))
@@ -828,7 +828,7 @@ async def on_message(message):
       if message.attachments[0].filename.endswith(".png"):
         url = message.attachments[0].url
       else:
-        url = message.author.avatar_url
+        url = message.author.avatar_url_as(format="png")
     
     if len(message.attachments) == 0:
       url = message.author.avatar_url_as(format="png")
@@ -936,7 +936,7 @@ async def on_message(message):
 
     for x in res:
       embed=discord.Embed(color=random.randint(0, 16777215))
-      embed.set_author(name=f"{person} facepalmmed to an action from you",icon_url=(person.avatar_url))
+      embed.set_author(name=f"{target} you made {person} facepalm",icon_url=(person.avatar_url))
       embed.set_image(url=res[x])
       await message.channel.send(content=target.mention,embed=embed)
     return
@@ -1367,7 +1367,7 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"milk") and not message.author.bot:
     embed = discord.Embed(title="You have summoned the milkman",color=random.randint(0, 16777215))
-    embed.set_image(url="https://media.discordapp.net/attachments/700506169243861202/778118626350989312/pillow_imagedraw1.gif")
+    embed.set_image(url="https://i.imgur.com/JdyaI1Y.gif")
     embed.set_footer(text="his milk is delicious")
     await message.channel.send(embed=embed)
     return
@@ -1397,7 +1397,7 @@ async def on_message(message):
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
     embed_message = discord.Embed(title=f" Rolled a {dice_roll6}", description=time_used, color=random.randint(0, 16777215))
     embed_message.set_footer(text = f"{message.author.id}")
-    embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
+    embed_message.set_thumbnail(url="https://i.imgur.com/JjNrhUk.png")
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
     embed_message.set_image(url=dice_gif)
     await message.channel.send(embed=embed_message)
@@ -1412,7 +1412,7 @@ async def on_message(message):
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
     embed_message = discord.Embed(title=f" Rolled a {dice_roll4}", description=time_used, color=random.randint(0, 16777215))
     embed_message.set_footer(text = f"{message.author.id}")
-    embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
+    embed_message.set_thumbnail(url="https://i.imgur.com/JjNrhUk.png")
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
     embed_message.set_image(url=dice_gif)
     await message.channel.send(embed=embed_message)
@@ -1427,7 +1427,7 @@ async def on_message(message):
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
     embed_message = discord.Embed(title=f" Rolled a {dice_roll8}", description=time_used, color=random.randint(0, 16777215))
     embed_message.set_footer(text = f"{message.author.id}")
-    embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
+    embed_message.set_thumbnail(url="https://i.imgur.com/JjNrhUk.png")
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
     embed_message.set_image(url=dice_gif)
     await message.channel.send(embed=embed_message)
@@ -1442,7 +1442,7 @@ async def on_message(message):
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
     embed_message = discord.Embed(title=f" Rolled a {dice_roll12}", description=time_used, color=random.randint(0, 16777215))
     embed_message.set_footer(text = f"{message.author.id}")
-    embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
+    embed_message.set_thumbnail(url="https://i.imgur.com/JjNrhUk.png")
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
     embed_message.set_image(url=dice_gif)
     await message.channel.send(embed=embed_message)
@@ -1457,7 +1457,7 @@ async def on_message(message):
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
     embed_message = discord.Embed(title=f" Rolled a {dice_roll100}", description=time_used, color=random.randint(0, 16777215))
     embed_message.set_footer(text = f"{message.author.id}")
-    embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
+    embed_message.set_thumbnail(url="https://i.imgur.com/JjNrhUk.png")
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
     embed_message.set_image(url=dice_gif)
     await message.channel.send(embed=embed_message)
@@ -1472,7 +1472,7 @@ async def on_message(message):
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
     embed_message = discord.Embed(title=f" Rolled a {dice_roll10}", description=time_used, color=random.randint(0, 16777215))
     embed_message.set_footer(text = f"{message.author.id}")
-    embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763974044734718002/dice.png")
+    embed_message.set_thumbnail(url="https://i.imgur.com/JjNrhUk.png")
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
     embed_message.set_image(url=dice_gif)
     await message.channel.send(embed=embed_message)
@@ -3030,7 +3030,7 @@ async def on_message(message):
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
     embed_info = discord.Embed(title=f"User Requested: {value_here} messages", description= time_used,color=random.randint(0, 16777215))
     embed_info.set_author(name=f"Tweets from @{tweet_username}",icon_url=(pfp))
-    embed_info.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763902909158391858/Twitter.png")
+    embed_info.set_thumbnail(url="https://i.imgur.com/0M7znIh.png")
     embed_info.add_field(name="Profile url",value=profile_url)
     embed_info.set_footer(text = f"{message.author.id}")
     await message.author.dm_channel.send(embed=embed_info)
@@ -3151,7 +3151,7 @@ async def on_message(message):
 
     embed = discord.Embed(title = "The Radical Function Has Been Completed!",color=random.randint(0, 16777215))
     embed.set_footer(text = f"{message.author.name} | {message.author.id}")
-    embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/d/d1/Calculator_on_macOS.png")
+    embed.set_thumbnail(url="https://i.imgur.com/E7GIyu6.png")
     embed.add_field(name = f"Formula: {num}√ {root_int}", value = f"Result: {root_answer}")
 
     await message.channel.send(embed=embed)
@@ -3177,7 +3177,7 @@ async def on_message(message):
       embed = discord.Embed(title = f"Result of the function",color=random.randint(0, 16777215))
       embed.add_field(name = f"Formula: {num} ^ {root_int}", value = f"Result: {ans}")
       embed.set_footer(text = f"{message.author.id}")
-      embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/d/d1/Calculator_on_macOS.png")
+      embed.set_thumbnail(url="https://i.imgur.com/E7GIyu6.png")
       await message.channel.send(embed = embed)
 
     except:
@@ -3418,7 +3418,7 @@ async def on_message(message):
       embed.add_field(name=f"Formula: {og_number}+{per_times}*({number_times}-1)",value=f"Result: {number_result}")
 
       embed.set_footer(text = f"{message.author.id}")
-      embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/d/d1/Calculator_on_macOS.png")
+      embed.set_thumbnail(url="https://i.imgur.com/E7GIyu6.png")
 
       await message.channel.send(embed=embed)
 
@@ -3428,15 +3428,10 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"invite") and not message.author.bot:
-    
     embed  = discord.Embed(title = "The Invite Links!", value = "One is for testing, one is the normal bot.",color=random.randint(0, 16777215))
     embed.add_field(name = "Testing Link:", value = "https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8", inline = False)
-    embed.add_field(name = "Normal Invite:", value = "https://discordapp.com/oauth2/authorize?client_id=702238592725942374&scope=bot&permissions=8", inline = False)
-
-    bot_pfp = client.user.avatar_url
-
-    embed.set_thumbnail(url=bot_pfp)
-
+    embed.add_field(name = "Normal Invite:", value = f"https://discordapp.com/oauth2/authorize?client_id={client.user.id}&scope=bot&permissions=8", inline = False)
+    embed.set_thumbnail(url=(client.user.avatar_url))
     await message.channel.send(embed=embed)
     return
 
@@ -3550,14 +3545,14 @@ async def on_message(message):
     embed_message = discord.Embed(title=f" {message.content}", description=time_used,color=random.randint(0, 16777215))
     embed_message.set_author(name=f"{message.author} tried to excute invalid command:",icon_url=(pfp))
     embed_message.set_footer(text = f"{message.author.id}")
-    embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763873708908478474/Warning.png")
+    embed_message.set_thumbnail(url="https://i.imgur.com/bW6ergl.png")
     await client.get_channel(738912143679946783).send(embed=embed_message)
     if (message.author.dm_channel is None):
       await message.author.create_dm()
     embed_message = discord.Embed(title=f" {message.content}", description=time_used,color=random.randint(0, 16777215))
     embed_message.set_author(name=f"You tried to excute invalid command:",icon_url=(pfp))
     embed_message.set_footer(text = f"{message.author.id}")
-    embed_message.set_thumbnail(url="https://media.discordapp.net/attachments/738912143679946783/763873708908478474/Warning.png")
+    embed_message.set_thumbnail(url="https://i.imgur.com/bW6ergl.png")
     await message.author.dm_channel.send(embed=embed_message)
     return
 
@@ -3589,20 +3584,32 @@ async def on_message_delete(message):
         await msg.delete()
     except:
       banana = 0
+
+#typing_timer=[]
 @client.event
 async def on_typing(channel,user,_time):
-  if not user.bot:
+  #if not user.bot:
     #try:
-    docs = DatabaseConfig.db.g_link_testing.find()
-    for chan in docs:
-      if (chan["chan_id"]!=channel.id):
+    #go_for_it = 1
+    #for obj in typing_timer:
+    #  if(channel.id ==obj.name ):
+    #    diff =obj.t.minute - _time.minute 
+    #    if(diff<0):
+    #      diff=(obj.t.minute-60)-_time.minute
+    #    if(diff>4):
+    #      go_for_it=0
+
+    #docs = DatabaseConfig.db.g_link_testing.find()
+   # for chan in docs:
+     # if (chan["chan_id"]!=channel.id):
        # print("CHAN_ID: "+str(chan["chan_id"]))
-        try:
+       # try:
           #print(client.get_channel(int(chan["chan_id"])).name)
-          await client.get_channel(int(chan["chan_id"])).trigger_typing()
-        except:
-          banana = 1
-    return
+          #if(go_for_it):
+            #await client.get_channel(int(chan["chan_id"])).trigger_typing()
+        #except:
+         # banana = 1
+    #return
     #except:
   return
 

@@ -105,11 +105,12 @@ async def extend(message):
   if(global_channel==message.channel.id):
     await client.get_channel(782123846781370368).send(embed = GetGlobalEmbed(message))
   return
+  
 
 async def respond(message):
   return
   if message.author.bot:
-    if(702238592725942374!=message.author.id):
+    if(client.user.id!=message.author.id):
       for gChan in DatabaseConfig.db.g_link_testing.find():
         if message.guild.id != gChan['ser_id']:
           try:
