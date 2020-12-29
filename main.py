@@ -2025,6 +2025,8 @@ async def on_message(message):
     emojis_return = emojis.get(data_here)
     for x in emojis_return:
       data_here = data_here.replace(x,f"\{x}")
+    for x in re.findall(r':\w*:\d*',data_here):
+        data_here=data_here.replace(x,f"\{x}")
     await message.channel.send(f"{data_here}")
     return
 
@@ -2678,57 +2680,66 @@ async def on_message(message):
     return
   
   if message.content.startswith(discordprefix+"webhook_create") and not message.author.bot and user.guild_permissions.manage_webhooks == True:
-    valid_image = ["PNG",".GIF",".JPG","JPEG"]
-    from PIL import Image
     try:
-      webhook_name = message.content.split(" ")[1]
+      arg = message.content.split(" ")[1]
     except:
-      webhook_name = "Webhook"
+      arg = None
+    
     try:
-      content_message = message.content.split(" ")[2]
+      if len(message.content.split(" ")) == 2: 
+        args = message.content.split(" ")[2]
+      if len(message.content.split(" ")) > 2:
+        value=len(message.content.split(" "))
+        args = message.content.split(" ")[2:value]
+        blank = " "
+        args = blank.join(args)
     except:
-      content_message = "test"
+      args = None
 
-    if content_message == "" or content_message == " ":
-      content_message = "test"
-    await message.channel.send("Making Webhooks with your manage permissions(safety reasons)")
+    if isinstance(message.channel, discord.TextChannel):
+      if message.author.guild_permissions.manage_webhooks:
+        if arg:
+          if args is None:
+            webhook = await message.channel.create_webhook(name=arg)
+            embed = discord.Embed(title=f"{message.author}'s message:",color=random.randint(0, 16777215),timestamp=(message.created_at))
+            embed.add_field(name="Content:",value="Test")
+          if args:
+            webhook = await message.channel.create_webhook(name=arg,reason=args)
+            embed = discord.Embed(title=f"{message.author}'s message:",color=random.randint(0, 16777215),timestamp=(message.created_at))
+            embed.add_field(name="Content:",value=args)
+          
+          if len(message.attachments) > 0:
+            image=await message.attachments[0].read()
+            pass_test = True
+            try:
+              discord.utils._get_mime_type_for_image(image)
+            except discord.errors.InvalidArgument:
+              pass_test = False
+            
+            if pass_test:
+              await webhook.edit(avatar=image)
+            if pass_test is False:
+              await message.channel.send("not a valid image")
+        
+          
+          await webhook.execute(embed=embed)
 
-    if len(message.attachments) > 0:
-      image_used = message.attachments[0]
+          if (message.author.dm_channel is None):
+            await message.author.create_dm()
+          
+          try:
+            await message.author.send("Webhook url coming up")
+            await message.author.send(webhook.url)
+          except discord.Forbidden:
+            await message.channel.send(f"We couldn't DM you {message.author.mention}")
 
-      async with aiohttp.ClientSession() as cs:
-        try:
-          async with cs.get(image_used.url) as response:
-            img = Image.open(await response.read())
-        except aiohttp.ClientConnectorError:
-          await message.channel.send("somehow you got pass the system") 
+        if arg is None:
+          await message.channel.send("You need to use values for it to work")
 
-        except aiohttp.InvalidURL:
-          await message.channel.send("seriously a fake url?")
-          return
+        
+    if isinstance(message.channel, discord.DMChannel):
+      await message.channel.send("You can't use that silly")
 
-      if (img.format).upper() in valid_image:
-        webhook=await message.channel.create_webhook(name=webhook_name,reason=content_message,avatar=await response.read())
-      if not (img.format).upper() in valid_image:
-        await message.channel.send("Not in the right format, defaulting to no avatar")
-        webhook=await message.channel.create_webhook(name=webhook_name,reason=content_message)
-    if message.attachments == []:
-      webhook=await message.channel.create_webhook(name=webhook_name,reason=content_message)
-    if (message.author.dm_channel is None):
-      await message.author.create_dm()
-    await message.delete()
-
-    await message.author.dm_channel.send("The link to use a webhook url is coming right now.")
-    await message.author.dm_channel.send(webhook.url)
-    await message.channel.send(f"Now testing... with {content_message}")
-    webhook_url = webhook.url
-    webhook = discord_webhook.DiscordWebhook(url=webhook_url)
-    embed = discord_webhook.DiscordEmbed(title=f"{message.author}'s Message:",color=random.randint(0, 16777215))
-    time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-    embed.add_embed_field(name=content_message, value=time_used)
-    embed.set_timestamp()
-    webhook.add_embed(embed)
-    webhook.execute()
     return
 
   if message.content.startswith(discordprefix+"webhook_delete") and not message.author.bot:
@@ -2800,14 +2811,10 @@ async def on_message(message):
     pfp = "https://cdn.discordapp.com/emojis/738229508099801169.png?v=1"
 
     warn_reason24 = user_info.replace(str(user.id),"")
-
     warn_reason24 = warn_reason24.replace("<@!>","")
-
     message_to_send=discord.Embed(title=f"Reason: {warn_reason24} ", color=random.randint(0, 16777215)) 
-
     message_to_send.set_author(name=f"You have been warned by {message.author}",icon_url=(pfp))
-
-    message_to_send.set_image(url="https://media1.tenor.com/images/e160829e84c01257050490b2dd46c0cb/tenor.gif")
+    message_to_send.set_image(url="https://i.imgur.com/jDLcaYc.gif")
     message_to_send.set_footer(text = f"ID: {message.author.id}")
     
     if (user.dm_channel is None):
@@ -2816,13 +2823,9 @@ async def on_message(message):
     await user.send(embed=message_to_send)
 
     message_to_send.set_footer(text = f"ID: {message.author.id}\nWarned by {message.author}\nWarned ID: {user.id} \nWarned: {user}")
-
     channel_used = client.get_channel(738912143679946783)
     await channel_used.send(embed=message_to_send)
-
     user_warned="Why did you warn "+str(user)+"?"
-
-    
 
     if (message.author.dm_channel is None):
       await message.author.create_dm()
@@ -2899,21 +2902,26 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"webhook_update") and not message.author.bot and message.author.id in jdjg_id:
-    update_color = 35056
     if isinstance(message.channel, discord.TextChannel):
       await message.delete()
-    url_grab = str(os.environ['webhook1'])
-    url_grab2 = str(os.environ['webhook99'])
+  
     message_info = message.content.replace(discordprefix+"webhook_update ","")
-    url_grab_ultra = [url_grab,url_grab2]
-    webhook = discord_webhook.DiscordWebhook(url=url_grab_ultra)
-    embed = discord_webhook.DiscordEmbed(title='Update',color=update_color)
-    embed.add_embed_field(name='Update Info:', value=message_info)
-    embed.set_timestamp()
-    embed.set_author(name="JDJG's Update",icon_url='https://i.imgur.com/pdQkCBv.png')
-    embed.set_footer(text="JDJG's Updates")
-    webhook.add_embed(embed)
-    webhook.execute()
+    async with aiohttp.ClientSession() as session:
+      webhook=discord.Webhook.from_url(os.environ["webhook1"], adapter=discord.AsyncWebhookAdapter(session))
+      embed=discord.Embed(title="Update",color=(35056),timestamp=(message.created_at))
+      embed.add_field(name="Update Info:",value=message_info)
+      embed.set_author(name="JDJG's Update",icon_url='https://i.imgur.com/pdQkCBv.png')
+      embed.set_footer(text="JDJG's Updates")
+      await webhook.execute(embed=embed)
+    
+    async with aiohttp.ClientSession() as session:
+      webhook=discord.Webhook.from_url(os.environ["webhook99"], adapter=discord.AsyncWebhookAdapter(session))
+      embed=discord.Embed(title="Update",color=(35056),timestamp=(message.created_at))
+      embed.add_field(name="Update Info:",value=message_info)
+      embed.set_author(name="JDJG's Update",icon_url='https://i.imgur.com/pdQkCBv.png')
+      embed.set_footer(text="JDJG's Updates")
+      await webhook.execute(embed=embed)
+
     return
 
   if message.content.startswith(discordprefix+"insult") and not message.author.bot:
@@ -3380,7 +3388,9 @@ async def on_message(message):
     return
   
   if message.content.startswith(discordprefix+"spam") and not message.author.bot:
-    await message.channel.send("https://tenor.com/view/shoot-spam-gif-11220664")
+    embed=discord.Embed(color=random.randint(0, 16777215))
+    embed.set_image(url="https://i.imgur.com/1LckTTu.gif")
+    await message.channel.send(content="I hate spam",embed=embed)
     return
   
   if message.content.startswith(discordprefix+"classic_delink") and not message.author.bot:
@@ -3473,7 +3483,7 @@ async def on_message(message):
     #server_settings.change_setting(message.guild,1,"a")
     return
 
-  if message.content.startswith(discordprefix) and not message.author.bot:
+  if message.content.startswith(discordprefix) and mention == False and not message.author.bot:
     pfp = message.author.avatar_url
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
     embed_message = discord.Embed(title=f" {message.content}", description=time_used,color=random.randint(0, 16777215))
