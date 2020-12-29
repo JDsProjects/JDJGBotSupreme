@@ -24,7 +24,6 @@ import tweepy
 import functools
 import math
 from async_timeout import timeout
-from clear_code import clear
 import DatabaseControl
 import RankSystem
 import GlobalLinker
@@ -47,16 +46,9 @@ day = today.strftime('%m/%d/%Y %H:%M:%S')
 logging.basicConfig(level=logging.WARNING)
 ratelimit_detection=logging.Filter(name='WARNING:discord.http:We are being rate limited.')
 
-#don't delete any import statements - some things might be not used
-
-#All code that has been transfered over took a while.
-
 client = ClientConfig.client
 
-#don't touch the database
-
-time_location = "America/New_York"  #The current timezone.
-#DATABASE LOGIN MOVED TO DATABASECONFIG.PY
+time_location = "America/New_York"
 
 all_commands = """random_message - is random messages
 ad -advice
@@ -3393,37 +3385,25 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"compliment") and not message.author.bot:
-    
     complimentt = random.choice(random_response.compliment)
-
     embed = discord.Embed(title = "Here is a compliment, for you!",color=random.randint(0, 16777215))
     embed.add_field(name = "I hope you like it!", value=complimentt)
     await message.channel.send(embed=embed)
     return
 
   if message.content.startswith(discordprefix+"Arithmetic") and not message.author.bot:
-
     try:
-
       og_number = int(message.content.split(" ")[1])
-
       per_times = int(message.content.split(" ")[2])
-
       number_times = int(message.content.split(" ")[3])
-
       number_result = og_number+per_times*(number_times-1)
-
       embed = discord.Embed(title = f"Result of the function",color=random.randint(0, 16777215))
-
       embed.add_field(name=f"Formula: {og_number}+{per_times}*({number_times}-1)",value=f"Result: {number_result}")
-
       embed.set_footer(text = f"{message.author.id}")
       embed.set_thumbnail(url="https://i.imgur.com/E7GIyu6.png")
-
       await message.channel.send(embed=embed)
 
     except:
-
       await message.channel.send("Either you forgot the values needed or you used text after the Arithmetic")
     return
 
