@@ -41,8 +41,6 @@ import userinfo
 import jdjg_os
 import mystbin
 import json
-today = datetime.date.today()
-day = today.strftime('%m/%d/%Y %H:%M:%S')
 logging.basicConfig(level=logging.WARNING)
 ratelimit_detection=logging.Filter(name='WARNING:discord.http:We are being rate limited.')
 
@@ -322,7 +320,6 @@ admin_contact = [
 #adding an id(if you have access to the source code and want to fork it, credit us, getting your discord id is easy, replace ours with the ones you are playing to use)
 
 send_channel = [
-  556242984241201167, 
   738912143679946783, 
 ]
 
@@ -2265,44 +2262,30 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"support DM ") and not message.author.bot:
-
     support_msg = message.content.replace(discordprefix+"support DM ","")
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
     pfp = message.author.avatar_url
-
     embed_message = discord.Embed(title=support_msg, description=time_used, color=random.randint(0, 16777215))
-
     embed_message.set_author(name=f"Help Needed from {message.author}:",icon_url=(pfp))
-
     embed_message.set_footer(text = f"{message.author.id} \nSupport Mode: DM")
-
-    embed_message.set_thumbnail(url="https://cdn.discordapp.com/attachments/738912143679946783/763925088378552320/raise_hand.png")
+    embed_message.set_thumbnail(url="https://i.imgur.com/lcND9Z2.png")
 
     for ad_id in admin_contact:
-
       try:
-
         admin_user = client.get_user(ad_id)
-
         if (admin_user.dm_channel is None):
           await admin_user.create_dm()
 
         embed_message.add_field(name="Sent To:",value=str(admin_user))
 
       except:
-
         await message.channel.send(f'Error processesing user: {ad_id}')
 
     for adID in admin_contact:
       try:
         admin_user = client.get_user(adID)
-
         if (admin_user.dm_channel is None):
           await admin_user.create_dm()
-
-
 
         await admin_user.send(embed=embed_message)
       except:
@@ -2801,9 +2784,7 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"warn") and not message.author.bot and user.guild_permissions.administrator == True:
-
     user_info=message.content.replace(discordprefix+"warn ","")
-
     try:
       user = message.mentions[0]
     except:
@@ -2852,41 +2833,25 @@ async def on_message(message):
 
 
   if message.content.startswith(discordprefix+"open_source") and not message.author.bot:
-
     pfp = client.user.avatar_url
-
-    source_send=discord.Embed(title="Project at: https://repl.it/@JDJGInc_Offical/JDJGBotSupreme#main.py", description="Want to get more info, contact the owner with the JDBot*owner command",color=random.randint(0, 16777215))
+    source_send=discord.Embed(title="Project at: https://github.com/JDJGInc/JDJGBotSupreme", description="Want to get more info, contact the owner with the JDBot*owner command",color=random.randint(0, 16777215))
 
     source_send.set_author(name=f"{client.user} Source Code:",icon_url=(pfp))
-
     await message.channel.send(embed=source_send)
-
     return
 
   if message.content.startswith(discordprefix+"support channel") and not message.author.bot:
-
     support_msg=message.content.replace(discordprefix+"support channel ","")
-
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-    
     embed_message = discord.Embed(title=support_msg, description=time_used, color=random.randint(0, 16777215))
-
     pfp = message.author.avatar_url
-
     embed_message.set_author(name=f"Help Needed from {message.author}:",icon_url=(pfp))
-
     embed_message.set_footer(text = f"{message.author.id} \nSupport Mode: Channel")
-
-    embed_message.set_thumbnail(url="https://cdn.discordapp.com/attachments/738912143679946783/763925088378552320/raise_hand.png")
-
-
+    embed_message.set_thumbnail(url="https://i.imgur.com/lcND9Z2.png")
 
     for cid in send_channel:
-
       channel_used = client.get_channel(cid)
-
       embed_message.add_field(name="Sent To:",value=str(channel_used))
-
       await channel_used.send(embed=embed_message)
 
     return
@@ -2935,17 +2900,17 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"webhook_update") and not message.author.bot and message.author.id in jdjg_id:
     update_color = 35056
-    await message.delete()
+    if isinstance(message.channel, discord.TextChannel):
+      await message.delete()
     url_grab = str(os.environ['webhook1'])
     url_grab2 = str(os.environ['webhook99'])
     message_info = message.content.replace(discordprefix+"webhook_update ","")
     url_grab_ultra = [url_grab,url_grab2]
     webhook = discord_webhook.DiscordWebhook(url=url_grab_ultra)
     embed = discord_webhook.DiscordEmbed(title='Update',color=update_color)
-    speacil_icon = 'https://media.discordapp.net/attachments/491419169842135059/732821876488798249/fisheye.png'
     embed.add_embed_field(name='Update Info:', value=message_info)
     embed.set_timestamp()
-    embed.set_author(name="JDJG's Update",icon_url=speacil_icon)
+    embed.set_author(name="JDJG's Update",icon_url='https://i.imgur.com/pdQkCBv.png')
     embed.set_footer(text="JDJG's Updates")
     webhook.add_embed(embed)
     webhook.execute()
@@ -3073,38 +3038,27 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"apply bloopers") and not message.author.bot:
-
     apply_message = message.content.replace(discordprefix+"apply bloopers ","")
-
     application_user = [
     708167737381486614,
-    168422909482762240,
-    ]
+    168422909482762240]
 
-    await message.delete()
+    if isinstance(message.channel, discord.TextChannel):
+      await message.delete()
 
     for x in application_user:
-
       apply_user = client.get_user(x)
 
       if (apply_user.dm_channel is None):
         await apply_user.create_dm()
 
       pfp = message.author.avatar_url
-
       time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
       embed_message = discord.Embed(title=apply_message, description=time_used,color=random.randint(0, 16777215))
-
       embed_message.set_author(name=f"Application from {message.author}",icon_url=(pfp))
-
       embed_message.set_footer(text = f"{message.author.id}")
-
-      embed_message.set_thumbnail(url="https://cdn.discordapp.com/attachments/738912143679946783/763889399514660914/Ballot.png")
-
-
+      embed_message.set_thumbnail(url="https://i.imgur.com/PfWlEd5.png")
       await apply_user.send(embed=embed_message)
-
     
     return
       
@@ -3334,10 +3288,10 @@ async def on_message(message):
     mail_msg2 =  mail_msg2.replace(replace_info,"")
     mail_msg2 = mail_msg2.replace(user_id22,"")
     mail_msg2 = mail_msg2.split(" ",2)[-1]
-    embed_message = discord.Embed(title=mail_msg2, description=day, color=random.randint(0, 16777215))
+    embed_message = discord.Embed(title=mail_msg2, timestamp=(message.created_at), color=random.randint(0, 16777215))
     embed_message.set_author(name=f"Mail from: {message.author}",icon_url=(pfp))
     embed_message.set_footer(text = f"{message.author.id}")
-    embed_message.set_thumbnail(url = "https://cdn.discordapp.com/attachments/752527845519130696/763390502317326346/459285aabe618b3d3e215676c97b689c.png")
+    embed_message.set_thumbnail(url = "https://i.imgur.com/1XvDnqC.png")
     if (user.dm_channel is None):
       await user.create_dm()
     await user.send(embed=embed_message)
@@ -3802,9 +3756,8 @@ Programmer - Shadi#7879(for ranks and such+and some cool new features)- bit of h
 #2616.
 Invite link is https://discordapp.com/oauth2/authorize?client_id=702238592725942374&scope=bot&permissions=8
 coded in Python
-Open source on https://repl.it/@JDJGInc_Offical/JDJGBotSupreme (check it out) - it's open source so you can see how it works.. Want to help? DM JDJG Inc. Official#3439 and join the support server
-We promise it follows(if our bot gets hacked, we will immediately change the token and tell us ourselves, or just join our support server(this makes it easier), some features will be moved to databases, one it makes it possible to store and keeps data private. If you ask what data we have on you, that might take a bit, but our token is stored safetly, as long as none of the project managers leak the info or repl.it isn't hacked(or anything else). the Bot is fine.
-Github: https://github.com/JDJGInc/JDJGBotSupreme """
+Open source on https://github.com/JDJGInc/JDJGBotSupreme (check it out) - it's open source so you can see how it works.. Want to help? DM JDJG Inc. Official#3439 and join the support server
+We promise it follows(if our bot gets hacked, we will immediately change the token and tell us ourselves, or just join our support server(this makes it easier), some features will be moved to databases, one it makes it possible to store and keeps data private. If you ask what data we have on you, that might take a bit."""
 
 legal_info = """Documents:
 
