@@ -32,7 +32,6 @@ import urllib3
 import numpy as np
 import logging
 import emojis
-from bs4 import BeautifulSoup
 import GetPfp
 import emote
 import color_code
@@ -3637,15 +3636,14 @@ async def on_guild_emojis_update(guild, before, after):
 
 @client.event
 async def on_error(name,*arguments,**karguments):
-  import termcolor
   import traceback
   idle_error=traceback.format_exc()
   if len(idle_error) < 2049:
     embed_message = discord.Embed(title="Error:",description=idle_error,color=random.randint(0, 16777215))
     embed_message.add_field(name="More Details:",value=karguments)
     embed_message.set_footer(text=f"Discord details: \n{arguments}")
-    idle_error=termcolor.colored(idle_error,"red")
-    print(f"\n{idle_error} \n{arguments}")
+    traceback.print_exc()
+    print(f"\n{arguments}")
     try:
       for adID in admin_contact:
         admin_user = client.get_user(adID)
@@ -3656,8 +3654,8 @@ async def on_error(name,*arguments,**karguments):
       print("\n can't DM them")
     await client.get_channel(738912143679946783).send(embed=embed_message)
   if len(idle_error) > 2049:
-    idle_error=termcolor.colored(idle_error,"red")
-    print(f"\n{idle_error} \n{arguments}")
+    traceback.print_exc()
+    print(f"\n{arguments}")
     print("\n message was way too big for discord")
   a=os.sys.exc_info()
   message_error=arguments[0]
