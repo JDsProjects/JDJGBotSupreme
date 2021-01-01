@@ -1360,17 +1360,16 @@ async def on_message(message):
   if message.content.startswith(discordprefix+"dice_roll20") and not message.author.bot:
     pfp=message.author.avatar_url
     type_dice = "d20"
-    dice_gif = "https://media1.tenor.com/images/c05126b9ad27709b3930670b6ab4c070/tenor.gif"
+    dice_gif = "https://i.imgur.com/9dbBkqj.gif"
     dice_roll20=random.randint(1,20)
     dice_roll20 = str(dice_roll20)
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-    file = discord.File("images/dice.png",filename="dice.png")
     embed_message = discord.Embed(title=f" Rolled a {dice_roll20}", description=time_used, color=random.randint(0, 16777215))
     embed_message.set_footer(text = f"{message.author.id}")
-    embed_message.set_thumbnail(url="attachment://dice.png")
+    embed_message.set_thumbnail(url="https://i.imgur.com/AivZBWP.png")
     embed_message.set_author(name=f"{type_dice} Rolled by {message.author}:",icon_url=(pfp))
     embed_message.set_image(url=dice_gif)
-    await message.channel.send(embed=embed_message,file=file)
+    await message.channel.send(embed=embed_message)
     return
   
   if message.content.startswith(discordprefix+"dice_roll6") and not message.author.bot:
@@ -2857,7 +2856,6 @@ async def on_message(message):
 
 
   if message.content.startswith(discordprefix+"coin") and not message.author.bot:
-    pfp = message.author.avatar_url
     guess_dice=message.content.replace(discordprefix+"coin ","")
 
     value = random.choice([True,False]) 
@@ -2878,23 +2876,21 @@ async def on_message(message):
       pic_name = "heads"
     else:
       pic_name ="Tails"
+
+    url_dic = {"heads":"https://i.imgur.com/MzdU5Z7.png","Tails":"https://i.imgur.com/qTf1owU.png"}
+
+    embed_message = discord.Embed(title="coin flip",color=random.randint(0, 16777215))
+    embed_message.set_author(name=f"{message.author}",icon_url=(message.author.avatar_url))
+    embed_message.add_field(name="The Coin Flipped: "+("heads" if value else "tails"),value=f"You guessed: {guess_dice}")
+    embed_message.set_image(url=url_dic[pic_name])
     
     if win:
-      f = discord.File("./images/"+pic_name+".png",pic_name+".png")
-      embed_message = discord.Embed(title="coin flip",color=random.randint(0, 16777215))
-      embed_message.set_author(name=f"{message.author}",icon_url=(pfp))
-      embed_message.add_field(name="The Coin Flipped: "+("heads" if value else "tails"),value=f"You guessed: {guess_dice}")
       embed_message.add_field(name="Result: ",value="Won")
-      embed_message.set_image(url="attachment://"+pic_name+".png")
-      await message.channel.send(file = f,embed=embed_message)
+
     else:
-      f = discord.File("./images/"+pic_name+".png",pic_name+".png")
-      embed_message = discord.Embed(title="coin flip",color=random.randint(0, 16777215))
-      embed_message.set_author(name=f"{message.author}",icon_url=(pfp))
-      embed_message.add_field(name="The Coin Flipped: "+("heads" if value else "tails"),value=f"You guessed: {guess_dice}")
       embed_message.add_field(name="Result: ",value="Lost")
-      embed_message.set_image(url="attachment://"+pic_name+".png")
-      await message.channel.send(file = f,embed=embed_message)
+    
+    await message.channel.send(embed=embed_message)
     return
 
   if message.content.startswith(discordprefix+"webhook_update") and not message.author.bot and message.author.id in jdjg_id:
