@@ -536,8 +536,7 @@ async def on_message(message):
 
     if (reverse_check):
       try:
-        file = discord.File("reverse.png")
-        await message.channel.send("Your reverse card was banned." ,file=file)
+        await message.add_reaction("<:UnoReverse:787555057696243733>")
       except:
         pass
     
@@ -677,8 +676,7 @@ async def on_message(message):
 
       if(reverse_check):
         try:
-          file = discord.File("reverse.png")
-          await message.channel.send("Your reverse card was banned." ,file=file)
+          await message.add_reaction("<:UnoReverse:787555057696243733>")
         except:
           pass
 
