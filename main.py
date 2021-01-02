@@ -3321,10 +3321,12 @@ async def on_message(message):
     if message.guild == None:
       pass
     elif banned_word in message.content.lower() and not message.guild.id in slur_okay:
-      await message.delete()
-      banned_response=random.choice(random_response.response_used)
-      await message.channel.send(banned_response)
-      return
+      try:
+        await message.delete()
+        banned_response=random.choice(random_response.response_used)
+        await message.channel.send(banned_response)
+      except discord.errors.Forbidden:
+        return
 
   if message.content.startswith(discordprefix+"clear") or message.content.startswith(discordprefix+"purge"):
     await message.delete()
@@ -3754,7 +3756,8 @@ banned_words = [
   'retard',
   'pussy',
   'bastard',
-  'nigga',]
+  'nigga',
+  ]
 
 #for banned words a.k.a slurs and such (don't open if you aren't a programmer - or easily offended
 
