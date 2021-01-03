@@ -39,6 +39,8 @@ import userinfo
 import jdjg_os
 import mystbin
 import json
+import sr_api
+
 logging.basicConfig(level=logging.WARNING)
 ratelimit_detection=logging.Filter(name='WARNING:discord.http:We are being rate limited.')
 
@@ -227,8 +229,6 @@ jdjg_id = [
 
 ]
 
-url_collection = []
-
 #this is used for the order command
 
 #jdjg's id only(don't add any more)
@@ -352,7 +352,7 @@ waitMessage = 0
 @client.event
 async def on_message(message):
   #await GlobalLinker.respond(message)
-  global url_collection
+  url_collection = []
   global safe_servers
   global waitMessage
   user = message.author
@@ -886,15 +886,14 @@ async def on_message(message):
       person = client.user
       target = message.author
 
-    async with aiohttp.ClientSession() as cs:
-      async with cs.get('https://some-random-api.ml/animu/wink') as anime:
-        res = await anime.json()
+    sr_client=sr_api.Client()
+    image=await sr_client.get_gif("wink")
+    await sr_client.close()
 
-    for x in res:
-      embed=discord.Embed(color=random.randint(0, 16777215))
-      embed.set_author(name=f"{person} winked at you",icon_url=(person.avatar_url))
-      embed.set_image(url=res[x])
-      await message.channel.send(content=target.mention,embed=embed)
+    embed=discord.Embed(color=random.randint(0, 16777215))
+    embed.set_author(name=f"{person} winked at you",icon_url=(person.avatar_url))
+    embed.set_image(url=image.url)
+    await message.channel.send(content=target.mention,embed=embed)
     return
 
   if message.content.startswith(discordprefix+"facepalm") and not message.author.bot:
@@ -915,15 +914,14 @@ async def on_message(message):
       person = client.user
       target = message.author
 
-    async with aiohttp.ClientSession() as cs:
-      async with cs.get('https://some-random-api.ml/animu/face-palm') as anime:
-        res = await anime.json()
-
-    for x in res:
-      embed=discord.Embed(color=random.randint(0, 16777215))
-      embed.set_author(name=f"{target} you made {person} facepalm",icon_url=(person.avatar_url))
-      embed.set_image(url=res[x])
-      await message.channel.send(content=target.mention,embed=embed)
+    sr_client=sr_api.Client()
+    image=await sr_client.get_gif("face-palm")
+    await sr_client.close()
+  
+    embed=discord.Embed(color=random.randint(0, 16777215))
+    embed.set_author(name=f"{target} you made {person} facepalm",icon_url=(person.avatar_url))
+    embed.set_image(url=image.url)
+    await message.channel.send(content=target.mention,embed=embed)
     return
 
   
