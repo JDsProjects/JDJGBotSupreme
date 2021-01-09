@@ -417,6 +417,67 @@ async def milk(ctx):
   embed.set_footer(text="his milk is delicious")
   await ctx.send(embed=embed)
 
+@client.command(help="a command to give information about the team",brief="this command works if you are in team otherwise it will just give the owner.")
+async def team(ctx):
+  information=await client.application_info()
+  if information.team == None:
+    true_owner=information.owner
+    team_members = []
+  if information.team != None:
+    true_owner = information.team.owner
+    team_members = information.team.members
+  embed=discord.Embed(title=information.name,color=random.randint(0, 16777215))
+  embed.add_field(name="Owner",value=true_owner)
+  embed.set_footer(text=f"ID: {true_owner.id}")
+  embed.set_image(url=(information.icon_url))
+  for x in team_members:
+    embed.add_field(name=x,value=x.id)
+  await ctx.send(embed=embed)
+
+@client.command(help="a command to send I hate spam.")
+async def spam(ctx):
+  embed=discord.Embed(color=random.randint(0, 16777215))
+  embed.set_image(url="https://i.imgur.com/1LckTTu.gif")
+  await ctx.send(content="I hate spam.",embed=embed)
+
+@client.command(help="a command meant to flip coins",brief="commands to flip coins, etc.")
+async def coin(ctx, *, args = None):
+  if args:
+    value = random.choice([True,False]) 
+    if args.lower().startswith("h") and value:
+      win = True
+    elif args.lower().startswith("t") and not value:
+      win = True
+    elif args.lower().startswith("h") and not value:
+      win = False
+    elif args.lower().startswith("t") and value:
+      win = False    
+    else:
+      await ctx.send("Please use heads or Tails as a value.")
+      return
+    
+    if(value):
+      pic_name = "heads"
+    else:
+      pic_name ="Tails"
+
+    url_dic = {"heads":"https://i.imgur.com/MzdU5Z7.png","Tails":"https://i.imgur.com/qTf1owU.png"}
+
+    embed = discord.Embed(title="coin flip",color=random.randint(0, 16777215))
+    embed.set_author(name=f"{ctx.author}",icon_url=(ctx.author.avatar_url))
+    embed.add_field(name="The Coin Flipped: "+("heads" if value else "tails"),value=f"You guessed: {args}")
+    embed.set_image(url=url_dic[pic_name])
+
+    if win:
+      embed.add_field(name="Result: ",value="You won")
+    else:
+      embed.add_field(name="Result: ",value="You lost")
+    
+    await ctx.send(embed=embed)
+
+  if args is None:
+    await ctx.send("example: \n```test*coin heads``` \nnot ```test*coin```")
+
 @client.command()
 async def stats(ctx):
   embed = discord.Embed(title="Bot stats",color=random.randint(0, 16777215))
@@ -454,6 +515,35 @@ async def closest_channel(ctx,*,args=None):
 @client.command()
 async def pi(ctx):
   await ctx.send(math.pi)
+
+@client.command(help="a command to get the closest user.")
+async def closest_user(ctx,*,args=None):
+  if args is None:
+    await ctx.send("please specify a user")
+  if args:
+    from difflib import SequenceMatcher
+    userNearest = discord.utils.get(client.users,name=args)
+    user_nick = discord.utils.get(client.users,display_name=args)
+    if userNearest is None:
+      userNearest = sorted(client.users, key=lambda x: SequenceMatcher(None, x.name, args).ratio())[-1]
+    if user_nick is None:
+      user_nick = sorted(client.users, key=lambda x: SequenceMatcher(None, x.display_name,args).ratio())[-1]
+    await ctx.send(f"Username: {userNearest}")
+    await ctx.send(f"Display name: {user_nick}")
+  
+  if isinstance(ctx.channel, discord.TextChannel):
+    member_list = []
+    for x in ctx.guild.members:
+      if x.nick is None:
+        pass
+      if x.nick:
+        member_list.append(x)
+    
+    nearest_server_nick = sorted(member_list, key=lambda x: SequenceMatcher(None, x.nick,args).ratio())[-1] 
+    await ctx.send(f"Nickname: {nearest_server_nick}")
+
+  if isinstance(ctx.channel,discord.DMChannel):
+    await ctx.send("You unforantely don't get the last value.") 
 
 @client.command(help="a command to roll d20",aliases=["roll20"])
 async def dice_roll20(ctx):
@@ -551,6 +641,71 @@ async def wink(ctx,*, Member: BetterMemberConverter=None):
       await target.send(content=target.mention,embed=embed)
     except discord.Forbidden:
       await ctx.author.send("Failed Dming them...")
+
+@client.command(aliases=["user info", "user_info","user-info"],help="a command that gives information on users",brief="this can work with mentions, ids, usernames, and even full names.")
+async def userinfo(ctx,*,user: BetterUserconverter = None):
+  if user is None:
+    user = ctx.author
+
+  if user.bot:
+    user_type = "Bot"
+  if not user.bot:
+    user_type = "User"
+  
+  if ctx.guild:
+    member_version=ctx.guild.get_member(user.id)
+    if member_version:
+      nickname = str(member_version.nick)
+      joined_guild = member_version.joined_at.strftime('%m/%d/%Y %H:%M:%S')
+      status = str(member_version.status).upper()
+      highest_role = member_version.roles[-1]
+    if not member_version:
+      nickname = str(member_version)
+      joined_guild = "N/A"
+      status = "Unknown"
+      for guild in client.guilds:
+        member=guild.get_member(user.id)
+        if member:
+          status=str(member.status).upper()
+          break
+      highest_role = "None Found"
+  if not ctx.guild:
+      nickname = "None"
+      joined_guild = "N/A"
+      status = "Unknown"
+      for guild in client.guilds:
+        member=guild.get_member(user.id)
+        if member:
+          status=str(member.status).upper()
+          break
+      highest_role = "None Found"
+  
+  guilds_list=[guild for guild in client.guilds if guild.get_member(user.id)]
+  if not guilds_list:
+    guild_list = "None"
+
+  x = 0
+  for g in guilds_list:
+    if x < 1:
+      guild_list = g.name
+    if x > 0:
+      guild_list = guild_list + f", {g.name}"
+    x = x + 1
+
+  embed=discord.Embed(title=f"{user}",description=f"Type: {user_type}", color=random.randint(0, 16777215),timestamp=ctx.message.created_at)
+  embed.add_field(name="Username: ", value = user.name)
+  embed.add_field(name="Discriminator:",value=user.discriminator)
+  embed.add_field(name="Nickname: ", value = nickname)
+  embed.add_field(name="Joined Discord: ",value = (user.created_at.strftime('%m/%d/%Y %H:%M:%S')))
+  embed.add_field(name="Joined Guild: ",value = joined_guild)
+  embed.add_field(name="Part of Guilds:", value=guild_list)
+  embed.add_field(name="ID:",value=user.id)
+  embed.add_field(name="Status:",value=status)
+  embed.add_field(name="Highest Role:",value=highest_role)
+  embed.set_image(url=user.avatar_url)
+  await ctx.send(embed=embed)
+  print("USERNAME: "+user.name)
+  await RankSystem.GetStatus(ctx.message,user)
 
 client.remove_command("help")
 
@@ -993,9 +1148,6 @@ async def on_message(message):
     await message.channel.send("That was close but it is all backed up to disk :)")
     return
 
-  if message.content.startswith(discordprefix+"test") and not message.author.bot:
-    return 
-
   if message.content.startswith(discordprefix+"pat") and not message.author.bot:
     import petpet.Pet
     await petpet.Pet.get_pet(message,message.channel)
@@ -1321,7 +1473,6 @@ async def on_message(message):
 #UPDATE NOTIFY
   if message.content.startswith(discordprefix+"update") and message.author.id in admins and not message.author.bot:
     await UpdateNotify.UpdateNote(message,client)
-    
     return
 
   if message.content.startswith(discordprefix+"help_2") and not message.author.bot:
@@ -1358,42 +1509,7 @@ async def on_message(message):
     message_generator = random.choice(random_response.random_message)
     embed = discord.Embed(title = "Random Message Time...",description=f"**{message_generator}**",color=random.randint(0, 16777215))
     await message.channel.send(embed=embed)
-    return
-
-  if message.content.startswith(discordprefix+"closest_user") and not message.author.bot:
-    guild_fetch = client.get_guild(message.guild.id)
-    user_wanted = message.content.replace(discordprefix+"closest_user","")
-    userNearest = sorted(client.users, key=lambda x: SequenceMatcher(None, x.name, user_wanted).ratio())[-1]
-    await message.channel.send(userNearest)
-    userNearest_nick = sorted(client.users, key=lambda x: SequenceMatcher(None, x.display_name,user_wanted).ratio())[-1]
-    await message.channel.send(userNearest_nick)
-    clean_member_list = []
-    for x in guild_fetch.members:
-      if x.nick == None:
-        pass
-      if not x.nick == None:
-        clean_member_list.append(x)
-
-    userNearest_server_nick = sorted(clean_member_list, key=lambda x: SequenceMatcher(None, x.nick,user_wanted).ratio())[-1]
-    await message.channel.send(userNearest_server_nick)
-    return
-
-  if message.content.startswith(discordprefix+"team") and not message.author.bot:
-    information=await client.application_info()
-    if information.team == None:
-      true_owner=information.owner
-      team_members = []
-    if information.team != None:
-      true_owner = information.team.owner
-      team_members = information.team.members
-    embed=discord.Embed(title=information.name,color=random.randint(0, 16777215))
-    embed.add_field(name="Owner",value=true_owner)
-    embed.set_footer(text=f"ID: {true_owner.id}")
-    embed.set_image(url=(information.icon_url))
-    for x in team_members:
-      embed.add_field(name=x,value=x.id)
-    await message.channel.send(embed=embed)
-    return
+    return   
 
   if message.content.startswith(discordprefix+"owner") and not message.author.bot:
     information=await client.application_info()
@@ -1617,84 +1733,6 @@ async def on_message(message):
     if bot_permissions.guild_permissions.manage_nicknames == False:
       await message.channel.send("sadly the bot doesn't have permissions")
     return
-
-  if message.content.startswith(discordprefix+"user info") and not message.author.bot or message.content.startswith(discordprefix+"user_info") and not message.author.bot or message.content.startswith(discordprefix+"user-info") and not message.author.bot or message.content.startswith(discordprefix+"userinfo") and not message.author.bot:
-    valid_command_test = message.content.replace(discordprefix,"")
-    if(valid_command_test != valid_command_test.replace("user info","")):
-      pass
-    if(valid_command_test != valid_command_test.replace("user_info","")):
-      pass
-    if(valid_command_test != valid_command_test.replace("user-info","")):
-      pass
-    if(valid_command_test != valid_command_test.replace("userinfo","")):
-      pass
-    user99=await userinfo.user_grab(message)
-    guild_used=message.guild
-    user99_plus=guild_used.get_member(user99.id)
-    avatar99 = user99.avatar_url
-    bot_decide = user99.bot
-    #if it's a bot(bool expression)
-    if bot_decide == True:
-      user_type = "Bot"
-    if bot_decide==False:
-      user_type = "User"
-    #user_type will become useful later.
-    user_id=str(user99.id)
-
-    try:
-      joined_guild = user99_plus.joined_at.strftime('%m/%d/%Y %H:%M:%S')
-    except:
-      joined_guild = "N/A"
-    user_create = user99.created_at.strftime('%m/%d/%Y %H:%M:%S')
-    try:
-      user_status=str(user99_plus.status)
-    except:
-      user_status = "NULL"
-    user_status = user_status.upper()
-    try:
-      nickname = str(user99_plus.nick)
-    except:
-      nickname = "None"
-    x = 0
-    try:
-      while x < len(user99_plus.roles):
-        x = x + 1
-      highest_role=user99_plus.roles[x-1]
-    except:
-      highest_role = "N/A"
-    guild_list = " "
-    for guild in client.guilds:
-      if user99 in guild.members:
-        guild_list+=(", "+guild.name)
-    if guild_list == " ":
-      guild_list = "Null"
-    #user_level = int(DatabaseConfig.db.users_testing.find_one({"user_id":user99.id})["level"])
-    #user_local_rank = RankSystem.GetRank(user99,message.guild)
-    #user_global_rank = RankSystem.GetRank(user99)
-    embedVar = discord.Embed(title=str(user99),description=user_type, color=random.randint(0, 16777215))
-    embedVar.set_image(url=avatar99)
-    embedVar.add_field(name="Username: ", value = user99.name)
-    embedVar.add_field(name="Discriminator:",value=user99.discriminator)
-    embedVar.add_field(name="Nickname: ", value = nickname)
-    embedVar.add_field(name="Joined Discord: ",value = user_create)
-    embedVar.add_field(name="Joined Guild: ",value = joined_guild)
-    embedVar.add_field(name="Part of Guilds:", value=guild_list)
-    embedVar.add_field(name="ID:",value=user_id)
-    embedVar.add_field(name="Status:",value=user_status)
-    embedVar.add_field(name="Highest Role:",value=highest_role)
-    #embedVar.add_field(name="Level: ",value = user_level)
-    #embedVar.add_field(name="Global Rank: ",value=user_global_rank)
-    #embedVar.add_field(name="Local Rank: ",value=user_local_rank)
-    await message.channel.send(embed=embedVar)
-    #try:
-    print("USERNAME: "+user99.name)
-    await RankSystem.GetStatus(message,user99)
-   # except:
-      #await message.channel.send("User not in Rank System")
-    #turn these into embed info stuff. hash check will just an embed image(so feel free to delete hash_check i-tself, but keep avatar99, or at least the stuff to get it.)
-    return
-    #please make this into an embed
-
 
   if message.content.startswith(discordprefix+"tenor shuffle") and not message.author.bot:
     urls = []
@@ -2889,45 +2927,6 @@ async def on_message(message):
 
     return
 
-
-  if message.content.startswith(discordprefix+"coin") and not message.author.bot:
-    guess_dice=message.content.replace(discordprefix+"coin ","")
-
-    value = random.choice([True,False]) 
-    win = False
-    if guess_dice.lower().startswith("h") and value:
-      win = True
-    elif guess_dice.lower().startswith("t") and not value:
-      win = True
-    elif guess_dice.lower().startswith("h") and not value:
-      win = False
-    elif guess_dice.lower().startswith("t") and value:
-      win = False
-    else:
-      await message.channel.send("Was that a choice?")
-      return
-    
-    if(value):
-      pic_name = "heads"
-    else:
-      pic_name ="Tails"
-
-    url_dic = {"heads":"https://i.imgur.com/MzdU5Z7.png","Tails":"https://i.imgur.com/qTf1owU.png"}
-
-    embed_message = discord.Embed(title="coin flip",color=random.randint(0, 16777215))
-    embed_message.set_author(name=f"{message.author}",icon_url=(message.author.avatar_url))
-    embed_message.add_field(name="The Coin Flipped: "+("heads" if value else "tails"),value=f"You guessed: {guess_dice}")
-    embed_message.set_image(url=url_dic[pic_name])
-    
-    if win:
-      embed_message.add_field(name="Result: ",value="Won")
-
-    else:
-      embed_message.add_field(name="Result: ",value="Lost")
-    
-    await message.channel.send(embed=embed_message)
-    return
-
   if message.content.startswith(discordprefix+"webhook_update") and not message.author.bot and message.author.id in jdjg_id:
     if isinstance(message.channel, discord.TextChannel):
       await message.delete()
@@ -3376,12 +3375,6 @@ async def on_message(message):
     if client.os_user == "None":
       client.os_user = message.author.id
       await jdjg_os.os(message)
-    return
-  
-  if message.content.startswith(discordprefix+"spam") and not message.author.bot:
-    embed=discord.Embed(color=random.randint(0, 16777215))
-    embed.set_image(url="https://i.imgur.com/1LckTTu.gif")
-    await message.channel.send(content="I hate spam",embed=embed)
     return
   
   if message.content.startswith(discordprefix+"classic_delink") and not message.author.bot:
