@@ -406,6 +406,12 @@ async def ping(ctx):
   await ctx.send("Pong")
   await ctx.send(f"Response time: {client.latency*1000}")
 
+@client.command(help="a way to view open source",brief="you can see the open source with the link it provides",aliases=["open source"])
+async def open_source(ctx):
+  source_send=discord.Embed(title="Project at: https://github.com/JDJGInc/JDJGBotSupreme", description="Want to get more info, contact the owner with the JDBot*owner command",color=random.randint(0, 16777215))
+  source_send.set_author(name=f"{client.user} Source Code:",icon_url=(client.user.avatar_url))
+  await ctx.send(embed=source_send)
+
 @client.command(help="a command to tell you the channel id")
 async def this(ctx):
   await ctx.send(ctx.channel.id)
@@ -416,6 +422,67 @@ async def milk(ctx):
   embed.set_image(url="https://i.imgur.com/JdyaI1Y.gif")
   embed.set_footer(text="his milk is delicious")
   await ctx.send(embed=embed)
+
+@client.command(help="gives you who the owner is.")
+async def owner(ctx):
+  info = await client.application_info()
+  if info.team is None:
+    owner = info.owner.id
+  if info.team:
+    owner = info.team.owner_id
+
+  support_guild=client.get_guild(736422329399246990)
+  owner=support_guild.get_member(owner)
+  if owner.bot:
+    user_type = "Bot"
+  if not owner.bot:
+    user_type = "User"
+
+  guilds_list=[guild for guild in client.guilds if guild.get_member(owner.id)]
+  if not guilds_list:
+    guild_list = "None"
+
+  x = 0
+  for g in guilds_list:
+    if x < 1:
+      guild_list = g.name
+    if x > 0:
+      guild_list = guild_list + f", {g.name}"
+    x = x + 1
+  
+  if owner:
+    nickname = str(owner.nick)
+    joined_guild = owner.joined_at.strftime('%m/%d/%Y %H:%M:%S')
+    status = str(owner.status).upper()
+    highest_role = owner.roles[-1]
+  
+  if owner is None:
+    nickname = "None"
+    joined_guild = "N/A"
+    status = "Unknown"
+    for guild in client.guilds:
+      member=guild.get_member(owner.id)
+      if member:
+        status=str(member.status).upper()
+        break
+    highest_role = "None Found"
+  
+  embed=discord.Embed(title=f"Bot Owner: {owner}",description=f"Type: {user_type}", color=random.randint(0, 16777215),timestamp=ctx.message.created_at)
+  embed.add_field(name="Username:", value = owner.name)
+  embed.add_field(name="Discriminator:",value=owner.discriminator)
+  embed.add_field(name="Nickname: ", value = nickname)
+  embed.add_field(name="Joined Discord: ",value = (owner.created_at.strftime('%m/%d/%Y %H:%M:%S')))
+  embed.add_field(name="Joined Guild: ",value = joined_guild)
+  embed.add_field(name="Part of Guilds:", value=guild_list)
+  embed.add_field(name="ID:",value=owner.id)
+  embed.add_field(name="Status:",value=status)
+  embed.add_field(name="Highest Role:",value=highest_role)
+  embed.set_image(url=owner.avatar_url)
+  await ctx.send(embed=embed)
+  try:
+    await RankSystem.GetStatus(ctx.message,owner)
+  except:
+    await ctx.send("User not in Rank System")
 
 @client.command(help="a command to give information about the team",brief="this command works if you are in team otherwise it will just give the owner.")
 async def team(ctx):
@@ -439,6 +506,36 @@ async def spam(ctx):
   embed=discord.Embed(color=random.randint(0, 16777215))
   embed.set_image(url="https://i.imgur.com/1LckTTu.gif")
   await ctx.send(content="I hate spam.",embed=embed)
+
+@client.command(help="a command to get the old help",aliases=["old help","old-help"])
+async def old_help(ctx):
+  await help(ctx.message)
+
+@client.command(help="a command to get even older help",aliases=["help2","help-2"])
+async def help_2(ctx):
+  if (ctx.author.dm_channel is None):
+      await ctx.author.create_dm()
+  await ctx.author.dm_channel.send("Help is on the way!")
+  helpmsg = "prefix is JDBot*, commands are:\n "+all_commands
+  embed_message = discord.Embed(title="About(commands):", description=helpmsg, color=random.randint(0, 16777215))
+  await ctx.author.dm_channel.send(embed=embed_message)
+  helpmsg2 = "prefix is JDBot*, More commands are:\n "+all_commands2
+  embed_message = discord.Embed(title="About(commands):",description=helpmsg2, color=random.randint(0, 16777215))
+  await ctx.author.dm_channel.send(embed=embed_message)
+  embed_message = discord.Embed(title="About(legal):",description=legal_info, color=random.randint(0, 16777215))
+  await ctx.author.dm_channel.send(embed=embed_message)
+
+@client.command(help="a command to give information about a file")
+async def file(ctx):
+  if len(ctx.message.attachments) < 1:
+    await ctx.send(ctx.message.attachments)
+    await ctx.send("no file submitted")
+  if len(ctx.message.attachments) > 0:
+    embed = discord.Embed(title="Attachment info",color=random.randint(0, 16777215))
+    for x in ctx.message.attachments:
+      embed.add_field(name=f"ID: {x.id}",value=f"[{x.filename}]({x.url})")
+      embed.set_footer(text="Check on the url/urls to get a direct download to the url.")
+    await ctx.send(embed=embed,content="\nThat's good")
 
 @client.command(help="a command meant to flip coins",brief="commands to flip coins, etc.")
 async def coin(ctx, *, args = None):
@@ -706,8 +803,6 @@ async def userinfo(ctx,*,user: BetterUserconverter = None):
   await ctx.send(embed=embed)
   print("USERNAME: "+user.name)
   await RankSystem.GetStatus(ctx.message,user)
-
-client.remove_command("help")
 
 #Typing Status Support
 waitMessage = 0
@@ -1475,35 +1570,7 @@ async def on_message(message):
     await UpdateNotify.UpdateNote(message,client)
     return
 
-  if message.content.startswith(discordprefix+"help_2") and not message.author.bot:
-
-    #Old help message replaced with new one above ^^^. If you are sad that the old help message is gone, please contact RenDev and he will listen to your dispute
-
-    if (message.author.dm_channel is None):
-      await message.author.create_dm()
-
-    await message.author.dm_channel.send("Help is on the way!")
-
-    helpmsg = "prefix is JDBot*, commands are:\n "+all_commands
-    embed_message = discord.Embed(title="About(commands):", description=helpmsg, color=random.randint(0, 16777215))
-    await message.author.dm_channel.send(embed=embed_message)
-
-    helpmsg2 = "prefix is JDBot*, More commands are:\n "+all_commands2
-
-    embed_message = discord.Embed(title="About(commands):",description=helpmsg2, color=random.randint(0, 16777215))
-
-    await message.author.dm_channel.send(embed=embed_message)
-  
-    embed_message = discord.Embed(title="About(legal):",description=legal_info, color=random.randint(0, 16777215))
-
-    await message.author.dm_channel.send(embed=embed_message)
-
-    return
-
 #OTHER STUFF
-  if message.content.startswith(discordprefix+"help") and not message.author.bot:
-    await help(message)
-    return
 
   if message.content.startswith(discordprefix+"random_message") and not message.author.bot:
     message_generator = random.choice(random_response.random_message)
@@ -1511,78 +1578,7 @@ async def on_message(message):
     await message.channel.send(embed=embed)
     return   
 
-  if message.content.startswith(discordprefix+"owner") and not message.author.bot:
-    information=await client.application_info()
-    if information.team == None:
-      true_owner=information.owner.id
-    if information.team != None:
-      true_owner = information.team.owner_id
-    user99 = client.get_user(true_owner)
-    if user99 == None:
-      await client.fetch_user(true_owner)
-    guild_used=message.guild
-    user99_plus=guild_used.get_member(user99.id)
-    avatar99 = user99.avatar_url
-    bot_decide = user99.bot
-    #if it's a bot(bool expression)
-    if bot_decide == True:
-      user_type = "Bot"
-    if bot_decide==False:
-      user_type = "User"
-    #user_type will become useful later.
-    user_id=str(user99.id)
-    try:
-      joined_guild = user99_plus.joined_at.strftime('%m/%d/%Y %H:%M:%S')
-    except:
-      joined_guild = "N/A"
-    user_create = user99.created_at.strftime('%m/%d/%Y %H:%M:%S')
-    try:
-      user_status=str(user99.status)
-    except:
-      user_status = "NULL"
-    user_status = user_status.upper()
-    try:
-      nickname = str(user99_plus.nick)
-    except:
-      nickname = "None"
-    x = 0
-    try:
-      while x < len(user99_plus.roles):
-        x = x + 1
-      highest_role=user99_plus.roles[x-1]
-    except:
-      highest_role = "N/A"
-    guild_list = " "
-    for guild in client.guilds:
-      if user99 in guild.members:
-        guild_list+=(", "+guild.name)
-    if guild_list == " ":
-      guild_list = "Null"
-
-    #user_level = int(DatabaseConfig.db.users_testing.find_one({"user_id":user99.id})["level"])
-    #user_local_rank = RankSystem.GetRank(user99,message.guild)
-    #user_global_rank = RankSystem.GetRank(user99)
-    embedVar = discord.Embed(title=str(user99),description=user_type, color=random.randint(0, 16777215))
-    embedVar.set_image(url=avatar99)
-    embedVar.add_field(name="Owner: ", value = user99.name)
-    embedVar.add_field(name="Nickname: ", value = nickname)
-    embedVar.add_field(name="Joined Discord: ",value = user_create)
-    embedVar.add_field(name="Joined Guild: ",value = joined_guild)
-    embedVar.add_field(name="Part of Guilds:", value=guild_list)
-    embedVar.add_field(name="ID:",value=user_id)
-    embedVar.add_field(name="Status:",value=user_status)
-    embedVar.add_field(name="Highest Role:",value=highest_role)
-    #embedVar.add_field(name="Level: ",value = user_level)
-    #embedVar.add_field(name="Global Rank: ",value=user_global_rank)
-    #embedVar.add_field(name="Local Rank: ",value=user_local_rank)
-    await message.channel.send(embed=embedVar)
-    try:
-      await RankSystem.GetStatus(message,user99 )
-    except:
-      await message.channel.send("User not in Rank System")
-    #turn these into embed info stuff. hash check will just an embed image(so feel free to delete hash_check i-tself, but keep avatar99, or at least the stuff to get it.)
-    return
-    return
+  
   if message.content.startswith(discordprefix+"fetch_guild"):
     id_used = message.content.replace(discordprefix+"fetch_guild ","")
     value = 0
@@ -1709,14 +1705,6 @@ async def on_message(message):
         await message.channel.send("Color Code Inverted And Saved!")
 
     
-    return
-
-  if message.content.startswith(discordprefix+"file") and not message.author.bot:
-    await message.channel.send(message.attachments)
-    if message.attachments == []:
-      await message.channel.send("\n No file submitted")
-    if len(message.attachments) > 0:
-      await message.channel.send("\n That's good")
     return
   
   if message.content.startswith(discordprefix+"nick") and  user.guild_permissions.manage_nicknames == True and not message.author.bot:
@@ -2905,13 +2893,6 @@ async def on_message(message):
     await message.author.send(user_warned)
     return
 
-  if message.content.startswith(discordprefix+"open_source") and not message.author.bot:
-    pfp = client.user.avatar_url
-    source_send=discord.Embed(title="Project at: https://github.com/JDJGInc/JDJGBotSupreme", description="Want to get more info, contact the owner with the JDBot*owner command",color=random.randint(0, 16777215))
-    source_send.set_author(name=f"{client.user} Source Code:",icon_url=(pfp))
-    await message.channel.send(embed=source_send)
-    return
-
   if message.content.startswith(discordprefix+"support channel") and not message.author.bot:
     support_msg=message.content.replace(discordprefix+"support channel ","")
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
@@ -3133,7 +3114,6 @@ async def on_message(message):
     await channel_usage.send(embed=embed)
     return
 
-
   if message.content.startswith(discordprefix+"power") and not message.author.bot:
     try:
       num = message.content.split(" ")[1]
@@ -3181,7 +3161,6 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"color") and not message.author.bot:
-
     try:
       convert_from = message.content.split(" ")[1].lower()
       convert_to = message.content.split(" ")[2].lower()
