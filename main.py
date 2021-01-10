@@ -406,6 +406,52 @@ async def ping(ctx):
   await ctx.send("Pong")
   await ctx.send(f"Response time: {client.latency*1000}")
 
+@apply.command(help="a command to apply for our Bloopers.")
+async def bloopers(ctx,*,args=None):
+  if args is None:
+    await ctx.send("You didn't give us any info.")
+  if args:
+    if isinstance(ctx.message.channel, discord.TextChannel):
+      await ctx.message.delete()
+
+    for x in [708167737381486614,168422909482762240]:
+      apply_user = client.get_user(x)
+    
+    if (apply_user.dm_channel is None):
+      await apply_user.create_dm()
+    
+    embed_message = discord.Embed(title=args,color=random.randint(0, 16777215),timestamp=(ctx.message.created_at))
+    embed_message.set_author(name=f"Application from {ctx.author}",icon_url=(ctx.author.avatar_url))
+    embed_message.set_footer(text = f"{ctx.author.id}")
+    embed_message.set_thumbnail(url="https://i.imgur.com/PfWlEd5.png")
+    await apply_user.send(embed=embed_message)
+
+@client.command(help="get an invite to invite the bot")
+async def invite(ctx):
+  embed  = discord.Embed(title = "The Invite Links!", value = "One is for testing, one is the normal bot.",color=random.randint(0, 16777215))
+  embed.add_field(name = "Testing Link:", value = "https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8", inline = False)
+  embed.add_field(name = "Normal Invite:", value = f"https://discordapp.com/oauth2/authorize?client_id={client.user.id}&scope=bot&permissions=8", inline = False)
+  embed.set_thumbnail(url=(client.user.avatar_url))
+  await ctx.send(embed=embed)
+
+@client.command(help="gives the id of the current guild or DM if you are in one.")
+async def guild_get(ctx):
+  if isinstance(ctx.channel, discord.TextChannel):
+    await ctx.send(content=ctx.guild.id) 
+
+  if isinstance(ctx.channel,discord.DMChannel):
+    await ctx.send(ctx.channel.id)
+
+@client.command(help="This gives random history using Sp46's api.",brief="a command that uses SP46's api's random history command to give you random history responses")
+async def random_history(ctx,*,args=None):
+  if args is None:
+    args = 1
+  asuna = asuna_api.Client()
+  response = await asuna.random_history(args)
+  await asuna.close()
+  for x in response:
+    await ctx.send(f":earth_africa: {x}")
+
 @client.command(help="a way to view open source",brief="you can see the open source with the link it provides",aliases=["open source"])
 async def open_source(ctx):
   source_send=discord.Embed(title="Project at: https://github.com/JDJGInc/JDJGBotSupreme", description="Want to get more info, contact the owner with the JDBot*owner command",color=random.randint(0, 16777215))
@@ -2094,35 +2140,6 @@ async def on_message(message):
         data_here=data_here.replace(x,f"\{x}")
     await message.channel.send(f"{data_here}")
     return
-
-  if message.content.startswith(discordprefix+"random_history") and not message.author.bot:
-    amount = message.content.replace(discordprefix+"random_history","")
-    try:
-      amount = int(amount)
-      if amount > 0 and amount < 51:
-        url=f"https://history.geist.ga/api/many?amount={amount}"
-      if amount > 50 or amount < 1:
-        url = "https://history.geist.ga/api/many?amount=1"
-    except ValueError:
-      url = "https://history.geist.ga/api/many?amount=1"
-    async with aiohttp.ClientSession() as cs:
-      async with cs.get(url) as r:
-        history = await r.json()
-    for x in history:
-      results=history[x]
-    if type(results) is list:
-      for x in results:
-        await message.channel.send(f":earth_africa: {x}")
-    if type(results) is str:
-      await message.channel.send(f":earth_africa: {results}")
-    return
-
-  if message.content.startswith(discordprefix+"guild_get") and not message.author.bot:
-      if message.guild != None:
-        await message.channel.send(message.guild.id)
-      if message.guild == None:
-          await message.channel.send("This doesn't work in Dms.")
-      return
   
   if message.content.startswith(discordprefix+"guild_info") and not message.author.bot:
       server = message.content.replace(discordprefix+"guild_info","")
@@ -3058,32 +3075,6 @@ async def on_message(message):
           await message.delete()
 
     return
-
-  if message.content.startswith(discordprefix+"apply bloopers") and not message.author.bot:
-    apply_message = message.content.replace(discordprefix+"apply bloopers ","")
-    application_user = [
-    708167737381486614,
-    168422909482762240]
-
-    if isinstance(message.channel, discord.TextChannel):
-      await message.delete()
-
-    for x in application_user:
-      apply_user = client.get_user(x)
-
-      if (apply_user.dm_channel is None):
-        await apply_user.create_dm()
-
-      pfp = message.author.avatar_url
-      time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-      embed_message = discord.Embed(title=apply_message, description=time_used,color=random.randint(0, 16777215))
-      embed_message.set_author(name=f"Application from {message.author}",icon_url=(pfp))
-      embed_message.set_footer(text = f"{message.author.id}")
-      embed_message.set_thumbnail(url="https://i.imgur.com/PfWlEd5.png")
-      await apply_user.send(embed=embed_message)
-    
-    return
-      
       
   if message.content.startswith(discordprefix+"radical") and not message.author.bot:
     try:
@@ -3234,7 +3225,6 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"message time") and not message.author.bot:
-
     embed = discord.Embed(title = "Message Time:",color=random.randint(0, 16777215),timestamp=message.created_at)
     embed.set_footer(text=f"{message.author.id}")
     await message.channel.send(embed=embed)
@@ -3336,14 +3326,6 @@ async def on_message(message):
 
     except:
       await message.channel.send("Either you forgot the values needed or you used text after the Arithmetic")
-    return
-
-  if message.content.startswith(discordprefix+"invite") and not message.author.bot:
-    embed  = discord.Embed(title = "The Invite Links!", value = "One is for testing, one is the normal bot.",color=random.randint(0, 16777215))
-    embed.add_field(name = "Testing Link:", value = "https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8", inline = False)
-    embed.add_field(name = "Normal Invite:", value = f"https://discordapp.com/oauth2/authorize?client_id={client.user.id}&scope=bot&permissions=8", inline = False)
-    embed.set_thumbnail(url=(client.user.avatar_url))
-    await message.channel.send(embed=embed)
     return
 
   if message.content.startswith(discordprefix+"suspend") and message.author.id in admins and not message.author.bot:

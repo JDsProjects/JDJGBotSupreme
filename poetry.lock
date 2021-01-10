@@ -30,6 +30,18 @@ speedups = ["aiodns", "brotlipy", "cchardet"]
 
 [[package]]
 category = "main"
+description = "An async python wrapper for the asuna api"
+name = "asuna-api"
+optional = false
+python-versions = "*"
+version = "0.2.5"
+
+[package.dependencies]
+aiohttp = "*"
+yarl = "*"
+
+[[package]]
+category = "main"
 description = "Timeout context manager for asyncio programs"
 name = "async-timeout"
 optional = false
@@ -653,7 +665,7 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "3b93c0f4044bb838ec48c8eb1598875b2a6bdb24b7b1cde80bbacf0fed09f371"
+content-hash = "3469278f60714e07da6465a5525524cabb55a4b3fc994fa5698a68cb97539da3"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -699,6 +711,9 @@ aiohttp = [
     {file = "aiohttp-3.7.3-cp39-cp39-win32.whl", hash = "sha256:3b0036c978cbcc4a4512278e98e3e6d9e6b834dc973206162eddf98b586ef1c6"},
     {file = "aiohttp-3.7.3-cp39-cp39-win_amd64.whl", hash = "sha256:e1b95972a0ae3f248a899cdbac92ba2e01d731225f566569311043ce2226f5e7"},
     {file = "aiohttp-3.7.3.tar.gz", hash = "sha256:9c1a81af067e72261c9cbe33ea792893e83bc6aa987bfbd6fdc1e5e7b22777c4"},
+]
+asuna-api = [
+    {file = "asuna_api-0.2.5.tar.gz", hash = "sha256:df080b5a84c88b7d35f68234b998cff8358a0808c94baead373587e9fab8dc33"},
 ]
 async-timeout = [
     {file = "async-timeout-3.0.1.tar.gz", hash = "sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f"},

@@ -22,14 +22,6 @@ insult = [
   "Some people like being evil, but why? Being good is better...(trust me)",
   "We ran out of insults for you, because frankly we don't care..",]
 
-insultdoom96 = []
-
-
-#isn't needed if not using a function
-response_yes = []
-
-#if isn't needed if not using a function
-
 random_message = [
 "Alright",
 "10/10 It tastes bad",
@@ -49,19 +41,11 @@ random_message = [
 "frick me",
 ]
 
-random_responses = []
-
-#a dump list(not needed without a function)
-
 response_used = [ 
   'Do you really need to curse?',
   'the f word and s words work but really using racial slurs, why?(still not the best idea)','Dude, why would even bother with that?',
   'Ugh....',
 ]
-
-response_banned = []
-
-#isn't needed if not using the functions.
 
 advice = [
   "Hey Fun fact in Project64 you can copy cheats in the cheat file(just have things that makes it easier to copy(you need to open it in Sublime or Notepad++ in order to read that(a.k.a notepad does't work on just it's own",
@@ -79,52 +63,3 @@ advice = [
 "not all authority is good, try to find the good people in life to hang out with",
 "Not all advice is spelled correctly..",
 ]
-
-ad_some = []
-
-#isn't needed if not using the functions.
-
-
-
-#--------below old code, just remove the single "#" infront to get it working again------#
-
-#def compliment():
-  #global response_yes
-  #complimentt = random.choice(response_answers_yes)
-  #if len(response_yes) == 0:
-
-    #response_yes = response_answers_yes
-
-    #random.shuffle(response_yes)
-
-  #return "\n"+response_yes.pop()
-
-#def insult_response():
-  #global insultdoom96
-  #if len(insultdoom96) == 0:
-  
-    #insultdoom96 = insult_doom94
-    #random.shuffle(insultdoom96)
-
-  #return "\n"+insultdoom96.pop()
-  
-#def advice():
-  #global ad_some
-  #if len(ad_some) == 0:
-    #ad_some = ad_all
-    #random.shuffle(ad_some)
-  #return "\n"+ad_some.pop()
-
-#def message_shuffler():
-  #global random_responses
-  #if len(random_responses) == 0:
-    #random_responses = random_message
-    #random.shuffle(random_responses)
-  #return "\n"+random_responses.pop()
-
-#def determine():
-  #global response_banned
-  #if len(response_banned) == 0:
-    #response_banned = response_used
-    #random.shuffle(response_banned)
-  #return "\n"+response_banned.pop()
