@@ -1,4 +1,3 @@
-import random
 compliment = [
   "You are nice to me :D, Thank you :D",
   "Hope your life is good :D",
@@ -8,7 +7,7 @@ compliment = [
   "People can trust you...",
   "Thank You for your help.",
   "Loading epic dance for you....",
-  "<a:mariodance:738972099460202567> is how you make me....",]
+  ":mariodance: is how you make me....",]
 
 insult = [
   "Look I can insult better than some people, but at least I don't willing send it to people unlike you, who wants it",
@@ -17,7 +16,7 @@ insult = [
   "Sorry for not wanting to insult you :rolling_eyes: loading... yoshi banner hammer...",
   "You are so bad you deserve to get banned(JDJG doesn't approve of this message",
   "Some people get custom tailored stuff, now you don't because you Didn't ask. MWHAAA!",
-  "Loading yoshi ban hammer.... <a:yoshihammer:717570681637699615>",
+  "Loading yoshi ban hammer.... yoshihammer",
   ".______________________. Geez you made me unable to comment about you, you're that evil...",
   "Some people like being evil, but why? Being good is better...(trust me)",
   "We ran out of insults for you, because frankly we don't care..",]
@@ -38,14 +37,12 @@ random_message = [
 "New Movie idea World War Karen(Karens v.s. the world)",
 "Stop Banning people when they don't deserve that",
 "I shouldn't have said that",
-"frick me",
-]
+"frick me",]
 
 response_used = [ 
   'Do you really need to curse?',
   'the f word and s words work but really using racial slurs, why?(still not the best idea)','Dude, why would even bother with that?',
-  'Ugh....',
-]
+  'Ugh....',]
 
 advice = [
   "Hey Fun fact in Project64 you can copy cheats in the cheat file(just have things that makes it easier to copy(you need to open it in Sublime or Notepad++ in order to read that(a.k.a notepad does't work on just it's own",
@@ -61,5 +58,4 @@ advice = [
 "Be nice when you can but you can still be mean when you need to(don't go overboard)",
 "don't let people have power over you",
 "not all authority is good, try to find the good people in life to hang out with",
-"Not all advice is spelled correctly..",
-]
+"Not all advice is spelled correctly..",]

@@ -406,6 +406,10 @@ async def ping(ctx):
   await ctx.send("Pong")
   await ctx.send(f"Response time: {client.latency*1000}")
 
+@client.group(name="apply",invoke_without_command=True)
+async def apply(ctx):
+  await ctx.send("this command is meant to apply")
+
 @apply.command(help="a command to apply for our Bloopers.")
 async def bloopers(ctx,*,args=None):
   if args is None:
