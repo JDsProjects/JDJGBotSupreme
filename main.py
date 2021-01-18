@@ -33,7 +33,7 @@ import numpy as np
 import logging
 import emojis
 import GetPfp
-import emote
+import emote_program
 import color_code
 import userinfo
 import jdjg_os
@@ -323,7 +323,7 @@ send_channel = [
 
 safe_servers = [736422329399246990, 736966204606120007,736051343185412296]
 
-slur_okay = [736051343185412296,745559622856998953,643960606998790154]
+slur_okay = [736051343185412296,745559622856998953,643960606998790154,768188362431004673]
 
 from_to_channel={}
 
@@ -405,6 +405,24 @@ class BetterUserconverter(commands.Converter):
 async def ping(ctx):
   await ctx.send("Pong")
   await ctx.send(f"Response time: {client.latency*1000}")
+
+@client.command()
+async def test(ctx):
+  text = "<:cursedlapis:651028035364978718><:lapisquash:651023136933806093>"
+  emoji_stuff=re.findall(r"<(?P<animated>a?):(?P<name>[a-zA-Z0-9_]{2,32}):(?P<id>[0-9]{18,22})>",text)
+  yes_here= client.get_guild(663593668942233600) 
+  for x in emoji_stuff:
+    grab=await emote_program.get_emoji_id(x[-1])
+    async with aiohttp.ClientSession() as cs:
+      async with cs.get(grab[0]) as speacil_image:
+        image= await speacil_image.read()
+        try:
+          new_emoji=await yes_here.create_custom_emoji(name = str(x[1]),image= image) 
+          await ctx.send(new_emoji)
+        except discord.errors.HTTPException:
+          await ctx.send(x[-1])
+          await ctx.send(grab[0])
+
 
 @client.group(name="apply",invoke_without_command=True)
 async def apply(ctx):
@@ -853,6 +871,24 @@ async def userinfo(ctx,*,user: BetterUserconverter = None):
   await ctx.send(embed=embed)
   print("USERNAME: "+user.name)
   await RankSystem.GetStatus(ctx.message,user)
+
+@client.command(help="a command to give a list of servers(owner only)")
+async def servers(ctx):
+  if await client.is_owner(ctx.author):
+    send_list = [""]
+    guild_list = ["%d %s %d %s" % (len(g.members), g.name, g.id, (g.system_channel or g.text_channels[0]).mention) for g in client.guilds]
+    for i in guild_list:
+      if len(send_list[-1] + i) < 1000:
+        send_list[-1] += i + "\n"
+      else:
+        send_list += [i + "\n"]
+    if (ctx.author.dm_channel is None):
+      await ctx.author.create_dm()
+    await ctx.author.dm_channel.send("\n Servers:")
+    for i in send_list:
+      await ctx.author.dm_channel.send(i) 
+  if await client.is_owner(ctx.author) is False:
+    await ctx.send("You can't use that it's owner only")
 
 #Typing Status Support
 waitMessage = 0
@@ -1485,8 +1521,7 @@ async def on_message(message):
     user_there=client.get_user(user_id)
     if user_there == None:
       user_there = message.author
-    await message.channel.send(f"{user_there.mention}")
-    
+    await message.channel.send(f"{user_there.mention}")    
     return
 
   if message.content.startswith(discordprefix+"safe") and not message.author.bot and user.guild_permissions.administrator == True:
@@ -2493,13 +2528,9 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"emoji_clean") and message.author.id in admins and not message.author.bot:
-
     id_used = (763857844440268842)
-
     dump_server = client.get_guild(id_used)
-
     for x in dump_server.emojis:
-
       await x.delete()
 
     return
@@ -2521,10 +2552,10 @@ async def on_message(message):
     emoji_url = []
     emoji_name = []
 
-    for em in (await emote.get(message)):
+    for em in (await emote_program.get(message)):
       emoji_url.append(em)
 
-    for name in await emote.get2(message):
+    for name in await emote_program.get2(message):
       emoji_name.append(name)
     e = 0
 
@@ -2601,33 +2632,24 @@ async def on_message(message):
     animated_amount = 0
     static_amount = 0
     for e in dump_server.emojis:
-
       if e.animated == "yes":
-
         animated_amount = animated_amount + 1
-
       if e.animated == "no":
-
         static_amount = static_amount + 1
 
     emoji_url = []
-
     emoji_name = []
 
-    for em in (await emote.get(message)):
-
+    for em in (await emote_program.get(message)):
       emoji_url.append(em)
 
-    for name in emote.get2(message):
-
+    for name in emote_program.get2(message):
       emoji_name.append(name)
 
     e = 0
 
     while e < len(emoji_name):
-
       img_link = emoji_url[e]
-
       emoji_name_grabbed = emoji_name[e]
 
       async with aiohttp.ClientSession() as cs:
@@ -2635,20 +2657,16 @@ async def on_message(message):
           img = Image.open(await response.read())
 
       if img.is_animated == True:
-
         if animated_amount < 50:
 
           pass_value = "yes"
           emote_data = await dump_server.create_custom_emoji(name = emoji_name_grabbed,image=await response.read())
 
           emote_collect.append(emote_data)
-
           animated_amount = animated_amount + 1
 
         if animated_amount >=50:
-
           pass_value = "no"
-
           await message.channel.send("That's why too many emojis")
       
       if img.is_animated == False:
@@ -2674,36 +2692,22 @@ async def on_message(message):
     e = 0
 
     pfp = client.user.avatar_url
-
     if emote_data.animated == True:
-
       animated_value = "Animated"
-
     if emote_data.animated == False:
-
       animated_value = "Static"
-
     if pass_value == "yes":
-
       for emote_data in emote_collect:
-
         time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-
         emoji_embed=discord.Embed(title=f"Added Emote: {emote_data.name}",description=time_used,color=random.randint(0, 16777215))
-
         emoji_embed.set_author(name=f"{message.author} Added an emoji.",icon_url=(pfp))
-
         emoji_embed.add_field(name=f"Emoji Type:",value=f"{animated_value}")
-
         emoji_embed.set_image(url=emote_data.url)
-
         emoji_embed.set_footer(text = f"{message.author.id}\n Emoji in {dump_server.name}\n ID: {dump_server.id}")
-
         channel_used=client.get_channel(738912143679946783)
         await channel_used.send(embed=emoji_embed)
-
         await message.channel.send(embed=emoji_embed)
-    retur
+    return
   
   if message.content.startswith(discordprefix+"emoji_id") and not message.author.bot:
     emoji_id=message.content.replace(discordprefix+"emoji_id ","")
@@ -2712,7 +2716,7 @@ async def on_message(message):
     except:
       await message.channel.send("make sure you pass actual emoji ids and not text.")
       return
-    url_speacil=await emote.get_emoji_id(emoji_id)
+    url_speacil=await emote_program.get_emoji_id(emoji_id)
     for url in url_speacil:
       embed = discord.Embed(description=f" Emoji ID: {emoji_id}",color=random.randint(0, 16777215))
       embed.set_image(url=url)
@@ -2720,12 +2724,12 @@ async def on_message(message):
     return
   
   if message.content.startswith(discordprefix+"emoji") and not message.author.bot:
-    for em in (await emote.get(message)):
-      for name in emote.get2(message):
+    for em in (await emote_program.get(message)):
+      for name in emote_program.get2(message):
         embed=discord.Embed(title=f"Emoji: **{name}**",color=random.randint(0, 16777215))
         embed.set_image(url=em)
         await message.channel.send(embed=embed)
-    await emote.default_emojis(message)
+    await emote_program.default_emojis(message)
     return
 
   if message.content.startswith(discordprefix+"log off") and message.author.id in admins and not message.author.bot:
@@ -3083,7 +3087,6 @@ async def on_message(message):
   if message.content.startswith(discordprefix+"radical") and not message.author.bot:
     try:
       num=message.content.split(" ")[1]
-
       root_int=message.content.split(" ")[2]
 
     except:
@@ -3207,26 +3210,6 @@ async def on_message(message):
     embed.add_field(name = f"{convert_to}:", value = f"{converted_value}")
     await message.channel.send(embed=embed)
     return
-  
-
-  if message.content.startswith(discordprefix+"servers") and message.author.id in admins and not message.author.bot:
-    send_list = [""]
-    guild_list = ["%d %s %d %s" % (len(g.members), g.name, g.id, (g.system_channel or g.text_channels[0]).mention) for g in client.guilds]
-
-    for i in guild_list:
-      if len(send_list[-1] + i) < 1000:
-        send_list[-1] += i + "\n"
-      else:
-        send_list += [i + "\n"]
-    
-    if (message.author.dm_channel is None):
-      await message.author.create_dm()
-
-    await message.author.dm_channel.send("\n Servers:")
-
-    for i in send_list:
-      await message.author.dm_channel.send(i) 
-    return
 
   if message.content.startswith(discordprefix+"message time") and not message.author.bot:
     embed = discord.Embed(title = "Message Time:",color=random.randint(0, 16777215),timestamp=message.created_at)
@@ -3282,6 +3265,15 @@ async def on_message(message):
   for banned_word in banned_words:
     if message.guild == None:
       pass
+    elif banned_word in message.content.lower() and message.guild.id in slur_okay:
+      for obj in DatabaseConfig.db.g_link_testing.find():
+        if message.guild.id == obj["ser_id"]:
+          try:
+            await message.delete()
+            banned_response=random.choice(random_response.response_used)
+            await message.channel.send(banned_response)
+          except discord.errors.Forbidden:
+            return
     elif banned_word in message.content.lower() and not message.guild.id in slur_okay:
       try:
         await message.delete()
@@ -3529,9 +3521,9 @@ async def on_message_edit(before,after):
       after.content = paste.url
     embedVar = discord.Embed(title=before.author.name+" Edited a Message",color=random.randint(0, 16777215))
     embedVar.add_field(name="Before:",value=str(before.content))
-    if(len(before.content)==0):
+    if(len(before.content)==0 or before.content is None):
       before.content = "NULL"
-    if(len(after.content)==0):
+    if(len(after.content)==0 or after.content is None):
       after.content = "NULL"
     embedVar.add_field(name="After:",value=str(after.content))
     logs = client.get_channel(738912143679946783)
