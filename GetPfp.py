@@ -3,23 +3,17 @@ import GlobalLinker
 import DatabaseConfig
 def GetServerPfp(message):
   contents = message.content.split(" ")
-  
   id_bit = 0
  
   try:
-
     id_bit = int(contents[1])
  
   except:
-
     id_bit = int(message.guild.id)
   
   guild_fetched=ClientConfig.client.get_guild(id_bit)
-
   server_icon=guild_fetched.icon_url
-
   return server_icon
-
 
 async def get_username(message):
   args = message.content.replace(message.content.split(" ")[0]+" ","")

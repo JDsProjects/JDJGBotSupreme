@@ -311,8 +311,11 @@ admins = [
 admin_contact = [
   168422909482762240,
   717822288375971900,
-  357006546674253826,
+  357006546674253826,]
 
+admin_contact2 = [
+  168422909482762240,
+  357006546674253826,
 ]
 
 #adding an id(if you have access to the source code and want to fork it, credit us, getting your discord id is easy, replace ours with the ones you are playing to use)
@@ -405,24 +408,6 @@ class BetterUserconverter(commands.Converter):
 async def ping(ctx):
   await ctx.send("Pong")
   await ctx.send(f"Response time: {client.latency*1000}")
-
-@client.command()
-async def test(ctx):
-  text = "<:cursedlapis:651028035364978718><:lapisquash:651023136933806093>"
-  emoji_stuff=re.findall(r"<(?P<animated>a?):(?P<name>[a-zA-Z0-9_]{2,32}):(?P<id>[0-9]{18,22})>",text)
-  yes_here= client.get_guild(663593668942233600) 
-  for x in emoji_stuff:
-    grab=await emote_program.get_emoji_id(x[-1])
-    async with aiohttp.ClientSession() as cs:
-      async with cs.get(grab[0]) as speacil_image:
-        image= await speacil_image.read()
-        try:
-          new_emoji=await yes_here.create_custom_emoji(name = str(x[1]),image= image) 
-          await ctx.send(new_emoji)
-        except discord.errors.HTTPException:
-          await ctx.send(x[-1])
-          await ctx.send(grab[0])
-
 
 @client.group(name="apply",invoke_without_command=True)
 async def apply(ctx):
@@ -1656,13 +1641,11 @@ async def on_message(message):
     return
 
 #OTHER STUFF
-
   if message.content.startswith(discordprefix+"random_message") and not message.author.bot:
     message_generator = random.choice(random_response.random_message)
     embed = discord.Embed(title = "Random Message Time...",description=f"**{message_generator}**",color=random.randint(0, 16777215))
     await message.channel.send(embed=embed)
     return   
-
   
   if message.content.startswith(discordprefix+"fetch_guild"):
     id_used = message.content.replace(discordprefix+"fetch_guild ","")
@@ -3520,11 +3503,11 @@ async def on_message_edit(before,after):
       await mystbin_client.close()
       after.content = paste.url
     embedVar = discord.Embed(title=before.author.name+" Edited a Message",color=random.randint(0, 16777215))
-    embedVar.add_field(name="Before:",value=str(before.content))
     if(len(before.content)==0 or before.content is None):
       before.content = "NULL"
     if(len(after.content)==0 or after.content is None):
       after.content = "NULL"
+    embedVar.add_field(name="Before:",value=str(before.content))
     embedVar.add_field(name="After:",value=str(after.content))
     logs = client.get_channel(738912143679946783)
     await logs.send(embed=embedVar)
@@ -3583,8 +3566,6 @@ async def on_guild_emojis_update(guild, before, after):
             embed.set_image(url=y.url)
             await logs.send(embed=embed)
       
-          
-
 
 @client.event
 async def on_error(name,*arguments,**karguments):
@@ -3597,11 +3578,14 @@ async def on_error(name,*arguments,**karguments):
     traceback.print_exc()
     print(f"\n{arguments}")
     try:
-      for adID in admin_contact:
+      for adID in admin_contact2:
         admin_user = client.get_user(adID)
         if (admin_user.dm_channel is None):
           await admin_user.create_dm()
-        await admin_user.send(embed=embed_message)
+        try:
+          await admin_user.send(embed=embed_message)
+        except:
+          print(adID)
     except:
       print("\n can't DM them")
     await client.get_channel(738912143679946783).send(embed=embed_message)
@@ -3655,14 +3639,14 @@ async def on_invite_create(invite):
 @client.event
 async def on_invite_delete(invite):
   try:
-    print(invite.revoked)
-    print(invite.guild)
-    print(invite.max_age)
-    print(invite.code)
+    invite.revoked
+    invite.guild
+    invite.max_age
+    invite.code
     print(invite.inviter)
-    print(invite.id)
-    print(invite.url)
-    print(invite.uses)
+    invite.id
+    invite.url
+    invite.uses
   except discord.errors.Forbidden:
     pass
 
