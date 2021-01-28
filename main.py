@@ -16,7 +16,6 @@ from io import BytesIO
 #from itertools import cycle
 import datetime
 from pytz import timezone #all good
-import pymongo
 from difflib import SequenceMatcher
 import tweepy
 #import itertools
@@ -35,11 +34,13 @@ import emojis
 import GetPfp
 import emote_program
 import color_code
-import userinfo
+import userinfo2
 import jdjg_os
 import mystbin
 import json
 import sr_api
+import asuna_api
+import aioimgur
 
 logging.basicConfig(level=logging.WARNING)
 ratelimit_detection=logging.Filter(name='WARNING:discord.http:We are being rate limited.')
@@ -402,7 +403,201 @@ class BetterUserconverter(commands.Converter):
           user = test
         if not test:
           user=ctx.author
+          
     return user
+
+async def triggered_converter(url,ctx):
+  sr_client=sr_api.Client()
+  source_image=sr_client.filter(option="triggered",url=str(url))
+  await sr_client.close()
+
+  imgur_client= aioimgur.ImgurClient(os.environ["imgur_id"],os.environ["imgur_secret"])
+  imgur_url= await imgur_client.upload_from_url(source_image.url)
+
+  embed = discord.Embed(color=random.randint(0, 16777215))
+  embed.set_author(name=f"Triggered gif requested by {ctx.author}",icon_url=(ctx.author.avatar_url))
+  embed.set_image(url=imgur_url["link"])
+  embed.set_footer(text="powered by some random api")
+  await ctx.send(embed=embed)
+
+@client.command(help="a hug command to hug people",brief="this the first command to hug.")
+async def hug(ctx,*, Member: BetterMemberConverter=None):
+  if Member is None:
+    Member = ctx.author
+    
+  if Member.id == ctx.author.id:
+    person = client.user
+    target = ctx.author
+  
+  if Member.id != ctx.author.id:
+    person = ctx.author
+    target = Member
+
+  sr_client=sr_api.Client()
+  image=await sr_client.get_gif("hug")
+  await sr_client.close()
+
+  embed=discord.Embed(color=random.randint(0, 16777215))
+  embed.set_author(name=f"{person} hugged you! Awwww...",icon_url=(person.avatar_url))
+  embed.set_image(url=image.url)
+  embed.set_footer(text="powered by some random api")
+  
+  if isinstance(ctx.channel, discord.TextChannel):
+    await ctx.send(content=target.mention,embed=embed) 
+
+  if isinstance(ctx.channel,discord.DMChannel):
+    if target.dm_channel is None:
+      await target.create_dm()
+    
+    try:
+      await target.send(content=target.mention,embed=embed)
+    except discord.Forbidden:
+      await ctx.author.send("Failed DM'ing them...")
+
+@client.command(help="another command to give you pat gifs",brief="powered using the asuna api")
+async def pat2(ctx,*, Member: BetterMemberConverter= None):
+  if Member is None:
+    Member = ctx.author
+    
+  if Member.id == ctx.author.id:
+    person = client.user
+    target = ctx.author
+  
+  if Member.id != ctx.author.id:
+    person = ctx.author
+    target = Member
+  
+  asuna = asuna_api.Client()
+  url = await asuna.get_gif("pat")
+  await asuna.close()
+
+  embed=discord.Embed(color=random.randint(0, 16777215))
+  embed.set_author(name=f"{person} patted you! *pat pat pat*",icon_url=(person.avatar_url))
+  embed.set_image(url=url.url)
+  embed.set_footer(text="powered using the asuna.ga api")
+  
+  if isinstance(ctx.channel, discord.TextChannel):
+    await ctx.send(content=target.mention,embed=embed) 
+
+  if isinstance(ctx.channel,discord.DMChannel):
+    if target.dm_channel is None:
+      await target.create_dm()
+    
+    try:
+      await target.send(content=target.mention,embed=embed)
+    except discord.Forbidden:
+      await ctx.author.send("Failed DM'ing them...")
+
+
+@client.command(help="a command to send facepalm gifs",brief="using some random api it sends you a facepalm gif lol")
+async def facepalm(ctx,*, Member: BetterMemberConverter=None):
+  if Member is None:
+    Member = ctx.author
+    
+  if Member.id == ctx.author.id:
+    person = client.user
+    target = ctx.author
+  
+  if Member.id != ctx.author.id:
+    person = ctx.author
+    target = Member
+  
+  sr_client=sr_api.Client()
+  image=await sr_client.get_gif("face-palm")
+  await sr_client.close()
+
+  embed=discord.Embed(color=random.randint(0, 16777215))
+  embed.set_author(name=f"{target} you made {person} facepalm",icon_url=(person.avatar_url))
+  embed.set_image(url=image.url)
+  embed.set_footer(text="powered by some random api")
+  
+  if isinstance(ctx.channel, discord.TextChannel):
+    await ctx.send(content=target.mention,embed=embed) 
+
+  if isinstance(ctx.channel,discord.DMChannel):
+    if target.dm_channel is None:
+      await target.create_dm()
+    
+    try:
+      await target.send(content=target.mention,embed=embed)
+    except discord.Forbidden:
+      await ctx.author.send("Failed Dming them...")
+
+@client.command(help="takes a .png attachment or your avatar and makes a triggered version.")
+async def triggered(ctx):
+  y = 0
+  if len(ctx.message.attachments) > 0:
+    for x in ctx.message.attachments:
+      if x.filename.endswith(".png"):
+        url = x.url
+        await triggered_converter(url,ctx)
+        y = y + 1
+      if not x.filename.endswith(".png"):
+        pass
+
+  if len(ctx.message.attachments) == 0 or y == 0:
+    url = ctx.author.avatar_url_as(format="png")
+    await triggered_converter(url,ctx)
+
+@client.command(help="uploads your emojis into a mystbin link")
+async def look_at(ctx):
+  if isinstance(ctx.message.channel, discord.TextChannel):
+    message_emojis = ""
+    for x in ctx.guild.emojis:
+      message_emojis = message_emojis+" "+str(x)+"\n"
+    mystbin_client = mystbin.Client()
+    paste = await mystbin_client.post(message_emojis)
+    await mystbin_client.close()
+    await ctx.send(paste.url)
+    
+  if isinstance(ctx.channel,discord.DMChannel):
+    await ctx.send("We can't use that in DMS")
+
+@client.command()
+async def headpat(ctx):
+  import petpet.Pet
+  await petpet.Pet.get_pet(ctx.message,ctx.message.channel)
+
+@client.command(help="a way to look up minecraft usernames",brief="using the official minecraft api, looking up minecraft information has never been easier(tis only gives minecraft account history relating to name changes)")
+async def mchistory(ctx,*,args=None):
+  import asuna_api
+  asuna = asuna_api.Client()
+  minecraft_info=await asuna.mc_user(args)
+  await asuna.close()
+  
+  if not args:
+    await ctx.send("Please pick a minecraft user.")
+
+  if args:
+    embed=discord.Embed(title=f"Minecraft Username: {args}",color=random.randint(0, 16777215))
+    embed.set_footer(text=f"Minecraft UUID: {minecraft_info.uuid}")
+    embed.add_field(name="Orginal Name:",value=minecraft_info.name)
+    y = 0
+    for x in minecraft_info.history:
+      if y > 0:
+        embed.add_field(name=f"Username:\n{x['name']}",value=f"Date Changed:\n{x['changedToAt']}\n \nTime Changed: \n {x['timeChangedAt']}")
+
+      y = y + 1
+    embed.set_author(name=f"Requested by {ctx.author}",icon_url=(ctx.author.avatar_url))
+    await ctx.send(embed=embed)
+
+@client.command(help="a command to backup text",brief="please don't upload any private files that aren't meant to be seen")
+async def text_backup(ctx):
+  if ctx.message.attachments:
+    for x in ctx.message.attachments:
+      file=await x.read()
+      if len(file) > 0:
+        encoding=chardet.detect(file)["encoding"]
+        if encoding:
+          text = file.decode(encoding)
+          mystbin_client = mystbin.Client()
+          paste = await mystbin_client.post(text)
+          await ctx.send(content=f"Added text file to mystbin: \n{paste.url}")
+          await mystbin_client.close()
+        if encoding is None:
+          await ctx.send("it looks like it couldn't decode this file, if this is an issue DM JDJG Inc. Official#3439 or it wasn't a text file.")
+      if len(file ) < 1:
+        await ctx.send("this doesn't contain any bytes.")
 
 @client.command()
 async def ping(ctx):
@@ -438,6 +633,7 @@ async def invite(ctx):
   embed  = discord.Embed(title = "The Invite Links!", value = "One is for testing, one is the normal bot.",color=random.randint(0, 16777215))
   embed.add_field(name = "Testing Link:", value = "https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8", inline = False)
   embed.add_field(name = "Normal Invite:", value = f"https://discordapp.com/oauth2/authorize?client_id={client.user.id}&scope=bot&permissions=8", inline = False)
+  embed.add_field(name="JDBot invite:",value="https://discord.com/oauth2/authorize?client_id=347265035971854337&scope=bot&permissions=8",inline=False)
   embed.set_thumbnail(url=(client.user.avatar_url))
   await ctx.send(embed=embed)
 
@@ -1260,35 +1456,6 @@ async def on_message(message):
           member_role = message.guild.get_role(748640407201644624)
           await message.author.add_roles(member_role,reason="User Vertification by Bot.")
           return
-
-  if message.content.startswith(discordprefix+"text_backup") and not message.author.bot:
-    if len(message.attachments) > 0:
-      if (message.attachments[0].url).endswith(".txt"):
-        info=await message.attachments[0].read()
-        if len(info) > 0:
-          the_encoding = chardet.detect(info)['encoding']
-          text=info.decode(the_encoding)
-          mystbin_client = mystbin.Client()
-          paste = await mystbin_client.post(text)
-          await message.channel.send("added text file to mystbin")
-          await message.channel.send(paste.url)
-          await mystbin_client.close()
-        if len(info) == 0:
-          await message.channel.send("it's not going to work with 0 bytes.")
-      if not (message.attachments[0].url).endswith(".txt"):
-        await message.channel.send("That's not a .txt file.")
-    if len(message.attachments) == 0:
-      await message.channel.send("Please try actually uploading a text file.")
-    return
-  
-  if message.content.startswith(discordprefix+"look_at") and not message.author.bot:
-    emoji_list=message.guild.emojis
-    message_emojis = ""
-    for x in emoji_list:
-      if x.animated == True:
-        message_emojis = message_emojis+" "+str(x)
-    await message.channel.send(message_emojis)
-    return
   
   if message.content.startswith(discordprefix+"CRAP_BACKUP") and not message.author.bot:
     await message.channel.send("Crap ok...ill back them up real quick")
@@ -1314,10 +1481,6 @@ async def on_message(message):
     await message.channel.send("That was close but it is all backed up to disk :)")
     return
 
-  if message.content.startswith(discordprefix+"pat") and not message.author.bot:
-    import petpet.Pet
-    await petpet.Pet.get_pet(message,message.channel)
-    return
 
   if message.content.startswith(discordprefix+"email") and not message.author.bot:
     import smtplib
@@ -1328,152 +1491,8 @@ async def on_message(message):
       return
 
     return
-  
-  if message.content.startswith(discordprefix+"triggered") and not message.author.bot:
-    if len(message.attachments) > 0:
-      if message.attachments[0].filename.endswith(".png"):
-        url = message.attachments[0].url
-      else:
-        url = message.author.avatar_url_as(format="png")
-    
-    if len(message.attachments) == 0:
-      url = message.author.avatar_url_as(format="png")
-    
-    async with aiohttp.ClientSession() as cs:
-      async with cs.get(f"https://some-random-api.ml/canvas/triggered?avatar={url}") as anime:
-        image= BytesIO(await anime.read())
-      file=discord.File(image, "triggered.gif")
-      await message.channel.send(file=file)
-    return
-
-  if message.content.startswith(discordprefix+"mchistory") and not message.author.bot:
-    username = message.content.replace(discordprefix+"mchistory ","")
-    if username == (""):
-      username = "JDJG_IncOfficial"
-    
-    async with aiohttp.ClientSession() as cs:
-      async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{username}') as r:
-        if r.status == 200:
-          user_dict=await r.json()
-          minecraft_uuid=user_dict["id"]
-          async with aiohttp.ClientSession() as cs:
-            async with cs.get(f"https://api.mojang.com/user/profiles/{minecraft_uuid}/names") as r:
-              if r.status == 200:
-                user_history=await r.json()
-
-                y = 0
-                for x in user_history:
-                  if y == 0:
-                    minecraft_username = x["name"]
-                    embed=discord.Embed(title=f"Minecraft Username: {username}",color=random.randint(0, 16777215))
-                    embed.set_footer(text=f"Minecraft UUID: {minecraft_uuid}")
-                    embed.add_field(name="Orginal Name:",value=minecraft_username)
-
-                  if y > 0:
-                    username = (x["name"])
-                    date_changed=datetime.datetime.utcfromtimestamp(int(x["changedToAt"])/1000).strftime("%m/%d/%Y")
-                    time_changed=datetime.datetime.utcfromtimestamp(int(x["changedToAt"])/1000).strftime("%H:%M:%S")
-                    embed.add_field(name=f"Username:\n{username}",value=f"Date Changed:\n{date_changed}\n  \nTime Changed: \n {time_changed}")
-
-                  y = y + 1
-                
-                embed.set_author(name=f"Requested by {message.author}",icon_url=(message.author.avatar_url))
-                await message.channel.send(embed=embed)
-
-              if r.status == 500:
-                await message.channel.send.send("Internal server error occured at Mojang. We're sorry :( ")
-                     
-        if not r.status == 200:
-          await message.channel.send("It doesn't like it didn't find the user.")
-
-    return
-
-  if message.content.startswith(discordprefix+"facepalm") and not message.author.bot:
-    facepalm = message.content.replace(discordprefix+"facepalm","")
-    if facepalm == (""):
-      person = client.user
-      target = message.author
-      
-    if len(message.mentions) > 0:
-      target = message.mentions[0]
-      person = message.author
-
-    if len(message.mentions) == 0:
-      person = message.author
-      target=await userinfo.user_grab(message)
-
-    if target.id == person.id:
-      person = client.user
-      target = message.author
-
-    sr_client=sr_api.Client()
-    image=await sr_client.get_gif("face-palm")
-    await sr_client.close()
-  
-    embed=discord.Embed(color=random.randint(0, 16777215))
-    embed.set_author(name=f"{target} you made {person} facepalm",icon_url=(person.avatar_url))
-    embed.set_image(url=image.url)
-    await message.channel.send(content=target.mention,embed=embed)
-    return
 
   
-  if message.content.startswith(discordprefix+"headpat") and not message.author.bot:
-    head_pat = message.content.replace(discordprefix+"headpat","")
-    if head_pat == (""):
-      person = client.user
-      target = message.author
-      
-    if len(message.mentions) > 0:
-      target = message.mentions[0]
-      person = message.author
-
-    if len(message.mentions) == 0:
-      person = message.author
-      target=await userinfo.user_grab(message)
-
-    if target.id == person.id:
-      person = client.user
-      target = message.author
-
-    async with aiohttp.ClientSession() as cs:
-      async with cs.get('https://some-random-api.ml/animu/pat') as anime:
-        res = await anime.json()
-
-    for x in res:
-      embed=discord.Embed(color=random.randint(0, 16777215))
-      embed.set_author(name=f"{person} patted you",icon_url=(person.avatar_url))
-      embed.set_image(url=res[x])
-      await message.channel.send(content=target.mention,embed=embed)
-    return
-
-  if message.content.startswith(discordprefix+"hug") and not message.author.bot:
-    hug = message.content.replace(discordprefix+"hug","")
-    if hug == (""):
-      person = client.user
-      target = message.author
-    
-    if len(message.mentions) > 0:
-      target = message.mentions[0]
-      person = message.author
-    
-    if len(message.mentions) == 0:
-      person = message.author
-      target=await userinfo.user_grab(message)
-
-    if target.id == person.id:
-      person = client.user
-      target = message.author
-
-    async with aiohttp.ClientSession() as cs:
-      async with cs.get('https://some-random-api.ml/animu/hug') as anime:
-        res = await anime.json()
-    for x in res:
-      embed=discord.Embed(color=random.randint(0, 16777215))
-      embed.set_author(name=f"{person} hugged you",icon_url=(person.avatar_url))
-      embed.set_image(url=res[x])
-      await message.channel.send(content=target.mention,embed=embed)
-    return
-
   if message.content.startswith(discordprefix+"save_image") and not message.author.bot and message.author.id in jdjg_id:
     if len(message.attachments) > 0:
       obj = message.attachments[0]
@@ -1811,7 +1830,10 @@ async def on_message(message):
       
       value_grabber=random.randint(0,len(urls))
       order_image = urls[value_grabber]
-      await message.delete()
+      try:
+        await message.delete()
+      except discord.errors.Forbidden:
+        pass
       order_description = (f"{message.author} ordered a {order_wanted}")
       pfp = message.author.avatar_url
       order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
@@ -1857,7 +1879,10 @@ async def on_message(message):
 
       gifNearest = sorted(urls_dictionary, key=lambda x: SequenceMatcher(None, x, order_wanted).ratio())[-1]
       order_image = urls_dictionary[gifNearest]
-      await message.delete()
+      try:
+        await message.delete()
+      except discord.errors.Forbidden:
+        pass
       order_description = (f"{message.author} ordered a {order_wanted}")
       pfp = message.author.avatar_url
       order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
@@ -1892,7 +1917,10 @@ async def on_message(message):
         gif_number = random.randint(0,len(lst))
         gifNearest = lst[gif_number]
         order_image = (f"https://media3.giphy.com/media/{gifNearest.id}/giphy.gif")
-        await message.delete()
+        try:
+          await message.delete()
+        except discord.errors.Forbidden:
+          pass
         order_description = (f"{message.author} ordered a {order_wanted}")
         pfp = message.author.avatar_url
         order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
@@ -1929,7 +1957,10 @@ async def on_message(message):
       if len(lst) > 0:
         gifNearest = sorted(lst, key=lambda x: SequenceMatcher(None, x.url, order_wanted).ratio())[-1]
         order_image = (f"https://media3.giphy.com/media/{gifNearest.id}/giphy.gif")
-        await message.delete()
+        try:
+          await message.delete()
+        except discord.errors.Forbidden:
+          pass
         order_description = (f"{message.author} ordered a {order_wanted}")
         pfp = message.author.avatar_url
         order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
@@ -1991,8 +2022,10 @@ async def on_message(message):
               url_collection.remove(x)
               print(x)
     
-    await message.delete()
-
+    try:
+      await message.delete()
+    except discord.errors.Forbidden:
+      pass
     order_description = (f"{message.author} ordered a {order_wanted}")
     pfp = message.author.avatar_url
     order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
@@ -2102,7 +2135,10 @@ async def on_message(message):
 
     time_after=time.process_time()
     time_spent = int((time_after - time_before)*1000)
-    await message.delete()
+    try:
+      await message.delete()
+    except discord.errors.Forbidden:
+      pass
     order_description = (f"{message.author} ordered a {order_wanted}")
     pfp = message.author.avatar_url
     order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
@@ -2272,7 +2308,6 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"advice") and not message.author.bot:
-
     advice_response=random.choice(random_response.advice)
     embed = discord.Embed(title = "Here is some advice for you!",color=random.randint(0, 16777215))
     embed.add_field(name = f"{advice_response}", value = "Hopefully this helped!")
@@ -3416,13 +3451,7 @@ async def on_message(message):
     embed_message.set_footer(text = f"{message.author.id}")
     embed_message.set_thumbnail(url="https://i.imgur.com/bW6ergl.png")
     await client.get_channel(738912143679946783).send(embed=embed_message)
-    if (message.author.dm_channel is None):
-      await message.author.create_dm()
-    embed_message = discord.Embed(title=f" {message.content}", description=time_used,color=random.randint(0, 16777215))
-    embed_message.set_author(name=f"You tried to excute invalid command:",icon_url=(pfp))
-    embed_message.set_footer(text = f"{message.author.id}")
-    embed_message.set_thumbnail(url="https://i.imgur.com/bW6ergl.png")
-    await message.author.dm_channel.send(embed=embed_message)
+    await message.channel.send("That's not a valid command.")
     return
 
   for channel_x in from_to_channel:
