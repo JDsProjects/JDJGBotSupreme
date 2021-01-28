@@ -34,7 +34,6 @@ import emojis
 import GetPfp
 import emote_program
 import color_code
-import userinfo2
 import jdjg_os
 import mystbin
 import json
