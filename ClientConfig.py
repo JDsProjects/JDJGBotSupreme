@@ -12,3 +12,4 @@ async def get_prefix(client,message):
   return commands.when_mentioned_or(*extras)(client, message)
 
 client = commands.Bot(command_prefix=(get_prefix),intents = discord.Intents.all())
+client.load_extension('jishaku')

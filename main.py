@@ -40,9 +40,10 @@ import json
 import sr_api
 import asuna_api
 import aioimgur
+import time
+import async_cse
 
-logging.basicConfig(level=logging.WARNING)
-ratelimit_detection=logging.Filter(name='WARNING:discord.http:We are being rate limited.')
+logging.basicConfig(level=logging.INFO)
 
 client = ClientConfig.client
 
@@ -418,6 +419,81 @@ async def triggered_converter(url,ctx):
   embed.set_image(url=imgur_url["link"])
   embed.set_footer(text="powered by some random api")
   await ctx.send(embed=embed)
+
+@client.group(name="order",invoke_without_command=True)
+async def order(ctx,*,args=None):
+  if args is None:
+    await ctx.send("You can't order nothing.")
+  if args:
+    time_before=time.process_time() 
+    image_client=async_cse.Search(os.environ["image_api_key"],engine_id=os.environ["google_image_key"])
+    results = await image_client.search(args, safesearch=True, image_search=True)
+    emoji_image = sorted(results, key=lambda x: SequenceMatcher(None, x.image_url,args).ratio())[-1]
+    await image_client.close()
+    time_after=time.process_time()
+    try:
+      await ctx.message.delete()
+    except discord.errors.Forbidden:
+      pass
+  
+    embed = discord.Embed(title=f"Item: {args}", description=f"{ctx.author} ordered a {args}",color=random.randint(0, 16777215),timestamp=ctx.message.created_at)
+    embed.set_author(name=f"order for {ctx.author}:",icon_url=(ctx.author.avatar_url))
+    embed.add_field(name="Time Spent:",value=f"{int((time_after - time_before)*1000)}MS")
+    embed.add_field(name="Powered by:",value="Google Images Api")
+    embed.set_image(url=emoji_image.image_url)
+    embed.set_footer(text = f"{ctx.author.id} \nCopyright: I don't know the copyright.")
+    await ctx.send(content="Order has been logged for safety purposes(we want to make sure no unsafe search is sent)",embed=embed)
+    await client.get_channel(738912143679946783).send(embed=embed)
+
+@order.command(brief="a command to shuffle images from google images")
+async def shuffle(ctx,*,args=None):
+  if args is None:
+    await ctx.send("You can't order nothing")
+  if args:
+    time_before=time.process_time() 
+    image_client=async_cse.Search(os.environ["image_api_key"],engine_id=os.environ["google_image_key"])
+    results = await image_client.search(args, safesearch=True, image_search=True)
+    emoji_image = results[random.randint(0,len(results)-1)]
+    await image_client.close()
+    time_after=time.process_time()
+    try:
+      await ctx.message.delete()
+    except discord.errors.Forbidden:
+      pass
+
+    embed = discord.Embed(title=f"Item: {args}", description=f"{ctx.author} ordered a {args}",color=random.randint(0, 16777215),timestamp=ctx.message.created_at)
+    embed.set_author(name=f"order for {ctx.author}:",icon_url=(ctx.author.avatar_url))
+    embed.add_field(name="Time Spent:",value=f"{int((time_after - time_before)*1000)}MS")
+    embed.add_field(name="Powered by:",value="Google Images Api")
+    embed.set_image(url=emoji_image.image_url)
+    embed.set_footer(text = f"{ctx.author.id} \nCopyright: I don't know the copyright.")
+    await ctx.send(content="Order has been logged for safety purposes(we want to make sure no unsafe search is sent)",embed=embed)
+    await client.get_channel(738912143679946783).send(embed=embed)
+
+@client.command(brief="a command to shuffle images from google images",aliases=["order-shuffle"])
+async def order_shuffle(ctx,*,args):
+  if args is None:
+    await ctx.send("You can't order nothing")
+  if args:
+    time_before=time.process_time() 
+    image_client=async_cse.Search(os.environ["image_api_key"],engine_id=os.environ["google_image_key"])
+    results = await image_client.search(args, safesearch=True, image_search=True)
+    emoji_image = results[random.randint(0,len(results)-1)]
+    await image_client.close()
+    time_after=time.process_time()
+    try:
+      await ctx.message.delete()
+    except discord.errors.Forbidden:
+      pass
+
+    embed = discord.Embed(title=f"Item: {args}", description=f"{ctx.author} ordered a {args}",color=random.randint(0, 16777215),timestamp=ctx.message.created_at)
+    embed.set_author(name=f"order for {ctx.author}:",icon_url=(ctx.author.avatar_url))
+    embed.add_field(name="Time Spent:",value=f"{int((time_after - time_before)*1000)}MS")
+    embed.add_field(name="Powered by:",value="Google Images Api")
+    embed.set_image(url=emoji_image.image_url)
+    embed.set_footer(text = f"{ctx.author.id} \nCopyright: I don't know the copyright.")
+    await ctx.send(content="Order has been logged for safety purposes(we want to make sure no unsafe search is sent)",embed=embed)
+    await client.get_channel(738912143679946783).send(embed=embed)
 
 @client.command(help="a hug command to hug people",brief="this the first command to hug.")
 async def hug(ctx,*, Member: BetterMemberConverter=None):
@@ -829,6 +905,61 @@ async def stats(ctx):
   embed.add_field(name="Guild count",value=len(client.guilds))
   embed.add_field(name="User Count:",value=len(client.users))
   await ctx.send(embed=embed)
+
+async def guildinfo(ctx,guild):
+  bots = 0
+  users = 0
+  for x in guild.members:
+    if x.bot is True:
+      bots = bots + 1
+    if x.bot is False:
+      users = users + 1
+  static_emojis = 0
+  animated_emojis = 0
+  usable_emojis = 0
+  for x in guild.emojis:
+    if x.animated is True:
+      animated_emojis = animated_emojis + 1
+    if x.animated is False:
+      static_emojis = static_emojis + 1
+    if x.available is True:
+      usable_emojis = usable_emojis + 1
+  
+  embed = discord.Embed(title="Guild Info:",color=random.randint(0, 16777215))
+  embed.add_field(name="Server Name:",value=guild.name)
+  embed.add_field(name="Server ID:",value=guild.id)
+  embed.add_field(name="Server region",value=guild.region)
+  embed.add_field(name="Server created at:",value=f"{guild.created_at} UTC")
+  embed.add_field(name="Server Owner:",value=guild.owner)
+  embed.add_field(name="Member Count:",value=guild.member_count)
+  embed.add_field(name="Users:",value=users)
+  embed.add_field(name="Bots:",value=bots)
+  embed.add_field(name="Channel Count:",value=len(guild.channels))
+  embed.add_field(name="Role Count:",value=len(guild.roles))
+  embed.set_thumbnail(url=(guild.icon_url))
+  embed.add_field(name="Emoji Limit:",value=guild.emoji_limit)
+  embed.add_field(name="Max File Size:",value=f"{guild.filesize_limit/1000000} MB")
+  embed.add_field(name="Shard ID:",value=guild.shard_id)
+  embed.add_field(name="Animated Icon",value=guild.is_icon_animated())
+  embed.add_field(name="Static Emojis",value=static_emojis)
+  embed.add_field(name="Animated Emojis",value=animated_emojis)
+  embed.add_field(name="Total Emojis:",value=f"{len(guild.emojis)}/{guild.emoji_limit*2}")
+  embed.add_field(name="Usable Emojis",value=usable_emojis)
+
+  await ctx.send(embed=embed)
+
+@client.command(help="gives you info about a guild",aliases=["server_info","guild_fetch","guild_info","fetch_guild",])
+async def serverinfo(ctx,*,args=None):
+  if args:
+    match=re.match(r'(\d{16,21})',args)
+    guild=client.get_guild(int(match.group(0)))
+    if guild is None:
+      guild = ctx.guild
+
+  if args is None:
+    guild = ctx.guild
+  
+  await guildinfo(ctx,guild)
 
 @client.command(help="a command to find the nearest emoji")
 async def emote(ctx,*,args=None):
@@ -1664,45 +1795,6 @@ async def on_message(message):
     embed = discord.Embed(title = "Random Message Time...",description=f"**{message_generator}**",color=random.randint(0, 16777215))
     await message.channel.send(embed=embed)
     return   
-  
-  if message.content.startswith(discordprefix+"fetch_guild"):
-    id_used = message.content.replace(discordprefix+"fetch_guild ","")
-    value = 0
-    try:
-      id_used=int(id_used)
-
-    except:
-      for guild in client.guilds:
-        if  id_used == guild.name:
-          id_used = guild.id
-          value = "Yes"
-
-        else:
-          value = None
-      
-        if value == None:
-          id_used = message.guild.id
-    
-    guild_fetched = client.get_guild(id_used)
-
-    if guild_fetched == None:
-      guild_fetched = client.get_guild(message.guild.id)
-
-    channels = [channel for channel in guild_fetched.channels]
-    roles = [role for role in guild_fetched.roles]
-    embed = discord.Embed(title="Guild Info", color=random.randint(0, 16777215))
-    embed.set_thumbnail(url = guild_fetched.icon_url)
-    embed.add_field(name='Server Name:',value=f'{guild_fetched.name}')
-    embed.add_field(name='Server ID:',value=f'{guild_fetched.id}')
-    embed.add_field(name='Server region:',value=f'{guild_fetched.region}')
-    embed.add_field(name='Server Creation Date:',value=f'{guild_fetched.created_at}')
-    embed.add_field(name='Server Owner:',value=f'{guild_fetched.owner}')
-    embed.add_field(name='Server Owner ID:',value=f'{guild_fetched.owner.id}')
-    embed.add_field(name='Member Count:',value=f'{guild_fetched.member_count}')
-    embed.add_field(name='Amount of Channels:',value=f"{len(channels)}")
-    embed.add_field(name='Amount of Roles:',value=f"{len(roles)}")
-    await message.channel.send(embed=embed)
-    return
 
   if message.content.startswith(discordprefix+"cc_") and not message.author.bot:
     from PIL import Image
@@ -1985,91 +2077,6 @@ async def on_message(message):
 
     return
 
-  if message.content.startswith(discordprefix+"order_shuffle") and not message.author.bot:
-    from google_images_search import GoogleImagesSearch
-    import time
-    order_wanted = message.content.replace(discordprefix+"order_shuffle ","")
-    time_before=time.process_time() 
-    def my_progressbar(url, progress):
-      url_collection.append(url)
-    gis = GoogleImagesSearch(os.environ['image_api_key'],os.environ['google_image_key'], validate_images=False,progressbar_fn=my_progressbar)
-    safe_search = {
-      'q': order_wanted,
-      'num': 5,
-     'rights': 'cc_publicdomain',
-     'fileType': 'jpg|gif|png|jpeg',
-     'safe': 'medium',
-     }
-     
-    try:
-      gis.search(search_params = safe_search)
-    except:
-      await message.channel.send("Please wait for a while so the api key gets regenerated")
-    for image_check in gis.results():
-      try:
-        raw_image_data = image_check.get_raw_data()
-        discord.utils._get_mime_type_for_image(raw_image_data)
-      except:
-        gis.results().remove(image_check)
-    
-    for x in url_collection:
-      async with aiohttp.ClientSession() as cs:
-         async with cs.get(x) as response:
-            try:
-              img = discord.utils._get_mime_type_for_image(await response.read())
-            except:
-              url_collection.remove(x)
-              print(x)
-    
-    try:
-      await message.delete()
-    except discord.errors.Forbidden:
-      pass
-    order_description = (f"{message.author} ordered a {order_wanted}")
-    pfp = message.author.avatar_url
-    order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-    order_info = (f"order for {message.author}:")
-
-    embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
-
-    embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time} \nCopyright: Public Domain")
-    embed_info.set_author(name=order_info,icon_url=(pfp))
-
-    time_after=time.process_time()
-    time_spent = int((time_after - time_before)*1000)
-    embed_info.add_field(name="Time Spent:",value=f"{time_spent} MS")  
-    image_channel = client.get_channel(764543893118648342)
-
-    if len(url_collection) > 0:
-      embed_info.add_field(name="Powered by:",value="Google Images Api")
-      max_number=len(url_collection)
-      spinner=random.randint(0,max_number-1)
-
-      emoji_image = url_collection[spinner]
-
-      await image_channel.send("let's see the best result")
-
-      for x in url_collection:
-
-        await image_channel.send(x)
-
-    if len(url_collection) == 0:
-
-      embed_info.add_field(name="Powered by:",value="Emojis")
-
-      emojiNearest = sorted(client.emojis, key=lambda x: SequenceMatcher(None, x.name, order_wanted).ratio())[-1] 
-
-      emoji_image=emojiNearest.url 
-
-    embed_info.set_image(url=emoji_image)
-
-    await message.channel.send(embed=embed_info)
-
-    await client.get_channel(738912143679946783).send(embed=embed_info)
-
-    url_collection = []
-    return
-
   if message.content.startswith(discordprefix+"image_check") and not message.author.bot:
     check_image = message.content.replace(discordprefix+"image_check ","")
     async with aiohttp.ClientSession() as cs:
@@ -2087,94 +2094,6 @@ async def on_message(message):
       await message.channel.send(valid_image)
     except discord.errors.InvalidArgument:
       await message.channel.send("Not a valid image")
-    return
-
-  if message.content.startswith(discordprefix+"order") and not message.author.bot:
-    import time
-    from google_images_search import GoogleImagesSearch
-    order_wanted = message.content.replace(discordprefix+"order ","")
-    time_before=time.process_time() 
-    def my_progressbar(url, progress):
-      url_collection.append(url)
-    gis = GoogleImagesSearch(os.environ['image_api_key'],os.environ['google_image_key'], validate_images=False,progressbar_fn=my_progressbar)
-    safe_search = {
-      'q': order_wanted,
-      'num': 5,
-     'rights': 'cc_publicdomain',
-     'fileType': 'jpg|gif|png|jpeg',
-     'safe': 'medium',
-     }
-
-    try:
-
-      gis.search(search_params = safe_search)
-    except:
-
-      await message.channel.send("Please wait for a while so the api key gets regenerated")
-
-    my_bytes_io = BytesIO()
-
-    for image_check in gis.results():
-      my_bytes_io.seek(0)
-      try:
-        raw_image_data = image_check.get_raw_data()
-        image_check.copy_to(my_bytes_io, raw_image_data)
-        temp_img = discord.utils._get_mime_type_for_image(my_bytes_io)
-
-      except:
-        gis.results().remove(image_check)
-
-    for x in url_collection:
-      async with aiohttp.ClientSession() as cs:
-        async with cs.get(x) as response:
-          try:
-            img = discord.utils._get_mime_type_for_image(await response.read())
-          except:
-            url_collection.remove(x)
-
-    time_after=time.process_time()
-    time_spent = int((time_after - time_before)*1000)
-    try:
-      await message.delete()
-    except discord.errors.Forbidden:
-      pass
-    order_description = (f"{message.author} ordered a {order_wanted}")
-    pfp = message.author.avatar_url
-    order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-    order_info = (f"order for {message.author}:")
-    embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
-    embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time} \nCopyright: Public Domain")
-    embed_info.add_field(name="Time Spent:",value=f"{time_spent} MS")
-    embed_info.set_author(name=order_info,icon_url=(pfp))
-    image_channel = client.get_channel(764543893118648342)
-    if len(url_collection) > 0:
-
-      embed_info.add_field(name="Powered by:",value="Google Images Api")
-
-      emoji_image = sorted(url_collection, key=lambda x: SequenceMatcher(None, x, order_wanted).ratio())[-1]
-
-      await image_channel.send("let's see the best result")
-
-      for x in url_collection:
-
-        await image_channel.send(x)
-
-    if len(url_collection) == 0:
-
-      embed_info.add_field(name="Powered by:",value="Emojis")
-
-      emojiNearest = sorted(client.emojis, key=lambda x: SequenceMatcher(None, x.name, order_wanted).ratio())[-1] 
-
-      emoji_image=emojiNearest.url 
-
-    embed_info.set_image(url=emoji_image)
-
-    await message.channel.send(embed=embed_info)
-
-    await client.get_channel(738912143679946783).send(embed=embed_info)
-
-    url_collection = []
-
     return
 
   if message.content.startswith(discordprefix+"exportPfp") and message.author.id in admins and not message.author.bot:
@@ -2197,97 +2116,7 @@ async def on_message(message):
         data_here=data_here.replace(x,f"\{x}")
     await message.channel.send(f"{data_here}")
     return
-  
-  if message.content.startswith(discordprefix+"guild_info") and not message.author.bot:
-      server = message.content.replace(discordprefix+"guild_info","")
-      try:
-          server = int(server)
-      except:
-          server = message.guild.id
-      server = client.get_guild(server)
-      if server != None:
-        bots = 0
-        real_members = 0
-        for x in server.members:
-          if x.bot == True:
-              bots=bots + 1
-          if x.bot == False:
-              real_members = real_members + 1
-        emojis_static = 0
-        emojis_animated = 0
-        for x in server.emojis:
-            if x.animated == False:
-                emojis_static = emojis_static + 1
-            if x.animated == True:
-                emojis_animated = emojis_animated + 1
-        embed = discord.Embed(title="Guild Info:",color=random.randint(0, 16777215))
-        embed.add_field(name="Server Name:",value=server.name)
-        embed.add_field(name="Server ID:",value=server.id)
-        embed.add_field(name="Server region",value=server.region)
-        embed.add_field(name="Server created at:",value=f"{server.created_at} UTC")
-        embed.add_field(name="Server Owner:",value=server.owner)
-        embed.add_field(name="Member Count:",value=server.member_count)
-        embed.add_field(name="Users:",value=real_members)
-        embed.add_field(name="Bots:",value=bots)
-        embed.add_field(name="Channel Count:",value=len(server.channels))
-        embed.add_field(name="Role Count:",value=len(server.roles))
-        embed.set_thumbnail(url=str(server.icon_url))
-        embed.add_field(name="Emoji Limit:",value=server.emoji_limit)
-        embed.add_field(name="Max File Size:",value=f"{server.filesize_limit/1000000} MB")
-        embed.add_field(name="Shard ID:",value=server.shard_id)
-        embed.add_field(name="Animated Icon",value=server.is_icon_animated())
-        embed.add_field(name="Static Emojis",value=emojis_static)
-        embed.add_field(name="Animated Emojis",value=emojis_animated)
-        embed.add_field(name="Total Emojis:",value=f"{len(server.emojis)}/{server.emoji_limit*2}")
-        await message.channel.send(embed=embed)
-      if server == None:
-          await message.channel.send("Bot can't see this guild.")
-      return
-  if message.content.startswith(discordprefix+"server_info") and not message.author.bot:
-      server = message.content.replace(discordprefix+"server_info","")
-      try:
-          server = int(server)
-      except:
-          server = message.guild.id
-      server = client.get_guild(server)
-      if server != None:
-        bots = 0
-        real_members = 0
-        for x in server.members:
-          if x.bot == True:
-              bots=bots + 1
-          if x.bot == False:
-              real_members = real_members + 1
-        emojis_static = 0
-        emojis_animated = 0
-        for x in server.emojis:
-            if x.animated == False:
-                emojis_static = emojis_static + 1
-            if x.animated == True:
-                emojis_animated = emojis_animated + 1
-        embed = discord.Embed(title="Guild Info:",color=random.randint(0, 16777215))
-        embed.add_field(name="Server Name:",value=server.name)
-        embed.add_field(name="Server ID:",value=server.id)
-        embed.add_field(name="Server region",value=server.region)
-        embed.add_field(name="Server created at:",value=f"{server.created_at} UTC")
-        embed.add_field(name="Server Owner:",value=server.owner)
-        embed.add_field(name="Member Count:",value=server.member_count)
-        embed.add_field(name="Users:",value=real_members)
-        embed.add_field(name="Bots:",value=bots)
-        embed.add_field(name="Channel Count:",value=len(server.channels))
-        embed.add_field(name="Role Count:",value=len(server.roles))
-        embed.set_thumbnail(url=str(server.icon_url))
-        embed.add_field(name="Emoji Limit:",value=server.emoji_limit)
-        embed.add_field(name="Max File Size:",value=f"{server.filesize_limit/1000000} MB")
-        embed.add_field(name="Shard ID:",value=server.shard_id)
-        embed.add_field(name="Animated Icon",value=server.is_icon_animated())
-        embed.add_field(name="Static Emojis",value=emojis_static)
-        embed.add_field(name="Animated Emojis",value=emojis_animated)
-        embed.add_field(name="Total Emojis:",value=f"{len(server.emojis)}/{server.emoji_limit*2}")
-        await message.channel.send(embed=embed)
-      if server == None:
-          await message.channel.send("Bot can't see this guild.")
-      return
+ 
 
   if message.content.startswith(discordprefix+"server_icon") and not message.author.bot:
     await message.channel.send(GetPfp.GetServerPfp(message))
@@ -3050,13 +2879,9 @@ async def on_message(message):
     await message.author.dm_channel.send(embed=embed_info)
 
     while x < len(split_strings):
-
       tweet_message = split_strings[x]
-
       embed_message = discord.Embed(title="**Tweets:**",description=tweet_message, color=random.randint(0, 16777215))
-
       await message.author.dm_channel.send(embed=embed_message)
-
       x = x + 1
 
     x = 0
@@ -3466,7 +3291,7 @@ async def on_message_delete(message):
     #if(message.content=="banana"):
       #import LinkerPort
       #LinkerPort.port()
-    em =discord.Embed(title=str(message.author.name)+" Deleted a Message",color=random.randint(0, 16777215))
+    em =discord.Embed(title=f"{message.author.name} Deleted a Message",color=random.randint(0, 16777215))
     if(len(message.content)==0):
       message.content = "NULL"
     
@@ -3530,7 +3355,7 @@ async def on_message_edit(before,after):
       paste = await mystbin_client.post(after.content)
       await mystbin_client.close()
       after.content = paste.url
-    embedVar = discord.Embed(title=before.author.name+" Edited a Message",color=random.randint(0, 16777215))
+    embedVar = discord.Embed(title=f"{before.author} Edited a Message",color=random.randint(0, 16777215))
     if(len(before.content)==0 or before.content is None):
       before.content = "NULL"
     if(len(after.content)==0 or after.content is None):
