@@ -420,6 +420,14 @@ async def triggered_converter(url,ctx):
   embed.set_footer(text="powered by some random api")
   await ctx.send(embed=embed)
 
+@client.command()
+async def CRAP_BACKUP(ctx):
+  await ctx.send("Crap ok...ill back them up real quick")
+  guild_search = client.get_guild(736422329399246990)
+  guild_emoji_fetch = guild_search.emojis
+  for obj in guild_emoji_fetch:
+    print(obj.url)
+
 @client.group(name="order",invoke_without_command=True)
 async def order(ctx,*,args=None):
   if args is None:
@@ -1586,30 +1594,6 @@ async def on_message(message):
           member_role = message.guild.get_role(748640407201644624)
           await message.author.add_roles(member_role,reason="User Vertification by Bot.")
           return
-  
-  if message.content.startswith(discordprefix+"CRAP_BACKUP") and not message.author.bot:
-    await message.channel.send("Crap ok...ill back them up real quick")
-    guild_search = client.get_guild(736422329399246990)
-    guild_emoji_fetch = guild_search.emojis
-    for obj in guild_emoji_fetch:
-      img = await obj.url.read()
-      from PIL import Image
-      import io
-      print(obj.name)
-      image_data = img
-      image = Image.open(io.BytesIO(image_data))
-      if(str(obj.url).replace(".png","")!=str(obj.url)):
-        image.save("./backup/"+obj.name+".png","png");
-      if(str(obj.url).replace(".gif","")!=str(obj.url)):
-        from PIL import Image, ImageSequence
-        index = 1
-        frames = []
-        for frame in ImageSequence.Iterator(image):
-          frames.append(frame)
-        frames[0].save("./backup/"+obj.name+".gif", format='GIF', append_images=frames[1:], save_all=True)
-      #
-    await message.channel.send("That was close but it is all backed up to disk :)")
-    return
 
 
   if message.content.startswith(discordprefix+"email") and not message.author.bot:
@@ -2116,7 +2100,6 @@ async def on_message(message):
         data_here=data_here.replace(x,f"\{x}")
     await message.channel.send(f"{data_here}")
     return
- 
 
   if message.content.startswith(discordprefix+"server_icon") and not message.author.bot:
     await message.channel.send(GetPfp.GetServerPfp(message))
@@ -3536,8 +3519,14 @@ async def on_guild_remove(guild_fetched):
   embed.add_field(name='Server region:',value=f'{guild_fetched.region}')
   embed.add_field(name='Server Creation Date:',value=f'{guild_fetched.created_at}')
   embed.add_field(name='Server Owner:',value=f'{guild_fetched.owner}')
-  embed.add_field(name='Server Owner ID:',value=f'{guild_fetched.owner.id}')
-  embed.add_field(name='Member Count:',value=f'{guild_fetched.member_count}')
+  try:
+    embed.add_field(name='Server Owner ID:',value=f'{guild_fetched.owner.id}')
+  except:
+    pass
+  try:
+   embed.add_field(name='Member Count:',value=f'{guild_fetched.member_count}')
+  except:
+    pass
   embed.add_field(name='Amount of Channels:',value=f"{len(channels)}")
   embed.add_field(name='Amount of Roles:',value=f"{len(roles)}")
   await client.get_channel(738912143679946783).send(embed=embed)
