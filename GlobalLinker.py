@@ -3,8 +3,12 @@ import DatabaseControl
 import ClientConfig
 import GetPfp
 import discord
-
+from profanity import censor_profanity
 client  = ClientConfig.client
+
+def censor_text(message):
+  message=censor_profanity(message)
+  return message
 
 def AddGlobalLink(client,message):
   this = message.channel.id
@@ -33,6 +37,7 @@ banned_list = [
 async def SendMessage(message):
   if message.author.id in banned_list:
     return
+
   for gChan in DatabaseConfig.db.g_link_testing.find():
         if message.channel.id == gChan['chan_id']:
           for gChan in DatabaseConfig.db.g_link_testing.find():
@@ -48,6 +53,7 @@ async def SendMessage(message):
                 await client.get_channel(gChan['chan_id']).send(embed=embedVar)
               except:
                 print(gChan['chan_id'])
+
 async def TestGLink(message):
   embedVar = discord.Embed(title=message.guild.name)
   embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)            
@@ -83,6 +89,7 @@ async def FindGlobal(message):
     except:
       banana = 1
   return ret
+
 def GetGlobalEmbed(message):
   embedVar = discord.Embed(title=message.guild.name)
   embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)            

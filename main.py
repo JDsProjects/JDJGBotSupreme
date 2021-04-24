@@ -331,7 +331,7 @@ send_channel = [
 
 safe_servers = [736422329399246990, 736966204606120007,736051343185412296]
 
-slur_okay = [736051343185412296,745559622856998953,643960606998790154,768188362431004673]
+slur_censor = []
 
 from_to_channel={}
 
@@ -2974,16 +2974,8 @@ async def on_message(message):
   for banned_word in banned_words:
     if message.guild == None:
       pass
-    elif banned_word in message.content.lower() and message.guild.id in slur_okay:
-      for obj in DatabaseConfig.db.g_link_testing.find():
-        if message.guild.id == obj["ser_id"]:
-          try:
-            await message.delete()
-            banned_response=random.choice(random_response.response_used)
-            await message.channel.send(banned_response)
-          except discord.errors.Forbidden:
-            return
-    elif banned_word in message.content.lower() and not message.guild.id in slur_okay:
+    
+    elif banned_word in message.content.lower() and message.guild.id in slur_censor:
       try:
         await message.delete()
         banned_response=random.choice(random_response.response_used)

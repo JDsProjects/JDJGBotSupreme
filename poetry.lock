@@ -1,21 +1,24 @@
 [[package]]
-category = "main"
-description = "Simple DNS resolver for asyncio"
 name = "aiodns"
+version = "2.0.0"
+description = "Simple DNS resolver for asyncio"
+category = "main"
 optional = false
 python-versions = "*"
-version = "2.0.0"
 
 [package.dependencies]
 pycares = ">=3.0.0"
 
 [[package]]
-category = "main"
-description = "Async http client/server framework (asyncio)"
 name = "aiohttp"
+version = "3.7.4.post0"
+description = "Async http client/server framework (asyncio)"
+category = "main"
 optional = false
 python-versions = ">=3.6"
-version = "3.7.4.post0"
+
+[package.extras]
+speedups = ["aiodns", "brotlipy", "cchardet"]
 
 [package.dependencies]
 async-timeout = ">=3.0,<4.0"
@@ -25,70 +28,67 @@ multidict = ">=4.5,<7.0"
 typing-extensions = ">=3.6.5"
 yarl = ">=1.0,<2.0"
 
-[package.extras]
-speedups = ["aiodns", "brotlipy", "cchardet"]
-
 [[package]]
-category = "main"
-description = "Fork of the official ImgurPython library rewritten with aiohttp"
 name = "aioimgur"
+version = "0.1.1"
+description = "Fork of the official ImgurPython library rewritten with aiohttp"
+category = "main"
 optional = false
 python-versions = "*"
-version = "0.1.1"
 
 [package.dependencies]
 aiohttp = "*"
 
 [[package]]
-category = "main"
-description = "An AST unparser for Python"
 name = "astunparse"
+version = "1.6.3"
+description = "An AST unparser for Python"
+category = "main"
 optional = false
 python-versions = "*"
-version = "1.6.3"
 
 [package.dependencies]
 six = ">=1.6.1,<2.0"
 wheel = ">=0.23.0,<1.0"
 
 [[package]]
-category = "main"
-description = "An async python wrapper for the asuna api"
 name = "asuna-api"
+version = "0.2.6"
+description = "An async python wrapper for the asuna api"
+category = "main"
 optional = false
 python-versions = "*"
-version = "0.2.6"
 
 [package.dependencies]
 aiohttp = "*"
 yarl = "*"
 
 [[package]]
-category = "main"
-description = "API wrapper for the Google Custom Search JSON API. https://developers.google.com/custom-search/v1/overview"
 name = "async-cse"
+version = "0.3.0"
+description = "API wrapper for the Google Custom Search JSON API. https://developers.google.com/custom-search/v1/overview"
+category = "main"
 optional = false
 python-versions = "*"
-version = "0.3.0"
 
 [package.dependencies]
 aiohttp = "*"
 
 [[package]]
-category = "main"
-description = "Timeout context manager for asyncio programs"
 name = "async-timeout"
+version = "3.0.1"
+description = "Timeout context manager for asyncio programs"
+category = "main"
 optional = false
 python-versions = ">=3.5.3"
-version = "3.0.1"
 
 [[package]]
-category = "main"
-description = "Classes Without Boilerplate"
 name = "attrs"
+version = "20.3.0"
+description = "Classes Without Boilerplate"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "20.3.0"
 
 [package.extras]
 dev = ["coverage (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface", "furo", "sphinx", "pre-commit"]
@@ -97,139 +97,147 @@ tests = ["coverage (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six
 tests_no_zope = ["coverage (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six"]
 
 [[package]]
-category = "main"
-description = "Bash-style brace expansion for Python"
 name = "braceexpand"
+version = "0.1.6"
+description = "Bash-style brace expansion for Python"
+category = "main"
 optional = false
 python-versions = "*"
-version = "0.1.6"
 
 [[package]]
-category = "main"
-description = "BSON codec for Python"
 name = "bson"
+version = "0.5.10"
+description = "BSON codec for Python"
+category = "main"
 optional = false
 python-versions = "*"
-version = "0.5.10"
 
 [package.dependencies]
 python-dateutil = ">=2.4.0"
 six = ">=1.9.0"
 
 [[package]]
-category = "main"
-description = "Python package for providing Mozilla's CA Bundle."
 name = "certifi"
+version = "2020.12.5"
+description = "Python package for providing Mozilla's CA Bundle."
+category = "main"
 optional = false
 python-versions = "*"
-version = "2020.12.5"
 
 [[package]]
-category = "main"
-description = "Foreign Function Interface for Python calling C code."
 name = "cffi"
+version = "1.14.5"
+description = "Foreign Function Interface for Python calling C code."
+category = "main"
 optional = false
 python-versions = "*"
-version = "1.14.5"
 
 [package.dependencies]
 pycparser = "*"
 
 [[package]]
-category = "main"
-description = "Universal encoding detector for Python 2 and 3"
 name = "chardet"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 version = "4.0.0"
-
-[[package]]
+description = "Universal encoding detector for Python 2 and 3"
 category = "main"
-description = "Composable command line interface toolkit"
-name = "click"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "7.1.2"
 
 [[package]]
+name = "click"
+version = "7.1.2"
+description = "Composable command line interface toolkit"
 category = "main"
-description = "A Python wrapper for the Discord API"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[[package]]
 name = "discord.py"
+version = "1.7.1"
+description = "A Python wrapper for the Discord API"
+category = "main"
 optional = false
 python-versions = ">=3.5.3"
-version = "1.7.1"
-
-[package.dependencies]
-aiohttp = ">=3.6.0,<3.8.0"
-
-[package.dependencies.PyNaCl]
-optional = true
-version = ">=1.3.0,<1.5"
 
 [package.extras]
 docs = ["sphinx (3.0.3)", "sphinxcontrib-trio (1.1.2)", "sphinxcontrib-websupport"]
 voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
+[package.dependencies]
+aiohttp = ">=3.6.0,<3.8.0"
+
+[package.dependencies.PyNaCl]
+version = ">=1.3.0,<1.5"
+optional = true
+
 [[package]]
-category = "main"
-description = "DNS toolkit"
 name = "dnspython"
+version = "2.1.0"
+description = "DNS toolkit"
+category = "main"
 optional = false
 python-versions = ">=3.6"
-version = "2.1.0"
 
 [package.extras]
-curio = ["curio (>=1.2)", "sniffio (>=1.1)"]
 dnssec = ["cryptography (>=2.6)"]
 doh = ["requests", "requests-toolbelt"]
 idna = ["idna (>=2.1)"]
+curio = ["curio (>=1.2)", "sniffio (>=1.1)"]
 trio = ["trio (>=0.14.0)", "sniffio (>=1.1)"]
 
 [[package]]
-category = "main"
-description = "Emoji for Python"
 name = "emoji"
+version = "1.2.0"
+description = "Emoji for Python"
+category = "main"
 optional = false
 python-versions = "*"
-version = "1.2.0"
 
 [package.extras]
 dev = ["pytest", "coverage", "coveralls"]
 
 [[package]]
-category = "main"
-description = "Emojis for Python"
 name = "emojis"
+version = "0.6.0"
+description = "Emojis for Python"
+category = "main"
 optional = false
 python-versions = "*"
-version = "0.6.0"
 
 [[package]]
+name = "filter-profanity"
+version = "1.0.9"
+description = "The fastest python module to filter and censor obscene language from strings!"
 category = "main"
-description = "A simple framework for building complex web applications."
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "flask"
+version = "1.1.2"
+description = "A simple framework for building complex web applications."
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "1.1.2"
-
-[package.dependencies]
-Jinja2 = ">=2.10.1"
-Werkzeug = ">=0.15"
-click = ">=5.1"
-itsdangerous = ">=0.24"
 
 [package.extras]
 dev = ["pytest", "coverage", "tox", "sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet", "sphinx-issues"]
 docs = ["sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet", "sphinx-issues"]
 dotenv = ["python-dotenv"]
 
+[package.dependencies]
+click = ">=5.1"
+itsdangerous = ">=0.24"
+Jinja2 = ">=2.10.1"
+Werkzeug = ">=0.15"
+
 [[package]]
-category = "main"
-description = "giphy-api"
 name = "giphy-client"
+version = "1.0.0"
+description = "giphy-api"
+category = "main"
 optional = false
 python-versions = "*"
-version = "1.0.0"
 
 [package.dependencies]
 certifi = "*"
@@ -238,76 +246,70 @@ six = ">=1.10"
 urllib3 = ">=1.15"
 
 [[package]]
-category = "main"
-description = "Python humanize utilities"
 name = "humanize"
+version = "3.4.1"
+description = "Python humanize utilities"
+category = "main"
 optional = false
 python-versions = ">=3.6"
-version = "3.4.1"
-
-[package.dependencies]
-setuptools = "*"
 
 [package.extras]
 tests = ["freezegun", "pytest", "pytest-cov"]
 
+[package.dependencies]
+setuptools = "*"
+
 [[package]]
-category = "main"
-description = "Internationalized Domain Names in Applications (IDNA)"
 name = "idna"
+version = "3.1"
+description = "Internationalized Domain Names in Applications (IDNA)"
+category = "main"
 optional = false
 python-versions = ">=3.4"
-version = "3.1"
 
 [[package]]
-category = "main"
-description = "Parses a superset of Python allowing for inline module import expressions"
 name = "import-expression"
+version = "1.1.4"
+description = "Parses a superset of Python allowing for inline module import expressions"
+category = "main"
 optional = false
 python-versions = "*"
-version = "1.1.4"
-
-[package.dependencies]
-astunparse = ">=1.6.3,<2.0.0"
 
 [package.extras]
 test = ["pytest", "pytest-cov"]
 
+[package.dependencies]
+astunparse = ">=1.6.3,<2.0.0"
+
 [[package]]
-category = "main"
-description = "Various helpers to pass data to untrusted environments and back."
 name = "itsdangerous"
+version = "1.1.0"
+description = "Various helpers to pass data to untrusted environments and back."
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "1.1.0"
 
 [[package]]
-category = "main"
-description = "A very fast and expressive template engine."
 name = "jinja2"
+version = "2.11.3"
+description = "A very fast and expressive template engine."
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "2.11.3"
-
-[package.dependencies]
-MarkupSafe = ">=0.23"
 
 [package.extras]
 i18n = ["Babel (>=0.8)"]
 
+[package.dependencies]
+MarkupSafe = ">=0.23"
+
 [[package]]
-category = "main"
-description = "A discord.py extension including useful tools for bot development and debugging."
 name = "jishaku"
+version = "1.20.0.220"
+description = "A discord.py extension including useful tools for bot development and debugging."
+category = "main"
 optional = false
 python-versions = ">=3.6.0"
-version = "1.20.0.220"
-
-[package.dependencies]
-braceexpand = ">=0.1.5"
-"discord.py" = ">=1.4.0"
-humanize = "*"
-import-expression = ">=1.0.0,<2.0.0"
 
 [package.extras]
 docs = ["sphinx (>=3.1.2)", "sphinxcontrib-asyncio"]
@@ -315,43 +317,57 @@ procinfo = ["psutil"]
 test = ["coverage", "flake8", "isort (<4.3.5)", "pylint", "pytest", "pytest-cov", "pytest-mock"]
 voice = ["PyNaCl (>=1.3.0)", "youtube-dl"]
 
+[package.dependencies]
+braceexpand = ">=0.1.5"
+"discord.py" = ">=1.4.0"
+humanize = "*"
+import-expression = ">=1.0.0,<2.0.0"
+
 [[package]]
-category = "main"
-description = "Safely add untrusted strings to HTML/XML markup."
 name = "markupsafe"
+version = "1.1.1"
+description = "Safely add untrusted strings to HTML/XML markup."
+category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
-version = "1.1.1"
 
 [[package]]
-category = "main"
-description = "multidict implementation"
 name = "multidict"
+version = "5.1.0"
+description = "multidict implementation"
+category = "main"
 optional = false
 python-versions = ">=3.6"
-version = "5.1.0"
 
 [[package]]
-category = "main"
-description = "A small simple wrapper around the mystb.in API."
 name = "mystbin.py"
+version = "2.1.0"
+description = "A small simple wrapper around the mystb.in API."
+category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
-version = "2.1.0"
-
-[package.dependencies]
-aiohttp = ">=3.6.2,<4.0.0"
 
 [package.extras]
 requests = ["requests (>=2.24.0,<3.0.0)"]
 
+[package.dependencies]
+aiohttp = ">=3.6.2,<4.0.0"
+
 [[package]]
+name = "numpy"
+version = "1.20.2"
+description = "NumPy is the fundamental package for array computing with Python."
 category = "main"
-description = "A generic, spec-compliant, thorough implementation of the OAuth request-signing logic"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
 name = "oauthlib"
+version = "3.1.0"
+description = "A generic, spec-compliant, thorough implementation of the OAuth request-signing logic"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "3.1.0"
 
 [package.extras]
 rsa = ["cryptography"]
@@ -359,42 +375,42 @@ signals = ["blinker"]
 signedtoken = ["cryptography", "pyjwt (>=1.0.0)"]
 
 [[package]]
-category = "main"
-description = "Python Imaging Library (Fork)"
 name = "pillow"
+version = "8.2.0"
+description = "Python Imaging Library (Fork)"
+category = "main"
 optional = false
 python-versions = ">=3.6"
-version = "8.2.0"
 
 [[package]]
-category = "main"
-description = "Python interface for c-ares"
 name = "pycares"
+version = "3.1.1"
+description = "Python interface for c-ares"
+category = "main"
 optional = false
 python-versions = "*"
-version = "3.1.1"
-
-[package.dependencies]
-cffi = ">=1.5.0"
 
 [package.extras]
 idna = ["idna (>=2.1)"]
 
-[[package]]
-category = "main"
-description = "C parser in Python"
-name = "pycparser"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "2.20"
+[package.dependencies]
+cffi = ">=1.5.0"
 
 [[package]]
+name = "pycparser"
+version = "2.20"
+description = "C parser in Python"
 category = "main"
-description = "Python driver for MongoDB <http://www.mongodb.org>"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[[package]]
 name = "pymongo"
+version = "3.11.3"
+description = "Python driver for MongoDB <http://www.mongodb.org>"
+category = "main"
 optional = false
 python-versions = "*"
-version = "3.11.3"
 
 [package.extras]
 aws = ["pymongo-auth-aws (<2.0.0)"]
@@ -407,126 +423,126 @@ tls = ["ipaddress"]
 zstd = ["zstandard"]
 
 [[package]]
-category = "main"
-description = "Python binding to the Networking and Cryptography (NaCl) library"
 name = "pynacl"
+version = "1.4.0"
+description = "Python binding to the Networking and Cryptography (NaCl) library"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "1.4.0"
-
-[package.dependencies]
-cffi = ">=1.4.1"
-six = "*"
 
 [package.extras]
 docs = ["sphinx (>=1.6.5)", "sphinx-rtd-theme"]
 tests = ["pytest (>=3.2.1,<3.3.0 || >3.3.0)", "hypothesis (>=3.27.0)"]
 
-[[package]]
-category = "main"
-description = "A Python SOCKS client module. See https://github.com/Anorov/PySocks for more information."
-name = "pysocks"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "1.7.1"
+[package.dependencies]
+cffi = ">=1.4.1"
+six = "*"
 
 [[package]]
+name = "pysocks"
+version = "1.7.1"
+description = "A Python SOCKS client module. See https://github.com/Anorov/PySocks for more information."
 category = "main"
-description = "Extensions to the standard Python datetime module"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[[package]]
 name = "python-dateutil"
+version = "2.8.1"
+description = "Extensions to the standard Python datetime module"
+category = "main"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
-version = "2.8.1"
 
 [package.dependencies]
 six = ">=1.5"
 
 [[package]]
-category = "main"
-description = "World timezone definitions, modern and historical"
 name = "pytz"
+version = "2020.5"
+description = "World timezone definitions, modern and historical"
+category = "main"
 optional = false
 python-versions = "*"
-version = "2020.5"
 
 [[package]]
-category = "main"
-description = "Python HTTP for Humans."
 name = "requests"
+version = "2.15.1"
+description = "Python HTTP for Humans."
+category = "main"
 optional = false
 python-versions = "*"
-version = "2.15.1"
-
-[package.dependencies]
-[package.dependencies.PySocks]
-optional = true
-version = ">=1.5.6,<1.5.7 || >1.5.7"
 
 [package.extras]
 security = ["cryptography (>=1.3.4)", "idna (>=2.0.0)", "pyOpenSSL (>=0.14)"]
 socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
 
+[package.dependencies]
+[package.dependencies.PySocks]
+version = ">=1.5.6,<1.5.7 || >1.5.7"
+optional = true
+
 [[package]]
-category = "main"
-description = "OAuthlib authentication support for Requests."
 name = "requests-oauthlib"
+version = "1.3.0"
+description = "OAuthlib authentication support for Requests."
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "1.3.0"
+
+[package.extras]
+rsa = ["oauthlib (>=3.0.0)"]
 
 [package.dependencies]
 oauthlib = ">=3.0.0"
 requests = ">=2.0.0"
 
-[package.extras]
-rsa = ["oauthlib (>=3.0.0)"]
-
 [[package]]
-category = "main"
-description = "Python 2 and 3 compatibility utilities"
 name = "six"
+version = "1.15.0"
+description = "Python 2 and 3 compatibility utilities"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
-version = "1.15.0"
 
 [[package]]
-category = "main"
-description = "An async wrapper for some-random-api"
 name = "sr-api"
+version = "1.1.3"
+description = "An async wrapper for some-random-api"
+category = "main"
 optional = false
 python-versions = "*"
-version = "1.1.3"
 
 [package.dependencies]
 aiohttp = "*"
 
 [[package]]
-category = "main"
-description = "Twitter library for Python"
 name = "tweepy"
+version = "3.10.0"
+description = "Twitter library for Python"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "3.10.0"
+
+[package.extras]
+dev = ["coveralls (>=1.8.2)", "tox (>=2.4.0)"]
+test = ["mock (>=1.0.1)", "nose (>=1.3.3)", "vcrpy (>=1.10.3)"]
 
 [package.dependencies]
 requests-oauthlib = ">=0.7.0"
 six = ">=1.10.0"
 
 [package.dependencies.requests]
-extras = ["socks"]
 version = ">=2.11.1"
-
-[package.extras]
-dev = ["coveralls (>=1.8.2)", "tox (>=2.4.0)"]
-test = ["mock (>=1.0.1)", "nose (>=1.3.3)", "vcrpy (>=1.10.3)"]
+extras = ["socks"]
 
 [[package]]
-category = "main"
-description = "A python module made on top of PIL that draws emoji from text to image."
 name = "twemoji-parser"
+version = "0.4.3"
+description = "A python module made on top of PIL that draws emoji from text to image."
+category = "main"
 optional = false
 python-versions = ">=3.7"
-version = "0.4.3"
 
 [package.dependencies]
 aiohttp = "*"
@@ -534,64 +550,64 @@ emoji = "*"
 pillow = "*"
 
 [[package]]
-category = "main"
-description = "Backported and Experimental Type Hints for Python 3.5+"
 name = "typing-extensions"
+version = "3.7.4.3"
+description = "Backported and Experimental Type Hints for Python 3.5+"
+category = "main"
 optional = false
 python-versions = "*"
-version = "3.7.4.3"
 
 [[package]]
-category = "main"
-description = "HTTP library with thread-safe connection pooling, file post, and more."
 name = "urllib3"
+version = "1.26.4"
+description = "HTTP library with thread-safe connection pooling, file post, and more."
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
-version = "1.26.4"
 
 [package.extras]
-brotli = ["brotlipy (>=0.6.0)"]
 secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
 socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
+brotli = ["brotlipy (>=0.6.0)"]
 
 [[package]]
-category = "main"
-description = "The comprehensive WSGI web application library."
 name = "werkzeug"
+version = "1.0.1"
+description = "The comprehensive WSGI web application library."
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "1.0.1"
 
 [package.extras]
 dev = ["pytest", "pytest-timeout", "coverage", "tox", "sphinx", "pallets-sphinx-themes", "sphinx-issues"]
 watchdog = ["watchdog"]
 
 [[package]]
-category = "main"
-description = "A built-package format for Python"
 name = "wheel"
+version = "0.36.2"
+description = "A built-package format for Python"
+category = "main"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
-version = "0.36.2"
 
 [package.extras]
 test = ["pytest (>=3.0.0)", "pytest-cov"]
 
 [[package]]
-category = "main"
-description = "Yet another URL library"
 name = "yarl"
+version = "1.6.3"
+description = "Yet another URL library"
+category = "main"
 optional = false
 python-versions = ">=3.6"
-version = "1.6.3"
 
 [package.dependencies]
 idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "cf200429c39c0e61f9a1e3093ab703c72f9c4e180f60ce940754dc1529c3e7a3"
 python-versions = "^3.8"
+content-hash = "9793cf14c7c7a20e05d41df7a92895e4b3887f4352ef4fcb0646acfd613ff39e"
 
 [metadata.files]
 aiodns = [
@@ -732,6 +748,9 @@ emojis = [
     {file = "emojis-0.6.0-py3-none-any.whl", hash = "sha256:7da34c8a78ae262fd68cef9e2c78a3c1feb59784489eeea0f54ba1d4b7111c7c"},
     {file = "emojis-0.6.0.tar.gz", hash = "sha256:bf605d1f1a27a81cd37fe82eb65781c904467f569295a541c33710b97e4225ec"},
 ]
+filter-profanity = [
+    {file = "filter-profanity-1.0.9.tar.gz", hash = "sha256:5c1ed24b4921ac7847379887c80241495e6e9e76e75d64695f1f6a41f07ddeaf"},
+]
 flask = [
     {file = "Flask-1.1.2-py2.py3-none-any.whl", hash = "sha256:8a4fdd8936eba2512e9c85df320a37e694c93945b33ef33c89946a340a238557"},
     {file = "Flask-1.1.2.tar.gz", hash = "sha256:4efa1ae2d7c9865af48986de8aeb8504bf32c7f3d6fdc9353d34b21f4b127060"},
@@ -863,6 +882,32 @@ multidict = [
 "mystbin.py" = [
     {file = "mystbin.py-2.1.0-py3-none-any.whl", hash = "sha256:3abc8494079309630c8a8381489241342bc6baadd2a8f368f8493ef85eed3848"},
     {file = "mystbin.py-2.1.0.tar.gz", hash = "sha256:0e330717a6b2b80c2e84b4b3795f9c71a4ac8d36efc88319743c5f6acc4fbffa"},
+]
+numpy = [
+    {file = "numpy-1.20.2-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:e9459f40244bb02b2f14f6af0cd0732791d72232bbb0dc4bab57ef88e75f6935"},
+    {file = "numpy-1.20.2-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:a8e6859913ec8eeef3dbe9aed3bf475347642d1cdd6217c30f28dee8903528e6"},
+    {file = "numpy-1.20.2-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:9cab23439eb1ebfed1aaec9cd42b7dc50fc96d5cd3147da348d9161f0501ada5"},
+    {file = "numpy-1.20.2-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:9c0fab855ae790ca74b27e55240fe4f2a36a364a3f1ebcfd1fb5ac4088f1cec3"},
+    {file = "numpy-1.20.2-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:61d5b4cf73622e4d0c6b83408a16631b670fc045afd6540679aa35591a17fe6d"},
+    {file = "numpy-1.20.2-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:d15007f857d6995db15195217afdbddfcd203dfaa0ba6878a2f580eaf810ecd6"},
+    {file = "numpy-1.20.2-cp37-cp37m-win32.whl", hash = "sha256:d76061ae5cab49b83a8cf3feacefc2053fac672728802ac137dd8c4123397677"},
+    {file = "numpy-1.20.2-cp37-cp37m-win_amd64.whl", hash = "sha256:bad70051de2c50b1a6259a6df1daaafe8c480ca98132da98976d8591c412e737"},
+    {file = "numpy-1.20.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:719656636c48be22c23641859ff2419b27b6bdf844b36a2447cb39caceb00935"},
+    {file = "numpy-1.20.2-cp38-cp38-manylinux1_i686.whl", hash = "sha256:aa046527c04688af680217fffac61eec2350ef3f3d7320c07fd33f5c6e7b4d5f"},
+    {file = "numpy-1.20.2-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:2428b109306075d89d21135bdd6b785f132a1f5a3260c371cee1fae427e12727"},
+    {file = "numpy-1.20.2-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:e8e4fbbb7e7634f263c5b0150a629342cc19b47c5eba8d1cd4363ab3455ab576"},
+    {file = "numpy-1.20.2-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:edb1f041a9146dcf02cd7df7187db46ab524b9af2515f392f337c7cbbf5b52cd"},
+    {file = "numpy-1.20.2-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:c73a7975d77f15f7f68dacfb2bca3d3f479f158313642e8ea9058eea06637931"},
+    {file = "numpy-1.20.2-cp38-cp38-win32.whl", hash = "sha256:6c915ee7dba1071554e70a3664a839fbc033e1d6528199d4621eeaaa5487ccd2"},
+    {file = "numpy-1.20.2-cp38-cp38-win_amd64.whl", hash = "sha256:471c0571d0895c68da309dacee4e95a0811d0a9f9f532a48dc1bea5f3b7ad2b7"},
+    {file = "numpy-1.20.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:4703b9e937df83f5b6b7447ca5912b5f5f297aba45f91dbbbc63ff9278c7aa98"},
+    {file = "numpy-1.20.2-cp39-cp39-manylinux2010_i686.whl", hash = "sha256:abc81829c4039e7e4c30f7897938fa5d4916a09c2c7eb9b244b7a35ddc9656f4"},
+    {file = "numpy-1.20.2-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:377751954da04d4a6950191b20539066b4e19e3b559d4695399c5e8e3e683bf6"},
+    {file = "numpy-1.20.2-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:6e51e417d9ae2e7848314994e6fc3832c9d426abce9328cf7571eefceb43e6c9"},
+    {file = "numpy-1.20.2-cp39-cp39-win32.whl", hash = "sha256:780ae5284cb770ade51d4b4a7dce4faa554eb1d88a56d0e8b9f35fca9b0270ff"},
+    {file = "numpy-1.20.2-cp39-cp39-win_amd64.whl", hash = "sha256:924dc3f83de20437de95a73516f36e09918e9c9c18d5eac520062c49191025fb"},
+    {file = "numpy-1.20.2-pp37-pypy37_pp73-manylinux2010_x86_64.whl", hash = "sha256:97ce8b8ace7d3b9288d88177e66ee75480fb79b9cf745e91ecfe65d91a856042"},
+    {file = "numpy-1.20.2.zip", hash = "sha256:878922bf5ad7550aa044aa9301d417e2d3ae50f0f577de92051d739ac6096cee"},
 ]
 oauthlib = [
     {file = "oauthlib-3.1.0-py2.py3-none-any.whl", hash = "sha256:df884cd6cbe20e32633f1db1072e9356f53638e4361bef4e8b03c9127c9328ea"},
