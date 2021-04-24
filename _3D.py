@@ -1,127 +1,7 @@
 from PIL import Image, ImageDraw
 import math
-import tris
+import _3D_t
 path = "./out/"
-class Vec2:
-    def __init__(self,_x,_y):
-        self.x = _x
-        self.y = _y
-    def to_tu(self):
-        return (self.x,self.y)
-    x=0
-    y=0
-class Vec3:
-    x=0
-    y=0
-    z=0
-    def construct(self,inlst):
-        ret = Vec3(inlst)
-        return ret
-    def __init__(self,inlst):
-        self.x = inlst[0]
-        self.y = inlst[1]
-        self.z = inlst[2]
-    def to_string(self):
-        return str(self.x)+" "+str(self.y)+" "+str(self.z)
-    def scale(self,scale):
-        a = self.x * scale
-        b = self.y * scale
-        c = self.z * scale
-        ret = Vec3((a,b,c))
-        return ret
-    def rx(self,ang):
-        x = self.x
-        y = self.y
-        z = self.z
-        y1 = (y*math.cos(ang))-(z*math.sin(ang))
-        z1 = (y*math.sin(ang))+(z*math.cos(ang))
-        ret = Vec3((x, y1,z1))
-        return ret
-
-    def ry(self,ang):
-        x = float(self.x) * 1
-        y = self.y
-        z = float(self.z) * 1
-        x1 = (x*math.cos(ang))-(z*math.sin(ang))
-        z1 = (x*math.sin(ang))+(z*math.cos(ang))
-        ret = Vec3((x1,y,z1))
-        return ret
-    def rz(self,ang):
-        x = self.x
-        y = self.y
-        z = self.z
-        x1 = (x*math.cos(ang))-(y*math.sin(ang))
-        y1 = (x*math.sin(ang))+(y*math.cos(ang))
-        ret = Vec3((x1,y1,z))
-        return ret
-    def to_3D(self,w):
-        self.x = self.x / w
-        self.y = self.y / w
-        self.z = self.z / w
-    def to_2D(self):
-        #print("~~~~~~~~~~")
-        ##print(str(self.x)+" : "+str(self.y)+" : "+str(self.z))
-        self.x = self.x/self.z
-        self.y = self.y/self.z
-        #print(str(self.x)+" : "+str(self.y))
-        #os.system("pause")
-        return Vec2(self.x,self.y)
-    def cross(self,line):
-      b= line
-      a = self
-      ret = Vec3((0,0,0))
-      ret.x = (a.y * b.z) - (a.z * b.y)
-      ret.y = (a.z * b.x) - (a.x * b.z)
-      ret.z = (a.x * b.y) - (a.y * b.x)
-      return ret
-    def len(self):
-      return math.sqrt((self.x*self.x)+(self.y*self.y)+(self.z*self.z))
-    def dot(self,line):
-      a = self
-      b = line
-      return (a.x * b.x) + (a.y * b.y) + (a.z * b.z)
-    def sub(self, point):
-      ret = Vec3((0,0,0))
-      ret.x = self.x - point.x
-      ret.y = self.y - point.y
-      ret.z = self.z - point.z
-      return ret
-    def add(self, point):
-      ret = Vec3((0,0,0))
-      ret.x = self.x + point.x
-      ret.y = self.y + point.y
-      ret.z = self.z + point.z
-      return ret
-    def div_f(self, num):
-      ret = Vec3((0,0,0))
-      ret.x = self.x/num
-      ret.y = self.y/num
-      ret.z = self.z/num
-      return ret
-    def rayCast(self,line):
-      ret = Vec3((0,0,0))
-      _len = self.len()
-      ret.x = self.x/_len
-      ret.y = self.y/_len
-      ret.z = self.z/_len
-      ret = ret.dot(line)
-      return ret
-
-class tri:
-    def __init__(self,v,n):
-        #print(points[0])
-        self.p1 = v[0]
-        self.p2 = v[1]
-        self.p3 = v[2]
-        self.n1 = n[0]
-        self.n2 = n[1]
-        self.n3 = n[2]
-    p1 = "NULL"
-    p2 = "NULL"
-    p3 = "NULL"
-    n1 = "NULL"
-    n2 = "NULL"
-    n3 = "NULL"
 class Render3D:
     pos = (-2,-94,105)
     rot = (0,0,0)
@@ -132,10 +12,10 @@ class Render3D:
     drawer = "NULL"
     f = "NULL"
     q =  "NULL" 
-    shaders = 0.3
+    shaders = 0.2
     gamma = 0
-    #light = Vec3((1,1,-0.09))
-    light = Vec3((-1,0.6,-0.09))
+    #light = _3D_t.Vec3((1,1,-0.09))
+    light = _3D_t.Vec3((-1,0.6,-0.09))
     def __init__(self):
         self.image =  Image.new("RGBA", (500, 500), (0,0,0,0))
         self.drawer = ImageDraw.Draw(self.image)
@@ -154,11 +34,15 @@ class Render3D:
                 if line[0]=='v' and line[1]==' ':
                     line = line.replace("v ","")
                     line = line.split(" ")
-                    vertex.append(Vec3((float(line[0]),float(line[1]),float(line[2]))))
+                    tmp = _3D_t.Vec3((float(line[0]),float(line[1]),float(line[2])))
+                    for tmp1 in vertex:
+                        if(tmp.x==tmp1.x and tmp.y==tmp1.y and tmp.z ==tmp1.z):
+                            print(tmp.to_string()+" L: "+str(len(vertex)))
+                    vertex.append(tmp)
                 else:
                     if line.startswith("vn "):
                       line = line.replace("vn ","").split(" ")
-                      normals.append(Vec3((float(line[0]),float(line[1]),float(line[2]))))
+                      normals.append(_3D_t.Vec3((float(line[0]),float(line[1]),float(line[2]))))
                     else:
                       if line.startswith("f "):
                           line = line.replace("f ","")
@@ -171,7 +55,8 @@ class Render3D:
                           vni.append(normals[int(line[0].split("/")[2])-1])
                           vni.append(normals[int(line[1].split("/")[2])-1])
                           vni.append(normals[int(line[2].split("/")[2])-1])
-                          mesh.append(tri(points,vni))
+                          mesh.append(_3D_t.tri(points,vni))
+        
         self.objs.append({"name":file_path.replace(path+"","").replace(".obj",""),"obj":mesh,"color":color})
     def translate(self, _point):
         point = _point
@@ -188,6 +73,47 @@ class Render3D:
       return (byte*color_ratio) + (shading*self.shaders) + (255*self.gamma)
       #byte /=255
       #return (byte * shading)*255
+    def sproject(self,wire):
+        for obj in self.objs:
+          if(obj["name"]=="Eyes"):
+            drawer = ImageDraw.Draw(self.image)
+            img = Image.open(path+"m.png").convert("RGBA")
+            x,y = img.size
+            for _x in range(x):
+              for _y in range(y):
+                color = img.getpixel((_x,_y))
+                if(color[3]==255):
+                  drawer.point((_x+270,_y+245),fill=color)
+                  drawer.point(((x-_x)+205,_y+245),fill=color)          
+          for _tri in obj["obj"]:
+              points = [self.translate(_tri.p1),self.translate(_tri.p2),self.translate(_tri.p3)]
+              _points=[]
+              line1 = points[1].sub(points[0])
+              line2 = points[2].sub(points[0])
+              normal = line1.cross(line2)
+              _pos = _3D_t.Vec3(self.pos)
+              trans_location = _pos.add(points[0])
+              normal  = normal.div_f(normal.len())
+              normal_dot =normal.dot(trans_location) #normal.rayCast(trans_location)
+              if(normal_dot < 0):
+                #shading = (self.light.rayCast(normal))*(255)
+                #shading = self.light.div_f(self.light.len()).dot(normal)*255
+                for _p in points:
+                  p = _p
+                  z =  p.z
+                  newp = _3D_t.Vec3((p.x*self.f,p.y*self.f,((z*self.q)-(self.zn*self.q))))
+                  newp.to_3D(z)
+                  newp = newp.to_2D(1)
+                  newp.x = newp.x + 250
+                  newp.y = newp.y + 250
+                  _points.append(newp)
+                toBeRasturized = _3D_t.tri(_points,(_tri.n1,_tri.n2,_tri.n3))
+                color = _3D_t.Vec3((obj["color"]))
+                toBeRasturized.FillShadeTru(self.drawer,color,self.shaders)
+                if(wire):
+                    new_points = [(_points[0].x,_points[0].y),(_points[1].x,_points[1].y),(_points[2].x,_points[2].y)]
+                    self.drawer.polygon(new_points, outline=(0,0,0,255))
+                
     def project(self,wire):
         for obj in self.objs:
           if(obj["name"]=="Face"):
@@ -206,7 +132,7 @@ class Render3D:
               line1 = points[1].sub(points[0])
               line2 = points[2].sub(points[0])
               normal = line1.cross(line2)
-              _pos = Vec3(self.pos)
+              _pos = _3D_t.Vec3(self.pos)
               trans_location = _pos.add(points[0])
               normal  = normal.div_f(normal.len())
               normal_dot =normal.dot(trans_location) #normal.rayCast(trans_location)
@@ -216,13 +142,13 @@ class Render3D:
                 for _p in points:
                   p = _p
                   z =  p.z
-                  newp = Vec3((p.x*self.f,p.y*self.f,((z*self.q)-(self.zn*self.q))))
+                  newp = _3D_t.Vec3((p.x*self.f,p.y*self.f,((z*self.q)-(self.zn*self.q))))
                   newp.to_3D(z)
                   newp = newp.to_2D()
                   newp.x = newp.x + 250
                   newp.y = newp.y + 250
                   _points.append(newp.to_tu())
-                color = Vec3((obj["color"]))
+                color = _3D_t.Vec3((obj["color"]))
                 color.x=self.shade_8bit(color.x, shading)
                 color.y=self.shade_8bit(color.y, shading)
                 color.z=self.shade_8bit(color.z, shading)
@@ -296,7 +222,7 @@ class mario:
       y = y * (3.14/180)
       z = z * (3.14/180)
       self.engine.rot = (x,y,z)
-    def render(self,cc,wire,user="NULL"):
+    def render(self,cc,wire,smooth=0,user="NULL"):
       decoder = ram()
       #path = "./obj1/"
       self.engine.objs =[]
@@ -316,6 +242,7 @@ class mario:
       self.engine.load(path+"LeftShoe.obj",(128,0,0,255))
       self.engine.load(path+"LeftLowerLeg.obj",(0,0,255,255))
       self.engine.load(path+"LeftUpperLeg.obj",(0,0,255,255))
+      
       self.engine.load(path+"HairCap.obj",(128,0,0,255))
       self.engine.load(path+"hairPiece.obj",(254,193,121,255))
       self.engine.load(path+"cappy.obj",(255,0,0,255))
@@ -333,7 +260,10 @@ class mario:
       self.decode(decoder.decode(cc))
       self.engine.pos = (-2,-168,400)
       self.set_rot(0,360/2,0)
-      self.engine.project(wire)
+      if smooth:
+          self.engine.sproject(wire)
+      else:
+          self.engine.project(wire)
       card = self.engine.image.copy()
       img = Image.open(path+"eyes.png").convert("RGBA")
       drawer = ImageDraw.Draw(card)

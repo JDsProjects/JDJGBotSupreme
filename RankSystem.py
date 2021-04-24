@@ -3,18 +3,35 @@ import datetime
 import math
 import discord
 from bson import ObjectId
+import ClientConfig
+
+client = ClientConfig.client
 
 def GetNextLevelUp(level):
   return math.floor(((level/1.5)*(level/1.5)*(level/1.5))+150)
+
 def CheckIfExisting(user):
+
+
+  exists = 0
   try:
     now = datetime.datetime.now()
     doc = {"user_id":user.id,"level":0,"exp":0,"last_exp":now.minute}
     DatabaseConfig.db.users_testing.insert_one(doc)
-    return 0
+    exists = 0
   except:
-    return 1
+    exists = 1
+  
+  try:
+    try_to_get_user = client.get_user(user.id)
+  except:
+    print("DELETE ME!!!!!")
+    #DatabaseConfig.db.users_testing.delete_one({"user_id":user.id})
+  return exists
+
+    
 async def UpdateScore(message):
+
   user = message.author
   if CheckIfExisting(user)==1:
     now = datetime.datetime.now()
@@ -38,6 +55,7 @@ async def UpdateScore(message):
     doc['user_id'] = user.id
     doc['last_exp'] = now.minute
     DatabaseConfig.db.users_testing.insert_one(doc)
+
 def GetRank(user,server="all"):
   ret =[]
   user_dat = DatabaseConfig.db.users_testing.find_one({"user_id":user.id})
@@ -54,6 +72,7 @@ def GetRank(user,server="all"):
     i=i+1
     if xp==int(user_dat['exp']):
       return i
+
 async def GetTop10(client,message):
   ret=[]
   i=-1
@@ -127,6 +146,7 @@ async def GetStatus(_message,_user="NULL"):
     embedVar.add_field(name="Experience: ",value=str(doc['exp']))
     embedVar.add_field(name="Experience till Level up: ",value=str((GetNextLevelUp(level-1)+next_level_exp)-exp))
     await message.channel.send(embed=embedVar)
+
 def GetUserByName(client,message):
   args = ""
   i = -1

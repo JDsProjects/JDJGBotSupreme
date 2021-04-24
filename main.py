@@ -270,6 +270,10 @@ async def startup():
   client.os_user = "None"
   client.check_users = {}
   #client.lavalink=await asyncio.create_subprocess_shell('java -jar Lavalink.jar')
+
+  #line added by RenDev 2/26/2021
+  ClientConfig.whoami = client.user.id
+
   await status_task()
 
 @client.event
@@ -331,25 +335,6 @@ slur_okay = [736051343185412296,745559622856998953,643960606998790154,7681883624
 
 from_to_channel={}
 
-@client.event
-async def on_guild_join(guild_fetched):
-  channels = [channel for channel in guild_fetched.channels]
-
-  roles = roles= [role for role in guild_fetched.roles]
-
-  embed = discord.Embed(title="Bot just joined: "+str(guild_fetched.name), color=random.randint(0,16777215))
-  embed.set_thumbnail(url = guild_fetched.icon_url)
-  embed.add_field(name='Server Name:',value=f'{guild_fetched.name}')
-  embed.add_field(name='Server ID:',value=f'{guild_fetched.id}')
-  embed.add_field(name='Server region:',value=f'{guild_fetched.region}')
-  embed.add_field(name='Server Creation Date:',value=f'{guild_fetched.created_at}')
-  embed.add_field(name='Server Owner:',value=f'{guild_fetched.owner}')
-  embed.add_field(name='Server Owner ID:',value=f'{guild_fetched.owner.id}')
-  embed.add_field(name='Member Count:',value=f'{guild_fetched.member_count}')
-  embed.add_field(name='Amount of Channels:',value=f"{len(channels)}")
-  embed.add_field(name='Amount of Roles:',value=f"{len(roles)}")
-  await client.get_channel(738912143679946783).send(embed=embed)
-
 class BetterMemberConverter(commands.Converter):
   async def convert(self,ctx,argument):
     try:
@@ -407,9 +392,8 @@ class BetterUserconverter(commands.Converter):
     return user
 
 async def triggered_converter(url,ctx):
-  sr_client=sr_api.Client()
+  sr_client=sr_api.Client(session=client.aiohttp_session)
   source_image=sr_client.filter(option="triggered",url=str(url))
-  await sr_client.close()
 
   imgur_client= aioimgur.ImgurClient(os.environ["imgur_id"],os.environ["imgur_secret"])
   imgur_url= await imgur_client.upload_from_url(source_image.url)
@@ -452,6 +436,36 @@ async def order(ctx,*,args=None):
     embed.set_footer(text = f"{ctx.author.id} \nCopyright: I don't know the copyright.")
     await ctx.send(content="Order has been logged for safety purposes(we want to make sure no unsafe search is sent)",embed=embed)
     await client.get_channel(738912143679946783).send(embed=embed)
+
+@client.command(brief="a command to get the avatar of a user",help="using the userinfo technology it now powers avatar grabbing.",aliases=["pfp",])
+async def avatar(ctx,*,user: BetterUserconverter = None): 
+  if user is None:
+    user = ctx.author
+  embed = discord.Embed(color=random.randint(0, 16777215))
+  embed.set_author(name=f"{user.name}'s avatar:",icon_url=(user.avatar_url))
+  embed.set_image(url=(user.avatar_url))
+  embed.set_footer(text=f"Requested by {ctx.author}")
+  await ctx.send(embed=embed)
+
+@client.command(brief="a command to send mail")
+async def mail(ctx,*,user: BetterUserconverter=None):
+  if user is None:
+    await ctx.reply("User not found, returning Letter")
+    user = ctx.author
+  if user:
+    def check(m):
+      return m.author.id == ctx.author.id
+    await ctx.reply("Please give me a message to use.")
+    message = await client.wait_for("message",check=check)
+    embed_message = discord.Embed(title=message.content, timestamp=(message.created_at), color=random.randint(0, 16777215))
+    embed_message.set_author(name=f"Mail from: {ctx.author}",icon_url=(ctx.author.avatar_url))
+    embed_message.set_footer(text = f"{ctx.author.id}")
+    embed_message.set_thumbnail(url = "https://i.imgur.com/1XvDnqC.png")
+    if (user.dm_channel is None):
+      await user.create_dm()
+    await user.send(embed=embed_message)
+    embed_message.add_field(name="Sent To:",value=str(user))
+    await client.get_channel(738912143679946783).send(embed=embed_message)
 
 @order.command(brief="a command to shuffle images from google images")
 async def shuffle(ctx,*,args=None):
@@ -516,9 +530,8 @@ async def hug(ctx,*, Member: BetterMemberConverter=None):
     person = ctx.author
     target = Member
 
-  sr_client=sr_api.Client()
+  sr_client=sr_api.Client(session=client.aiohttp_session)
   image=await sr_client.get_gif("hug")
-  await sr_client.close()
 
   embed=discord.Embed(color=random.randint(0, 16777215))
   embed.set_author(name=f"{person} hugged you! Awwww...",icon_url=(person.avatar_url))
@@ -550,9 +563,8 @@ async def pat2(ctx,*, Member: BetterMemberConverter= None):
     person = ctx.author
     target = Member
   
-  asuna = asuna_api.Client()
+  asuna = asuna_api.Client(session=client.aiohttp_session)
   url = await asuna.get_gif("pat")
-  await asuna.close()
 
   embed=discord.Embed(color=random.randint(0, 16777215))
   embed.set_author(name=f"{person} patted you! *pat pat pat*",icon_url=(person.avatar_url))
@@ -585,9 +597,8 @@ async def facepalm(ctx,*, Member: BetterMemberConverter=None):
     person = ctx.author
     target = Member
   
-  sr_client=sr_api.Client()
+  sr_client=sr_api.Client(session=client.aiohttp_session)
   image=await sr_client.get_gif("face-palm")
-  await sr_client.close()
 
   embed=discord.Embed(color=random.randint(0, 16777215))
   embed.set_author(name=f"{target} you made {person} facepalm",icon_url=(person.avatar_url))
@@ -628,9 +639,8 @@ async def look_at(ctx):
     message_emojis = ""
     for x in ctx.guild.emojis:
       message_emojis = message_emojis+" "+str(x)+"\n"
-    mystbin_client = mystbin.Client()
+    mystbin_client = mystbin.Client(session=client.aiohttp_session)
     paste = await mystbin_client.post(message_emojis)
-    await mystbin_client.close()
     await ctx.send(paste.url)
     
   if isinstance(ctx.channel,discord.DMChannel):
@@ -644,9 +654,8 @@ async def headpat(ctx):
 @client.command(help="a way to look up minecraft usernames",brief="using the official minecraft api, looking up minecraft information has never been easier(tis only gives minecraft account history relating to name changes)")
 async def mchistory(ctx,*,args=None):
   import asuna_api
-  asuna = asuna_api.Client()
+  asuna = asuna_api.Client(session=client.aiohttp_session)
   minecraft_info=await asuna.mc_user(args)
-  await asuna.close()
   
   if not args:
     await ctx.send("Please pick a minecraft user.")
@@ -673,10 +682,9 @@ async def text_backup(ctx):
         encoding=chardet.detect(file)["encoding"]
         if encoding:
           text = file.decode(encoding)
-          mystbin_client = mystbin.Client()
+          mystbin_client = mystbin.Client(session=client.aiohttp_session)
           paste = await mystbin_client.post(text)
           await ctx.send(content=f"Added text file to mystbin: \n{paste.url}")
-          await mystbin_client.close()
         if encoding is None:
           await ctx.send("it looks like it couldn't decode this file, if this is an issue DM JDJG Inc. Official#3439 or it wasn't a text file.")
       if len(file ) < 1:
@@ -732,9 +740,8 @@ async def guild_get(ctx):
 async def random_history(ctx,*,args=None):
   if args is None:
     args = 1
-  asuna = asuna_api.Client()
+  asuna = asuna_api.Client(session=client.aiohttp_session)
   response = await asuna.random_history(args)
-  await asuna.close()
   for x in response:
     await ctx.send(f":earth_africa: {x}")
 
@@ -747,6 +754,7 @@ async def open_source(ctx):
 @client.command(help="a command to tell you the channel id")
 async def this(ctx):
   await ctx.send(ctx.channel.id)
+  await ctx.send(ClientConfig.whoami)
 
 @client.command(help="gives you the milkman gif",brief="you summoned the milkman oh no")
 async def milk(ctx):
@@ -1029,69 +1037,6 @@ async def closest_user(ctx,*,args=None):
   if isinstance(ctx.channel,discord.DMChannel):
     await ctx.send("You unforantely don't get the last value.") 
 
-@client.command(help="a command to roll d20",aliases=["roll20"])
-async def dice_roll20(ctx):
-  embed_message = discord.Embed(title=f" Rolled a {random.randint(1,20)}", color=random.randint(0, 16777215),timestamp=(ctx.message.created_at))
-  embed_message.set_footer(text = f"{ctx.author.id}")
-  embed_message.set_thumbnail(url="https://i.imgur.com/AivZBWP.png")
-  embed_message.set_author(name=f"d20 Rolled by {ctx.author}:",icon_url=(ctx.author.avatar_url))
-  embed_message.set_image(url="https://i.imgur.com/9dbBkqj.gif")
-  await ctx.send(embed=embed_message)
-
-@client.command(help="a command to roll d6",aliases=["roll6"])
-async def dice_roll6(ctx):
-  embed_message = discord.Embed(title=f" Rolled a {random.randint(1,6)}", color=random.randint(0, 16777215),timestamp=(ctx.message.created_at))
-  embed_message.set_footer(text = f"{ctx.author.id}")
-  embed_message.set_thumbnail(url="https://i.imgur.com/AivZBWP.png")
-  embed_message.set_author(name=f"d6 Rolled by {ctx.author}:",icon_url=(ctx.author.avatar_url))
-  embed_message.set_image(url="https://i.imgur.com/6ul8ZGY.gif")
-  await ctx.send(embed=embed_message)
-
-@client.command(help=" a command to roll d10",aliases=["roll10"])
-async def dice_roll10(ctx):
-  embed_message = discord.Embed(title=f" Rolled a {random.randint(1,10)}", color=random.randint(0, 16777215),timestamp=(ctx.message.created_at))
-  embed_message.set_footer(text = f"{ctx.author.id}")
-  embed_message.set_thumbnail(url="https://i.imgur.com/AivZBWP.png")
-  embed_message.set_author(name=f"d10 Rolled by {ctx.author}:",icon_url=(ctx.author.avatar_url))
-  embed_message.set_image(url="https://i.imgur.com/gaLM6AG.gif")
-  await ctx.send(embed=embed_message)
-
-@client.command(help=" a command to roll d100",aliases=["roll100"])
-async def dice_roll100(ctx):
-  embed_message = discord.Embed(title=f" Rolled a {random.randint(1,100)}", color=random.randint(0, 16777215),timestamp=(ctx.message.created_at))
-  embed_message.set_footer(text = f"{ctx.author.id}")
-  embed_message.set_thumbnail(url="https://i.imgur.com/AivZBWP.png")
-  embed_message.set_author(name=f"d100 Rolled by {ctx.author}:",icon_url=(ctx.author.avatar_url))
-  embed_message.set_image(url="https://i.imgur.com/gaLM6AG.gif")
-  await ctx.send(embed=embed_message)
-
-@client.command(help=" a command to roll d12",aliases=["roll12"])
-async def dice_roll12(ctx):
-  embed_message = discord.Embed(title=f" Rolled a {random.randint(1,12)}", color=random.randint(0, 16777215),timestamp=(ctx.message.created_at))
-  embed_message.set_footer(text = f"{ctx.author.id}")
-  embed_message.set_thumbnail(url="https://i.imgur.com/AivZBWP.png")
-  embed_message.set_author(name=f"d12 Rolled by {ctx.author}:",icon_url=(ctx.author.avatar_url))
-  embed_message.set_image(url="https://i.imgur.com/gaLM6AG.gif")
-  await ctx.send(embed=embed_message)
-
-@client.command(help=" a command to roll d8",aliases=["roll8"])
-async def dice_roll8(ctx):
-  embed_message = discord.Embed(title=f" Rolled a {random.randint(1,8)}", color=random.randint(0, 16777215),timestamp=(ctx.message.created_at))
-  embed_message.set_footer(text = f"{ctx.author.id}")
-  embed_message.set_thumbnail(url="https://i.imgur.com/AivZBWP.png")
-  embed_message.set_author(name=f"d8 Rolled by {ctx.author}:",icon_url=(ctx.author.avatar_url))
-  embed_message.set_image(url="https://i.imgur.com/gaLM6AG.gif")
-  await ctx.send(embed=embed_message)
-
-@client.command(help=" a command to roll d4",aliases=["roll4"])
-async def dice_roll4(ctx):
-  embed_message = discord.Embed(title=f" Rolled a {random.randint(1,4)}", color=random.randint(0, 16777215),timestamp=(ctx.message.created_at))
-  embed_message.set_footer(text = f"{ctx.author.id}")
-  embed_message.set_thumbnail(url="https://i.imgur.com/AivZBWP.png")
-  embed_message.set_author(name=f"d4 Rolled by {ctx.author}:",icon_url=(ctx.author.avatar_url))
-  embed_message.set_image(url="https://i.imgur.com/gaLM6AG.gif")
-  await ctx.send(embed=embed_message)
-
 @client.command(help="a command to send wink gifs",brief="you select a user to send it to and it will send it to you lol")
 async def wink(ctx,*, Member: BetterMemberConverter=None):
   if Member is None:
@@ -1105,9 +1050,8 @@ async def wink(ctx,*, Member: BetterMemberConverter=None):
     person = ctx.author
     target = Member
   
-  sr_client=sr_api.Client()
+  sr_client=sr_api.Client(session=client.aiohttp_session)
   image=await sr_client.get_gif("wink")
-  await sr_client.close()
 
   embed=discord.Embed(color=random.randint(0, 16777215))
   embed.set_author(name=f"{person} winked at you",icon_url=(person.avatar_url))
@@ -1188,7 +1132,7 @@ async def userinfo(ctx,*,user: BetterUserconverter = None):
   embed.add_field(name="Highest Role:",value=highest_role)
   embed.set_image(url=user.avatar_url)
   await ctx.send(embed=embed)
-  print("USERNAME: "+user.name)
+  #print("USERNAME: "+user.name)
   await RankSystem.GetStatus(ctx.message,user)
 
 @client.command(help="a command to give a list of servers(owner only)")
@@ -1217,7 +1161,7 @@ async def on_message(message):
 
   await client.process_commands(message)
 
-  #await GlobalLinker.respond(message)
+  await GlobalLinker.respond(message)
 
   url_collection = []
   global safe_servers
@@ -1269,7 +1213,9 @@ async def on_message(message):
       message.content = message.content.replace(check_time,discordprefix)
     
   if message.reference != None and not message.content.startswith(discordprefix) and not message.author.bot:
-    return
+    if message.mentions != None and client.user in message.mentions:
+      jdjg=client.get_user(168422909482762240)
+      await client.get_channel(738912143679946783).send(content=f"{jdjg.mention} {message} \n Content: {message.content} ")
     
   if message.guild is None and not message.author.bot and not message.content.startswith(discordprefix):
     punc = [' ','.','!','?']
@@ -1427,26 +1373,11 @@ async def on_message(message):
     return
 
   if not message.guild is None and not message.author.bot:
-
     if message.guild.id in guild_prefixes and not message.author.bot:
       server_prefix=guild_prefixes[message.guild.id]
       if message.content.startswith(server_prefix):
         message.content = message.content.replace(server_prefix,discordprefix)
         print(message.content)
-
-    if message.guild.id == 731732168602288199 and not message.author.bot:
-      punc = [' ','.','!','?']
-      tmpStr = message.content.lower()
-      tmpStr = tmpStr.replace("yoshicake","")
-      for pun in punc:
-        tmpStr = tmpStr.replace("yoshicake"+pun,"")
-      yoshicake_check = (len(message.content)!=len(tmpStr))
-
-      if (yoshicake_check):
-        try:
-          await message.channel.send("https://tenor.com/view/birthday-faded-marion-cartoons-cake-gif-4878378")
-        except:
-          pass
 
     if message.guild.id in safe_servers and not message.author.bot and not message.content.startswith(discordprefix):
       punc = [' ','.','!','?']
@@ -1605,7 +1536,6 @@ async def on_message(message):
       return
 
     return
-
   
   if message.content.startswith(discordprefix+"save_image") and not message.author.bot and message.author.id in jdjg_id:
     if len(message.attachments) > 0:
@@ -2105,19 +2035,6 @@ async def on_message(message):
     await message.channel.send(GetPfp.GetServerPfp(message))
     return
 
-  if message.content.startswith(discordprefix+"pfp") and not message.author.bot:
-    await message.channel.send((await GetPfp.GetUserPfp(message)).avatar_url)
-    return
-
-  if message.content.startswith(discordprefix+"avatar") and not message.author.bot:
-    user = await GetPfp.GetUserPfp(message)
-    pfp = user.avatar_url
-    embed = discord.Embed(title = f"{user.name}'s avatar:",color=random.randint(0, 16777215))
-    embed.set_image(url=(pfp))
-    await message.channel.send(embed=embed)
-    
-    return
-
   if message.content.startswith(discordprefix+"advice") and not message.author.bot:
     advice_response=random.choice(random_response.advice)
     embed = discord.Embed(title = "Here is some advice for you!",color=random.randint(0, 16777215))
@@ -2300,10 +2217,11 @@ async def on_message(message):
     new_height = int(height/divide_rate)
     dimensions=(new_width,new_height)
     file_name = (f"{obj.name}.{image_format}")
-    check_time.resize(dimensions)
+    check_time=check_time.resize(dimensions)
     buffer = BytesIO()
     check_time.save(buffer,format = image_format,save_all=True)
     buffer.seek(0)
+    new_byte_size=check_time.tell()
     file=discord.File(buffer, filename=file_name)
     embed_message=discord.Embed(title=f"Emoji name : {obj.name}",timestamp=(message.created_at),color=random.randint(0, 16777215))
     embed_message.set_author(name=f"{message.author}",icon_url=(message.author.avatar_url))
@@ -2314,7 +2232,7 @@ async def on_message(message):
     embed_message.add_field(name="Image type:",value=image_format)
     embed_message.add_field(name="New Width:",value=new_width)
     embed_message.add_field(name="New Height:",value=new_height)
-    #embed_message.add_field(name="New Byte Size:",value=f"{new_bytes} KB")
+    embed_message.add_field(name="New Byte Size:",value=f"{new_byte_size} KB")
     embed_message.set_image(url=f"attachment://{file_name}")
     embed_message.set_thumbnail(url=obj.url)
     embed_message.set_footer(text = f"{message.author.id}")
@@ -2563,7 +2481,7 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"log off") and message.author.id in admins and not message.author.bot:
     await message.channel.send("Shutting off")
-    await client.logout()
+    await client.close()
     return
 
   if message.content.startswith(discordprefix+"voice_create") and not message.author.bot and user.guild_permissions.manage_channels == True:
@@ -3042,40 +2960,6 @@ async def on_message(message):
     await message.channel.send(embed=embed)
     return
 
-  if message.content.startswith(discordprefix+"mail") and not message.author.bot:
-    try:
-      user = message.mentions[0]
-    except:
-      try:
-        user = client.get_user(int(message.content.split(" ",2)[1]))
-          #user does not exist, uses the message.author instead.
-      except:
-        # was the userID not an int?
-        await message.channel.send("\n User Not Found, defaulting to you.")
-        pass
-
-    if user is None:
-      user = message.author
-      await message.channel.send("\n User Not Found, defaulting to you.")
-    await message.channel.send("Sending mail....")
-    pfp = message.author.avatar_url
-    user_id22=str(user.id)
-    replace_info="<@!"+str(user.id)+">"
-    mail_msg2 = message.content.replace(discordprefix+"mail","")
-    mail_msg2 =  mail_msg2.replace(replace_info,"")
-    mail_msg2 = mail_msg2.replace(user_id22,"")
-    mail_msg2 = mail_msg2.split(" ",2)[-1]
-    embed_message = discord.Embed(title=mail_msg2, timestamp=(message.created_at), color=random.randint(0, 16777215))
-    embed_message.set_author(name=f"Mail from: {message.author}",icon_url=(pfp))
-    embed_message.set_footer(text = f"{message.author.id}")
-    embed_message.set_thumbnail(url = "https://i.imgur.com/1XvDnqC.png")
-    if (user.dm_channel is None):
-      await user.create_dm()
-    await user.send(embed=embed_message)
-    embed_message.add_field(name="Sent To:",value=str(user))
-    await client.get_channel(738912143679946783).send(embed=embed_message)
-    return
-
   if message.content.lower().startswith('fooz'):
     try:
       evalStr = eval(message.content[4:])
@@ -3279,9 +3163,8 @@ async def on_message_delete(message):
       message.content = "NULL"
     
     if len(message.content) > 1025:
-      mystbin_client = mystbin.Client()
+      mystbin_client = mystbin.Client(session=client.aiohttp_session)
       paste = await mystbin_client.post(message.content)
-      await mystbin_client.close()
       em.add_field(name="Message: ",value=paste.url)
     if len(message.content) < 1025:
       em.add_field(name="Message: ",value=message.content)
@@ -3329,14 +3212,12 @@ async def on_message_edit(before,after):
   #print("EDIT")
   if(before.content!=after.content):
     if len(before.content) > 1025:
-      mystbin_client = mystbin.Client()
+      mystbin_client = mystbin.Client(session=client.aiohttp_session)
       paste = await mystbin_client.post(before.content)
-      await mystbin_client.close()
       before.content = paste.url
     if len(after.content) > 1025:
-      mystbin_client = mystbin.Client()
+      mystbin_client = mystbin.Client(session=client.aiohttp_session)
       paste = await mystbin_client.post(after.content)
-      await mystbin_client.close()
       after.content = paste.url
     embedVar = discord.Embed(title=f"{before.author} Edited a Message",color=random.randint(0, 16777215))
     if(len(before.content)==0 or before.content is None):
@@ -3435,10 +3316,9 @@ async def on_error(name,*arguments,**karguments):
     jdjg = client.get_user(168422909482762240)
     if (jdjg.dm_channel is None):
       await jdjg.create_dm()
-    mystbin_client = mystbin.Client()
+    mystbin_client = mystbin.Client(session=client.aiohttp_session)
     paste = await mystbin_client.post(message_error.content)
     await jdjg.send(f"Error: {paste.url}")
-    await mystbin_client.close()
     #try:
       #member_permissions=message_error.channel.permissions_for(message_error.guild.me)
       #if member_permissions.send_messages == True:
@@ -3452,9 +3332,7 @@ async def on_error(name,*arguments,**karguments):
 @client.event
 async def on_member_join(member):
   embed_message=discord.Embed(title=f"{member} just joined {member.guild.name}",timestamp=datetime.datetime.utcnow(),color=random.randint(0, 16777215))
-
   embed_message.set_footer(text=f"User ID: {member.id}")
-
   await client.get_channel(738912143679946783).send(embed=embed_message)
 
 @client.event
@@ -3507,30 +3385,6 @@ async def on_user_update(before,after):
   if not before.discriminator == after.discriminator:
     embed_message.add_field(name="Discriminator",value=f"#{before.discriminator} -> {after.discriminator}")
   await client.get_channel(738912143679946783).send(embed=embed_message)
-
-@client.event
-async def on_guild_remove(guild_fetched):
-  channels = [channel for channel in guild_fetched.channels]
-  roles = roles= [role for role in guild_fetched.roles]
-  embed = discord.Embed(title="Bot just left: "+str(guild_fetched.name), color=random.randint(0,16777215))
-  embed.set_thumbnail(url = guild_fetched.icon_url)
-  embed.add_field(name='Server Name:',value=f'{guild_fetched.name}')
-  embed.add_field(name='Server ID:',value=f'{guild_fetched.id}')
-  embed.add_field(name='Server region:',value=f'{guild_fetched.region}')
-  embed.add_field(name='Server Creation Date:',value=f'{guild_fetched.created_at}')
-  embed.add_field(name='Server Owner:',value=f'{guild_fetched.owner}')
-  try:
-    embed.add_field(name='Server Owner ID:',value=f'{guild_fetched.owner.id}')
-  except:
-    pass
-  try:
-   embed.add_field(name='Member Count:',value=f'{guild_fetched.member_count}')
-  except:
-    pass
-  embed.add_field(name='Amount of Channels:',value=f"{len(channels)}")
-  embed.add_field(name='Amount of Roles:',value=f"{len(roles)}")
-  await client.get_channel(738912143679946783).send(embed=embed)
-
 
 banned_words = [
   'faggot',

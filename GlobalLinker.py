@@ -3,7 +3,9 @@ import DatabaseControl
 import ClientConfig
 import GetPfp
 import discord
+
 client  = ClientConfig.client
+
 def AddGlobalLink(client,message):
   this = message.channel.id
   thisSer = message.guild.id
@@ -26,7 +28,6 @@ banned_list = [
 573593846772924418,
 535629244517056531,
 742845516743704776,
-
 
 ]
 async def SendMessage(message):
@@ -93,26 +94,66 @@ def GetGlobalEmbed(message):
   embedVar.add_field(name=str(message.author),value=val,inline=True)
   return embedVar
 
+
+
+async def display_guilds_id(message):
+  for gChan in DatabaseConfig.db.g_link_testing.find():
+    string = ""
+    string = string + str(client.get_channel(int(gChan["chan_id"])).name)
+    await message.channel.send(string)
+
+
+
 async def extend(message):
-  gChan = DatabaseConfig.db.g_link_testing.find_one({"ser_id":message.guild.id})
-  if gChan == None:
+  if(ClientConfig.whoami==0):
     return
-  global_channel=gChan["chan_id"]
-  if global_channel == None:
+  if(message.author.id == ClientConfig.whoami):
     return
-    print(global_channel)
-  if(global_channel==message.channel.id):
-    await client.get_channel(782123846781370368).send(embed = GetGlobalEmbed(message))
-  return
-  
+  if(message.channel.id == 782123846781370368):
+    return
+  if(message.channel.id != 782123846781370368 and not message.author.bot):
+    gChan = DatabaseConfig.db.g_link_testing.find_one({"ser_id":message.guild.id})
+    try:
+      gChan["chan_id"]
+    except:
+      return
+    if(gChan["chan_id"]==message.channel.id):
+      await client.get_channel(782123846781370368).send(embed = GetGlobalEmbed(message))
+    return
+    print("ERROR IN EXTENDER: JDJGBOT")
+
 
 async def respond(message):
   return
+  if(ClientConfig.whoami==0):
+    return
+  try:
+    if(message.guild.id != 736422329399246990):
+      return
+  except:
+    return
+  if(ClientConfig.whoami==message.author.id):
+    return
+  print("WHOAMI: "+ str(ClientConfig.whoami) +" : "+str(message.author.id))
+  #return
+  if(message.author.bot):
+    print("********************************************")
+    print("BOT NAME: " + str(message.author.name))
+    print("GUILD NAME: " + str(message.guild.name))
+    print("CHANNEL NAME: " + str(message.channel.name))
   if message.author.bot:
-    if(client.user.id!=message.author.id):
-      for gChan in DatabaseConfig.db.g_link_testing.find():
-        if message.guild.id != gChan['ser_id']:
-          try:
-            await client.get_channel(gChan['chan_id']).send(embed=message.embeds[0])
-          except:
-              print(gChan['chan_id'])
+    if(ClientConfig.whoami!=message.author.id):
+      if(message.channel.id == 782123846781370368):
+        for gChan in DatabaseConfig.db.g_link_testing.find():
+          if message.guild.id != gChan['ser_id']:
+            try:
+              await client.get_channel(gChan['chan_id']).send(embed=message.embeds[0])
+            except:
+              print("ERROR: NO ACCESS TO CHANNEL: "+str(gChan['ser_id']) + " : "+str(gChan['chan_id'])+"\nCONTANCT RENDEV OR DELETE THIS SERVER FROM DATABASE")
+         # except:
+        #      print("ERROR IN RESPONDER: SHADIBOT")
+        #      print(gChan['chan_id'])
+        #      banana = 1;
+      else:
+        banana =0
+        #print("chanID: "+str(message.channel.id) + str(message.author) + str())
