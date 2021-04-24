@@ -3,11 +3,12 @@ import DatabaseControl
 import ClientConfig
 import GetPfp
 import discord
-from profanity import censor_profanity
+import profanity
 client  = ClientConfig.client
 
 def censor_text(message):
-  message=censor_profanity(message)
+  #after the vps team fixes their package installer remove the folder.BlockingIOError
+  message=profanity.censor_profanity(message)
   return message
 
 def AddGlobalLink(client,message):
