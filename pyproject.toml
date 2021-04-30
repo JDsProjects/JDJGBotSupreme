@@ -24,7 +24,7 @@ aioimgur = "^0.1.0"
 jishaku = "^1.20.0"
 async-cse = "^0.3.0"
 numpy = "^1.20.2"
-filter-profanity = "^1.0.9"
+better-profanity = "^0.7.0"
 
 [tool.poetry.dev-dependencies]
 

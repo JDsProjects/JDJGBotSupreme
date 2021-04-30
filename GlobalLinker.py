@@ -3,12 +3,11 @@ import DatabaseControl
 import ClientConfig
 import GetPfp
 import discord
-import profanity
+from better_profanity import profanity
 client  = ClientConfig.client
 
 def censor_text(message):
-  #after the vps team fixes their package installer remove the folder.BlockingIOError
-  message=profanity.censor_profanity(message)
+  message.content = profanity.censor(message.content,censor_char="#")
   return message
 
 def AddGlobalLink(client,message):
@@ -26,7 +25,12 @@ def FilterMessage(message):
   tmp_msg = str(message.content)
   for men in message.mentions:
     tmp_msg = tmp_msg.replace(str("<@!"+str(men.id)+">"),men.name)
+
+  message=censor_text(message)
+  #this should now censor all the text right RenDev?
+
   return tmp_msg
+  
 banned_list = [
 629060550525190145,
 691713870238187530,
@@ -165,3 +169,10 @@ async def respond(message):
       else:
         banana =0
         #print("chanID: "+str(message.channel.id) + str(message.author) + str())
+  
+
+def isGlobalChannel(channel_id):
+  doc = DatabaseConfig.db.g_link_testing.find_one({"chan_id":channel_id})
+  if(doc == None):
+    return False
+  return True

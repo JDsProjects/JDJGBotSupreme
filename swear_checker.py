@@ -34,6 +34,7 @@ sexual_words =[
   "wet dream",
 ]
 
+bad_word_list = sexual_words+bad_words
 
 import DatabaseConfig
 col = DatabaseConfig.db.server_settings

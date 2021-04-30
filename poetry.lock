@@ -97,6 +97,14 @@ tests = ["coverage (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six
 tests_no_zope = ["coverage (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six"]
 
 [[package]]
+name = "better-profanity"
+version = "0.7.0"
+description = "Blazingly fast cleaning swear words (and their leetspeak) in strings"
+category = "main"
+optional = false
+python-versions = "==3.*"
+
+[[package]]
 name = "braceexpand"
 version = "0.1.6"
 description = "Bash-style brace expansion for Python"
@@ -203,14 +211,6 @@ description = "Emojis for Python"
 category = "main"
 optional = false
 python-versions = "*"
-
-[[package]]
-name = "filter-profanity"
-version = "1.0.9"
-description = "The fastest python module to filter and censor obscene language from strings!"
-category = "main"
-optional = false
-python-versions = ">=3.6"
 
 [[package]]
 name = "flask"
@@ -607,7 +607,7 @@ multidict = ">=4.0"
 
 [metadata]
 python-versions = "^3.8"
-content-hash = "9793cf14c7c7a20e05d41df7a92895e4b3887f4352ef4fcb0646acfd613ff39e"
+content-hash = "037ad326fe84b8e85cefe3bd0c8439eccf87c431bbdf07d7813a86c005afd858"
 
 [metadata.files]
 aiodns = [
@@ -673,6 +673,10 @@ async-timeout = [
 attrs = [
     {file = "attrs-20.3.0-py2.py3-none-any.whl", hash = "sha256:31b2eced602aa8423c2aea9c76a724617ed67cf9513173fd3a4f03e3a929c7e6"},
     {file = "attrs-20.3.0.tar.gz", hash = "sha256:832aa3cde19744e49938b91fea06d69ecb9e649c93ba974535d08ad92164f700"},
+]
+better-profanity = [
+    {file = "better_profanity-0.7.0-py3-none-any.whl", hash = "sha256:bd4c529ea6aa2db1aaa50524be1ed14d0fe5c664f1fd88c8bc388c7e9f9f00e8"},
+    {file = "better_profanity-0.7.0.tar.gz", hash = "sha256:8a6fdc8606d7471e7b5f6801917eca98ec211098262e82f62da4f5de3a73145b"},
 ]
 braceexpand = [
     {file = "braceexpand-0.1.6-py2.py3-none-any.whl", hash = "sha256:c37571ad130213247fac9921f3fd1032c81057490b9ca29be6884fd6d9dc1013"},
@@ -747,9 +751,6 @@ emoji = [
 emojis = [
     {file = "emojis-0.6.0-py3-none-any.whl", hash = "sha256:7da34c8a78ae262fd68cef9e2c78a3c1feb59784489eeea0f54ba1d4b7111c7c"},
     {file = "emojis-0.6.0.tar.gz", hash = "sha256:bf605d1f1a27a81cd37fe82eb65781c904467f569295a541c33710b97e4225ec"},
-]
-filter-profanity = [
-    {file = "filter-profanity-1.0.9.tar.gz", hash = "sha256:5c1ed24b4921ac7847379887c80241495e6e9e76e75d64695f1f6a41f07ddeaf"},
 ]
 flask = [
     {file = "Flask-1.1.2-py2.py3-none-any.whl", hash = "sha256:8a4fdd8936eba2512e9c85df320a37e694c93945b33ef33c89946a340a238557"},

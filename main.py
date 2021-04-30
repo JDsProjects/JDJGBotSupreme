@@ -42,6 +42,9 @@ import asuna_api
 import aioimgur
 import time
 import async_cse
+import swear_checker
+
+bad_list=swear_checker.bad_word_list
 
 logging.basicConfig(level=logging.INFO)
 
@@ -2971,10 +2974,22 @@ async def on_message(message):
       pass
     return
 
+
+  
+  #from better_profanity import profanity
+  if not message.author.bot:
+    if GlobalLinker.isGlobalChannel(message.channel.id):
+      for x in bad_list:
+        if x.lower() in message.content.lower():
+          try:
+            banned_response=random.choice(random_response.response_used)
+            await message.channel.send(banned_response)
+          except discord.errors.Forbidden:
+            return
+
   for banned_word in banned_words:
     if message.guild == None:
       pass
-    
     elif banned_word in message.content.lower() and message.guild.id in slur_censor:
       try:
         await message.delete()
