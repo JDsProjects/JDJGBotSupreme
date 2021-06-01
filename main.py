@@ -199,7 +199,6 @@ bad_value = [
 jdjg_id = [
   168422909482762240,
   393511863385587712,
-
 ]
 
 #this is used for the order command
@@ -241,7 +240,6 @@ async def startup():
   await client.wait_until_ready()
   client.os_user = "None"
   client.check_users = {}
-  #client.lavalink=await asyncio.create_subprocess_shell('java -jar Lavalink.jar')
 
   #line added by RenDev 2/26/2021
   ClientConfig.whoami = client.user.id
@@ -1128,11 +1126,8 @@ async def servers(ctx):
 #Typing Status Support
 waitMessage = 0
 #commands with embed: help, mail, support, about, update(will soon)
-@client.event
+@client.listen()
 async def on_message(message):
-
-  await client.process_commands(message)
-
   await GlobalLinker.respond(message)
 
   url_collection = []
