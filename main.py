@@ -387,12 +387,12 @@ async def order(ctx,*,args=None):
   if args is None:
     await ctx.send("You can't order nothing.")
   if args:
-    time_before=time.process_time() 
+    time_before=time.perf_counter()
     image_client=async_cse.Search(os.environ["image_api_key"],engine_id=os.environ["google_image_key"])
     results = await image_client.search(args, safesearch=True, image_search=True)
     emoji_image = sorted(results, key=lambda x: SequenceMatcher(None, x.image_url,args).ratio())[-1]
     await image_client.close()
-    time_after=time.process_time()
+    time_after=time.perf_counter()
     try:
       await ctx.message.delete()
     except discord.errors.Forbidden:
@@ -442,12 +442,12 @@ async def shuffle(ctx,*,args=None):
   if args is None:
     await ctx.send("You can't order nothing")
   if args:
-    time_before=time.process_time() 
+    time_before=time.perf_counter()
     image_client=async_cse.Search(os.environ["image_api_key"],engine_id=os.environ["google_image_key"])
     results = await image_client.search(args, safesearch=True, image_search=True)
     emoji_image = results[random.randint(0,len(results)-1)]
     await image_client.close()
-    time_after=time.process_time()
+    time_after=time.perf_counter()
     try:
       await ctx.message.delete()
     except discord.errors.Forbidden:
@@ -467,12 +467,12 @@ async def order_shuffle(ctx,*,args):
   if args is None:
     await ctx.send("You can't order nothing")
   if args:
-    time_before=time.process_time() 
+    time_before=time.perf_counter() 
     image_client=async_cse.Search(os.environ["image_api_key"],engine_id=os.environ["google_image_key"])
     results = await image_client.search(args, safesearch=True, image_search=True)
     emoji_image = results[random.randint(0,len(results)-1)]
     await image_client.close()
-    time_after=time.process_time()
+    time_after=time.perf_counter()
     try:
       await ctx.message.delete()
     except discord.errors.Forbidden:
