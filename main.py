@@ -1180,7 +1180,7 @@ async def on_message(message):
       message.content = message.content.replace(check_time,discordprefix)
     
   if message.reference != None and not message.content.startswith(discordprefix) and not message.author.bot:
-    if message.mentions != None and client.user in message.mentions:
+    if message.mentions != None and client.user in message.mentions and not client.user.mentioned_in(message):
       jdjg=client.get_user(168422909482762240)
       await client.get_channel(738912143679946783).send(content=f"{jdjg.mention} {message} \n Content: {message.content} ")
     
