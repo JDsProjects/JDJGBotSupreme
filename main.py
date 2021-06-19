@@ -694,7 +694,6 @@ async def invite(ctx):
   embed  = discord.Embed(title = "The Invite Links!", value = "One is for testing, one is the normal bot.",color=random.randint(0, 16777215))
   embed.add_field(name = "Testing Link:", value = "https://discordapp.com/oauth2/authorize?client_id=702243652960780350&scope=bot&permissions=8", inline = False)
   embed.add_field(name = "Normal Invite:", value = f"https://discordapp.com/oauth2/authorize?client_id={client.user.id}&scope=bot&permissions=8", inline = False)
-  embed.add_field(name="JDBot invite:",value="https://discord.com/oauth2/authorize?client_id=347265035971854337&scope=bot&permissions=8",inline=False)
   embed.set_thumbnail(url=(client.user.avatar_url))
   await ctx.send(embed=embed)
 
@@ -1180,7 +1179,7 @@ async def on_message(message):
       message.content = message.content.replace(check_time,discordprefix)
     
   if message.reference != None and not message.content.startswith(discordprefix) and not message.author.bot:
-    if message.mentions != None and client.user in message.mentions and not client.user.mentioned_in(message):
+    if message.mentions != None and client.user in message.mentions:
       jdjg=client.get_user(168422909482762240)
       await client.get_channel(738912143679946783).send(content=f"{jdjg.mention} {message} \n Content: {message.content} ")
     
