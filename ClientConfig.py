@@ -1,8 +1,5 @@
-import discord
-import re
-import os
+import discord, aiohttp, re, os, contextlib
 from discord.ext import commands
-import aiohttp
 intents_usage=discord.Intents.all()
 
 async def get_prefix(client,message):
@@ -24,6 +21,19 @@ class JDJG_Bot(commands.Bot):
   async def close(self):
     await self.aiohttp_session.close()
     await super().close()
+
+  async def getch_member(self, guild, member_id):
+    member = None
+    with contextlib.suppress(discord.Forbidden, discord.HTTPException):
+      member = guild.get_member(member_id) or await guild.fetch_member(member_id)
+    return member
+
+  async def getch_user(self, user_id):
+    user = None
+
+    with contextlib.suppress(discord.NotFound, discord.HTTPException):
+      user = self.get_user(user_id) or await self.fetch_user(user_id)
+    return user
 
 client = JDJG_Bot(command_prefix=(get_prefix),intents = discord.Intents.all())
 

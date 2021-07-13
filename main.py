@@ -1039,55 +1039,52 @@ async def wink(ctx,*, Member: BetterMemberConverter=None):
     except discord.Forbidden:
       await ctx.author.send("Failed Dming them...")
 
-@client.command(aliases=["user info", "user_info","user-info"],help="a command that gives information on users",brief="this can work with mentions, ids, usernames, and even full names.")
-async def userinfo(ctx,*,user: BetterUserconverter = None):
-  if user is None:
-    user = ctx.author
-
-  if user.bot:
-    user_type = "Bot"
-  if not user.bot:
-    user_type = "User"
+@client.command(aliases=["user_info", "user-info", "ui", "whois"], brief="a command that gives information on users", help="this can work with mentions, ids, usernames, and even full names.")
+async def userinfo(ctx, *, user: BetterUserconverter = None):
+  user = user or ctx.author
+  user_type = ['User', 'Bot'][user.bot]
   
   if ctx.guild:
-    member_version=ctx.guild.get_member(user.id)
+    member_version = await client.getch_member(ctx.guild, user.id)
+
     if member_version:
       nickname = str(member_version.nick)
       joined_guild = member_version.joined_at.strftime('%m/%d/%Y %H:%M:%S')
       status = str(member_version.status).upper()
-      highest_role = member_version.roles[-1]
+      highest_role = member_version.top_role
+      
     if not member_version:
+
       nickname = str(member_version)
+
       joined_guild = "N/A"
       status = "Unknown"
+
       for guild in client.guilds:
         member=guild.get_member(user.id)
         if member:
           status=str(member.status).upper()
           break
+          
       highest_role = "None Found"
+
   if not ctx.guild:
-      nickname = "None"
-      joined_guild = "N/A"
-      status = "Unknown"
-      for guild in client.guilds:
-        member=guild.get_member(user.id)
-        if member:
-          status=str(member.status).upper()
-          break
-      highest_role = "None Found"
+    nickname = "None"
+    joined_guild = "N/A"
+    status = "Unknown"
+    for guild in client.guilds:
+      member=guild.get_member(user.id)
+      if member:
+        status=str(member.status).upper()
+        break
+    highest_role = "None Found"
   
-  guilds_list=[guild for guild in client.guilds if guild.get_member(user.id)]
+  guilds_list=[guild for guild in client.guilds if guild.get_member(user.id) and guild.get_member(ctx.author.id)]
   if not guilds_list:
     guild_list = "None"
 
-  x = 0
-  for g in guilds_list:
-    if x < 1:
-      guild_list = g.name
-    if x > 0:
-      guild_list = guild_list + f", {g.name}"
-    x = x + 1
+  if guilds_list:
+    guild_list= ", ".join(map(str, guilds_list))
 
   embed=discord.Embed(title=f"{user}",description=f"Type: {user_type}", color=random.randint(0, 16777215),timestamp=ctx.message.created_at)
   embed.add_field(name="Username: ", value = user.name)
@@ -1095,13 +1092,13 @@ async def userinfo(ctx,*,user: BetterUserconverter = None):
   embed.add_field(name="Nickname: ", value = nickname)
   embed.add_field(name="Joined Discord: ",value = (user.created_at.strftime('%m/%d/%Y %H:%M:%S')))
   embed.add_field(name="Joined Guild: ",value = joined_guild)
-  embed.add_field(name="Part of Guilds:", value=guild_list)
+  embed.add_field(name="Mutual Guilds:", value=guild_list)
   embed.add_field(name="ID:",value=user.id)
   embed.add_field(name="Status:",value=status)
   embed.add_field(name="Highest Role:",value=highest_role)
   embed.set_image(url=user.avatar_url)
   await ctx.send(embed=embed)
-  #print("USERNAME: "+user.name)
+
   await RankSystem.GetStatus(ctx.message,user)
 
 @client.command(help="a command to give a list of servers(owner only)")
@@ -1842,7 +1839,8 @@ async def on_message(message):
             for i in range(len(data_used['results'])):
               url = data_used['results'][i]['media'][0]['gif']['url']
               title = data_used['results'][i]["itemurl"]
-              urls_dictionary[title]=url       
+              urls_dictionary[title] = url
+
       except aiohttp.ClientConnectorError:
         await message.channel.send("Bot ran into an error please try again a bit later.\n Please DM the Bot owner about this")
         await message.channel.send("if you did this on purpose, just stop.")
@@ -2066,6 +2064,7 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"time") and not message.author.bot:
     currenttime = datetime.datetime.now(timezone(time_location)).strftime("%m/%d/%Y, %H:%M:%S")
+
     embed = discord.Embed(title="Current Server Time:",description=currenttime,color=random.randint(0, 16777215))
     embed.add_field(name="Time Zone(closest):",value=time_location)
     await message.channel.send(embed=embed)
@@ -2157,15 +2156,6 @@ async def on_message(message):
     embed = discord.Embed(title="Inverted image:",timestamp=(message.created_at),color=random.randint(0, 16777215))
     embed.set_image(url=f"attachment://invert.{image_format}")
     await message.channel.send(embed=embed,file=file)
-    return
-
-  if message.content.startswith(discordprefix+"closest_embed") and not message.author.bot:
-    for message_wanted in await message.channel.history(limit=100).flatten():
-      if len(message_wanted.embeds) != 0:
-        for embed in message_wanted.embeds:
-          await message.channel.send(embed=embed)
-        return
-    await message.channel.send("couldn't find any embeds")
     return
 
   if message.content.startswith(discordprefix+"emoji_check") and not message.author.bot:
@@ -2457,7 +2447,7 @@ async def on_message(message):
     except:
       await message.channel.send("That's not a valid function")
       return
-    voice_channel=await message.guild.create_voice_channel(channel_name)
+    voice_channel = await message.guild.create_voice_channel(channel_name)
     link_data = link_data+str(voice_channel.id)
     data_send = "The channel link exists at: "+str(link_data)
     await message.channel.send(data_send)
@@ -2840,7 +2830,7 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"works") and not message.author.bot:
-    number_here = random.randint(1,100)
+    number_here = random.randint(1, 100)
     pfp = message.author.avatar_url
     works_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
     try:
@@ -2912,7 +2902,7 @@ async def on_message(message):
       await message.channel.send("unknown format: '%s'" % convert_to)
       return
 
-    if triple == [255,255,255]:
+    if triple == [255, 255,255]:
       triple = [255,254,255]
     color_embed = (discord.Colour.from_rgb(*triple))
     embed = discord.Embed(title = "The conversion has been completed!",description=f"Converted from {convert_from} to {convert_to}:",color=color_embed)
@@ -2925,18 +2915,6 @@ async def on_message(message):
     embed.set_footer(text=f"{message.author.id}")
     await message.channel.send(embed=embed)
     return
-
-  if message.content.lower().startswith('fooz'):
-    try:
-      evalStr = eval(message.content[4:])
-      if evalStr is None or len(str(evalStr)) == 0:
-        await message.channel.send("Successful.")
-      else:
-        await message.channel.send(str(evalStr))
-    except Exception as e:
-      pass
-    return
-
 
   
   #from better_profanity import profanity
@@ -2992,11 +2970,16 @@ async def on_message(message):
       og_number = int(message.content.split(" ")[1])
       per_times = int(message.content.split(" ")[2])
       number_times = int(message.content.split(" ")[3])
+
       number_result = og_number+per_times*(number_times-1)
+
       embed = discord.Embed(title = f"Result of the function",color=random.randint(0, 16777215))
-      embed.add_field(name=f"Formula: {og_number}+{per_times}*({number_times}-1)",value=f"Result: {number_result}")
+
+      embed.add_field(name=f"Formula: {og_number}+{per_times}*({number_times} - 1)",value=f"Result: {number_result}")
+
       embed.set_footer(text = f"{message.author.id}")
       embed.set_thumbnail(url="https://i.imgur.com/E7GIyu6.png")
+
       await message.channel.send(embed=embed)
 
     except:
