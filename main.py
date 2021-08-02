@@ -1792,6 +1792,7 @@ async def on_message(message):
             for i in range(len(data_used['results'])):
               url = data_used['results'][i]['media'][0]['gif']['url']
               urls.append(url)
+
       except aiohttp.ClientConnectorError:
         await message.channel.send("Bot ran into an error please try again a bit later.\n Please DM the Bot owner about this")
         return
@@ -1841,17 +1842,20 @@ async def on_message(message):
               title = data_used['results'][i]["itemurl"]
               urls_dictionary[title] = url
 
+
       except aiohttp.ClientConnectorError:
         await message.channel.send("Bot ran into an error please try again a bit later.\n Please DM the Bot owner about this")
         await message.channel.send("if you did this on purpose, just stop.")
         return
 
       gifNearest = sorted(urls_dictionary, key=lambda x: SequenceMatcher(None, x, order_wanted).ratio())[-1]
+
       order_image = urls_dictionary[gifNearest]
       try:
         await message.delete()
       except discord.errors.Forbidden:
         pass
+
       order_description = (f"{message.author} ordered a {order_wanted}")
       pfp = message.author.avatar_url
       order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
@@ -1862,12 +1866,16 @@ async def on_message(message):
       embed_info.add_field(name="Powered by:",value="Tenor")
       embed_info.set_image(url=order_image)
       await message.channel.send(embed=embed_info)
+
       await client.get_channel(738912143679946783).send(embed=embed_info)
+
       image_channel = client.get_channel(764543893118648342)
       await image_channel.send("let's see the best result")
+
       for i in range(len(data_used['results'])):
         url = data_used['results'][i]['media'][0]['gif']['url']
         await image_channel.send(url)
+
       return
     
     if not response.status_code == 200:
@@ -1922,27 +1930,37 @@ async def on_message(message):
     giphy_usage = giphy_client.DefaultApi()
     try:
       api_response = giphy_usage.gifs_search_get(api_key=os.environ["giphy_token"],limit=5,rating="g",q=order_wanted)
+
       lst = list(api_response.data)
+
       if len(lst) > 0:
         gifNearest = sorted(lst, key=lambda x: SequenceMatcher(None, x.url, order_wanted).ratio())[-1]
+
         order_image = (f"https://media3.giphy.com/media/{gifNearest.id}/giphy.gif")
+        
+
         try:
           await message.delete()
         except discord.errors.Forbidden:
           pass
+
         order_description = (f"{message.author} ordered a {order_wanted}")
         pfp = message.author.avatar_url
         order_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
         order_info = (f"order for {message.author}:")
         embed_info = discord.Embed(title=f"Item: {order_wanted}", description=order_description,  color=random.randint(0, 16777215))
         embed_info.set_footer(text = f"{message.author.id} \nTime: {order_time}")
-        embed_info.set_author(name=order_info,icon_url=(pfp))
+        embed_info.set_author(name=order_info, icon_url=(pfp))
         embed_info.add_field(name="Powered by:",value="GIPHY")
         embed_info.set_image(url=order_image)
         await message.channel.send(embed=embed_info)
+
         await client.get_channel(738912143679946783).send(embed=embed_info)
+
         image_channel = client.get_channel(764543893118648342)
+
         await image_channel.send("let's see the best result")
+
         for x in lst:
           await image_channel.send(x.url)
 
@@ -2543,10 +2561,12 @@ async def on_message(message):
             json_data= await response.json()
             used_id = int(json_data["id"])
             guild_id = int(json_data["guild_id"])
+
             guild_used = client.get_guild(guild_id)
             permission_check=guild_used.get_member(user.id)
             webhook_name=json_data["name"]
             check_bool=permission_check.guild_permissions.manage_webhooks
+
             if check_bool == True:
               webhook_used=await client.fetch_webhook(used_id)
               await webhook_used.delete()
@@ -2569,8 +2589,9 @@ async def on_message(message):
           if response.status == 200:
             json_data=await response.json()
             used_id = int(json_data["id"])
-            webhook_fetched=await client.fetch_webhook(used_id)
+            webhook_fetched = await client.fetch_webhook(used_id)
             webhook_avatar=webhook_fetched.avatar_url
+
             full_info=("The webhook avatar is: \n "+str(webhook_avatar))
             await message.channel.send(full_info)
           if not response.status == 200:
@@ -2622,13 +2643,17 @@ async def on_message(message):
     return
 
   if message.content.startswith(discordprefix+"support channel") and not message.author.bot:
-    support_msg=message.content.replace(discordprefix+"support channel ","")
+    support_msg = message.content.replace(discordprefix+"support channel ","")
+
     time_used=(message.created_at).strftime('%m/%d/%Y %H:%M:%S')
+
     embed_message = discord.Embed(title=support_msg, description=time_used, color=random.randint(0, 16777215))
+    
     pfp = message.author.avatar_url
     embed_message.set_author(name=f"Help Needed from {message.author}:",icon_url=(pfp))
     embed_message.set_footer(text = f"{message.author.id} \nSupport Mode: Channel")
     embed_message.set_thumbnail(url="https://i.imgur.com/lcND9Z2.png")
+
     for cid in send_channel:
       channel_used = client.get_channel(cid)
       embed_message.add_field(name="Sent To:",value=str(channel_used))
@@ -2670,15 +2695,18 @@ async def on_message(message):
   
   if message.content.startswith(discordprefix+"send_tweet") and message.author.id in admins and not message.author.bot:
 
-    consumer_key= os.environ['tweet_key']
+    consumer_key = os.environ['tweet_key']
     consumer_secret=os.environ['tweet_secret']
     access_token=os.environ['tweet_access']
     access_token_secret=os.environ['tweet_token']
+
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     twitter_api = tweepy.API(auth)
     tweet_send=message.content.replace(discordprefix+"send_tweet ","")
+
     twitter_api.update_status(status = tweet_send)
+
     return
 
   if message.content.startswith(discordprefix+"tweet") and not message.author.bot:
@@ -2827,34 +2855,6 @@ async def on_message(message):
     except:
       await message.channel.send("either it was a string you used or you didn't give enough values.")
       
-    return
-
-  if message.content.startswith(discordprefix+"works") and not message.author.bot:
-    number_here = random.randint(1, 100)
-    pfp = message.author.avatar_url
-    works_time = (message.created_at).strftime('%m/%d/%Y %H:%M:%S')
-    try:
-      name_1 = message.content.split(" ")[1]
-      name_2 = message.content.split(" ")[2] 
-      embed_message = discord.Embed(title = f"How well does {name_1} and {name_2} work together?",color=random.randint(0, 16777215))
-      embed_message.set_author(name=f"{message.author}",icon_url=(pfp))
-      if  number_here  < 50:
-        resp = "They don't work well together at ALL :angry:"
-      elif number_here < 70 and number_here > 51:
-        resp = "They work quite poorly together..."
-      elif number_here < 90 and number_here  > 71:
-        resp = "They work kinda good together, maybe"
-      elif number_here < 99 and number_here > 91:
-        resp = "They work REALLY good together, wow. Nice."
-      elif number_here == 100:
-        resp = "Let them collaborate anytime."
-      
-      embed_message.add_field(name = f"They work at a rate {number_here}%", value = resp)
-      embed_message.set_footer(text = f"{message.author.id} \nTime: {works_time}")
-      await message.channel.send(embed=embed_message)
-      await client.get_channel(738912143679946783).send(embed=embed_message)
-    except:
-      await message.channel.send("\n Make sure to have two objects.")
     return
 
   if message.content.startswith(discordprefix+"color") and not message.author.bot:
