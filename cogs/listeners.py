@@ -8,7 +8,7 @@ class Events(commands.Cog):
     self.bot = bot
 
   @commands.Cog.listener()
-  async def on_guild_join(self,guild_fetched):
+  async def on_guild_join(self, guild_fetched):
     channels = [channel for channel in guild_fetched.channels]
     roles = roles= [role for role in guild_fetched.roles]
     embed = discord.Embed(title="Bot just joined: "+str(guild_fetched.name), color=random.randint(0,16777215))
@@ -25,7 +25,7 @@ class Events(commands.Cog):
     await self.bot.get_channel(738912143679946783).send(embed=embed)
 
   @commands.Cog.listener()
-  async def on_guild_remove(self,guild_fetched):
+  async def on_guild_remove(self, guild_fetched):
     channels = [channel for channel in guild_fetched.channels]
     roles = roles= [role for role in guild_fetched.roles]
     embed = discord.Embed(title="Bot just left: "+str(guild_fetched.name), color=random.randint(0,16777215))
@@ -45,4 +45,5 @@ class Events(commands.Cog):
       pass
     embed.add_field(name='Amount of Channels:',value=f"{len(channels)}")
     embed.add_field(name='Amount of Roles:',value=f"{len(roles)}")
+
     await self.bot.get_channel(738912143679946783).send(embed=embed)

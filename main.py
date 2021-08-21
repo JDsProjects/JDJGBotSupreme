@@ -1628,6 +1628,7 @@ async def on_message(message):
     await message.channel.send(await GetPfp.get_username(message))
     await message.channel.send("Done!")
     return
+    
   if message.content.startswith(discordprefix+"lead") and not message.author.bot:
     await RankSystem.GetTop10(client,message)
     return
