@@ -25,6 +25,7 @@ jishaku = "^1.20.0"
 async-cse = "^0.3.0"
 numpy = "^1.20.2"
 better-profanity = "^0.7.0"
+discord-ext-menus = {git = "https://github.com/Rapptz/discord-ext-menus"}
 
 [tool.poetry.dev-dependencies]
 

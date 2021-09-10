@@ -54,7 +54,7 @@ async def SendMessage(message):
               #  print(client.get_guild(gChan['ser_id']).name)
               #except:
               #  print("Error " + str(gChan['ser_id']))
-              embedVar = discord.Embed(title=message.guild.name,description=str(FilterMessage(message)),inline=True)
+              embedVar = discord.Embed(title=message.guild.name,description=str(FilterMessage(message)),inline=True, color = 16265216)
               embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)
               embedVar.set_thumbnail(url = GetPfp.GetServerPfp(message))
               try:
@@ -63,7 +63,7 @@ async def SendMessage(message):
                 print(gChan['chan_id'])
 
 async def TestGLink(message):
-  embedVar = discord.Embed(title=message.guild.name)
+  embedVar = discord.Embed(title=message.guild.name, color = 16265216)
   embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)            
   embedVar.set_thumbnail(url = GetPfp.GetServerPfp(message))
   val = str(FilterMessage(message))
@@ -99,7 +99,7 @@ async def FindGlobal(message):
   return ret
 
 def GetGlobalEmbed(message):
-  embedVar = discord.Embed(title=message.guild.name)
+  embedVar = discord.Embed(title=message.guild.name, color = 16265216)
   embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)            
   embedVar.set_thumbnail(url = GetPfp.GetServerPfp(message))
   val = str(FilterMessage(message))
