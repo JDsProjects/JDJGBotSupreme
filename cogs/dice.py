@@ -2,7 +2,7 @@ from discord.ext import commands
 import discord, random, bisect
 
 class Dice(commands.Cog):
-  def __init__(self,client):
+  def __init__(self, client):
     self.client = client
 
   @commands.command(brief="a command to roll d20",aliases=["roll20"])

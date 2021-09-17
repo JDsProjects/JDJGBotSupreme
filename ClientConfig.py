@@ -1,6 +1,6 @@
-import discord, aiohttp, re, os, contextlib
+import discord, aiohttp, re, os, contextlib, traceback
 from discord.ext import commands
-intents_usage=discord.Intents.all()
+intents_usage = discord.Intents.all()
 
 async def get_prefix(client,message):
   extras = ["JDBot*","jd*"]
@@ -45,5 +45,5 @@ for filename in os.listdir('./cogs'):
   if filename.endswith('.py'):
     try:
       client.load_extension(f'cogs.{filename[:-3]}')
-    except commands.errors.NoEntryPointError:
-      pass
+    except commands.errors.ExtensionError:
+      traceback.print_exc()

@@ -2009,10 +2009,6 @@ async def on_message(message):
     await message.channel.send(f"{data_here}")
     return
 
-  if message.content.startswith(discordprefix+"server_icon") and not message.author.bot:
-    await message.channel.send(GetPfp.GetServerPfp(message))
-    return
-
   if message.content.startswith(discordprefix+"advice") and not message.author.bot:
     advice_response=random.choice(random_response.advice)
     embed = discord.Embed(title = "Here is some advice for you!",color=random.randint(0, 16777215))
