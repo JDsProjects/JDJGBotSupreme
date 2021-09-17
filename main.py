@@ -1,4 +1,4 @@
-import discord,  os, random, imghdr, aiohttp, aiodns,asyncio, chardet, re, tweepy,  functools, math, logging, emojis, urllib3, mystbin, json, sr_api, asuna_api, aioimgur, time, async_cse
+import discord, os, random, imghdr, aiohttp, aiodns,asyncio, chardet, re, tweepy,  functools, math, logging, emojis, mystbin, json, sr_api, asuna_api, aioimgur, time, async_cse
 #modules ^
 from discord.ext import commands
 import ClientConfig, B, random_response, DatabaseControl, RankSystem, GlobalLinker, UpdateNotify, DatabaseConfig,  GetPfp, emote_program, color_code, jdjg_os, swear_checker
@@ -11,7 +11,6 @@ from pytz import timezone #all good
 from difflib import SequenceMatcher
 #import itertools
 from async_timeout import timeout
-import numpy as np
 
 bad_list=swear_checker.bad_word_list
 
@@ -245,10 +244,6 @@ async def startup():
   ClientConfig.whoami = client.user.id
 
   await status_task()
-
-@client.event
-async def on_ready():
-  print("Bot is ready.\n")
 
 async def help(message):
   if (message.author.dm_channel is None):

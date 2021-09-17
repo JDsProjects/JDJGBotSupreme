@@ -1,7 +1,5 @@
 from discord.ext import commands
-import discord
-import random
-import os
+import discord, random, os
 
 class Events(commands.Cog):
   def __init__(self,bot):
@@ -47,3 +45,10 @@ class Events(commands.Cog):
     embed.add_field(name='Amount of Roles:',value=f"{len(roles)}")
 
     await self.bot.get_channel(738912143679946783).send(embed=embed)
+
+  
+  @commands.Cog.listener()
+  async def on_ready(self):
+    print("Bot is Ready")
+    print(f"Logged in as {self.bot.user}")
+    print(f"Id: {self.bot.user.id}")
