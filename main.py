@@ -1594,6 +1594,7 @@ async def on_message(message):
       embedVar.add_field(name = header,value = body)
     await message.channel.send(embed = embedVar)
     return
+    
   if message.content.startswith(discordprefix+"global_mention") and not message.author.bot:
     i=0
     embedVar = discord.Embed(title = "Gobal Channels List",color=random.randint(0, 16777215))
@@ -1609,6 +1610,9 @@ async def on_message(message):
       embedVar.add_field(name = header,value = body)
     await message.channel.send(embed = embedVar)
     return
+
+  
+
 #RANK SYSTEM COMMANDS
   if message.content.startswith(discordprefix+"rank") and not message.author.bot:
     await RankSystem.GetStatus(message)
