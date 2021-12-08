@@ -412,6 +412,18 @@ async def avatar(ctx,*,user: BetterUserconverter = None):
   embed.set_footer(text=f"Requested by {ctx.author}")
   await ctx.send(embed=embed)
 
+@client.command(brief = "a command that takes a url and sees if it's an image.")
+async def image_check(ctx):
+  
+  images = list(filter(lambda e: e.type == "image", ctx.message.embeds))
+
+  for e in images:
+    if e.type == "image":
+      await ctx.send(f"{e.url}")
+      
+  if not images:
+    await ctx.send("you need to pass a url with an image, if you did, then please run again. This is a discord issue, and I do not want to wait for discord to change its message.")
+
 @client.command(brief="a command to send mail")
 async def mail(ctx,*,user: BetterUserconverter=None):
   if user is None:
@@ -1971,25 +1983,6 @@ async def on_message(message):
       await message.channel.send("Either the rate limit was reached or you didn't insert anything")
       print(e)
 
-    return
-
-  if message.content.startswith(discordprefix+"image_check") and not message.author.bot:
-    check_image = message.content.replace(discordprefix+"image_check ","")
-    async with aiohttp.ClientSession() as cs:
-      try:
-        async with cs.get(check_image) as response:
-          valid_image = await response.read()
-      except aiohttp.ClientConnectorError:
-        await message.channel.send("Not a valid url")
-        return
-      except aiohttp.InvalidURL:
-        await message.channel.send("seriously a fake url?")
-        return
-    try:
-      valid_image=discord.utils._get_mime_type_for_image(valid_image)
-      await message.channel.send(valid_image)
-    except discord.errors.InvalidArgument:
-      await message.channel.send("Not a valid image")
     return
 
   if message.content.startswith(discordprefix+"exportPfp") and message.author.id in admins and not message.author.bot:
