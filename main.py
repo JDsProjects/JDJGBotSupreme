@@ -3097,9 +3097,6 @@ async def on_message(message):
 @client.event
 async def on_message_delete(message):
   if not message.author.bot:
-    #if(message.content=="banana"):
-      #import LinkerPort
-      #LinkerPort.port()
     em =discord.Embed(title=f"{message.author.name} Deleted a Message",color=random.randint(0, 16777215))
     if(len(message.content)==0):
       message.content = "NULL"
