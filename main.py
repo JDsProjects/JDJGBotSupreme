@@ -1826,11 +1826,6 @@ async def on_message(message):
       embed_info.set_image(url=order_image)
       await message.channel.send(embed=embed_info)
       await client.get_channel(738912143679946783).send(embed=embed_info)
-      image_channel = client.get_channel(764543893118648342)
-      await image_channel.send("let's see the best result")
-      for i in range(len(data_used['results'])):
-        url = data_used['results'][i]['media'][0]['gif']['url']
-        await image_channel.send(url)
       return
     
     if not response.status_code == 200:
@@ -1880,14 +1875,6 @@ async def on_message(message):
       await message.channel.send(embed=embed_info)
 
       await client.get_channel(738912143679946783).send(embed=embed_info)
-
-      image_channel = client.get_channel(764543893118648342)
-      await image_channel.send("let's see the best result")
-
-      for i in range(len(data_used['results'])):
-        url = data_used['results'][i]['media'][0]['gif']['url']
-        await image_channel.send(url)
-
       return
     
     if not response.status_code == 200:
@@ -1921,10 +1908,6 @@ async def on_message(message):
         embed_info.set_image(url=order_image)
         await message.channel.send(embed=embed_info)
         await client.get_channel(738912143679946783).send(embed=embed_info)
-        image_channel = client.get_channel(764543893118648342)
-        await image_channel.send("let's see the best result")
-        for x in lst:
-          await image_channel.send(x.url)
       
       if len(lst) == 0:
         await message.channel.send("search failed... \n Error: No gifs found.")
@@ -1968,13 +1951,6 @@ async def on_message(message):
         await message.channel.send(embed=embed_info)
 
         await client.get_channel(738912143679946783).send(embed=embed_info)
-
-        image_channel = client.get_channel(764543893118648342)
-
-        await image_channel.send("let's see the best result")
-
-        for x in lst:
-          await image_channel.send(x.url)
 
       if len(lst) == 0:
         await message.channel.send("search failed... \n Error: No gifs found.")
