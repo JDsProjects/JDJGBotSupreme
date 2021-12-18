@@ -3097,17 +3097,8 @@ async def on_message(message):
 @client.event
 async def on_message_delete(message):
   if not message.author.bot:
-    em =discord.Embed(title=f"{message.author.name} Deleted a Message",color=random.randint(0, 16777215))
     if(len(message.content)==0):
       message.content = "NULL"
-    
-    if len(message.content) > 1025:
-      mystbin_client = mystbin.Client(session=client.aiohttp_session)
-      paste = await mystbin_client.post(message.content)
-      em.add_field(name="Message: ",value=paste.url)
-    if len(message.content) < 1025:
-      em.add_field(name="Message: ",value=message.content)
-    await client.get_channel(738912143679946783).send(embed=em)
       
     try:
      can = await GlobalLinker.FindGlobal(message)
@@ -3149,24 +3140,14 @@ async def on_typing(channel,user,_time):
 @client.event
 async def on_message_edit(before,after):
   #print("EDIT")
-  if(before.content!=after.content):
-    if len(before.content) > 1025:
-      mystbin_client = mystbin.Client(session=client.aiohttp_session)
-      paste = await mystbin_client.post(before.content)
-      before.content = paste.url
-    if len(after.content) > 1025:
-      mystbin_client = mystbin.Client(session=client.aiohttp_session)
-      paste = await mystbin_client.post(after.content)
-      after.content = paste.url
-    embedVar = discord.Embed(title=f"{before.author} Edited a Message",color=random.randint(0, 16777215))
+  
     if(len(before.content)==0 or before.content is None):
       before.content = "NULL"
     if(len(after.content)==0 or after.content is None):
       after.content = "NULL"
     embedVar.add_field(name="Before:",value=str(before.content))
     embedVar.add_field(name="After:",value=str(after.content))
-    logs = client.get_channel(738912143679946783)
-    await logs.send(embed=embedVar)
+    
   if not after.author.bot:
     try:
      can = await GlobalLinker.FindGlobal(before)
@@ -3177,51 +3158,6 @@ async def on_message_edit(before,after):
         await msg.edit(embed = newEmbed)
     except:
       banana = 0
-
-@client.event
-async def on_guild_emojis_update(guild, before, after):
-  if emoji_added := [x for x in before if x not in after]:
-     for different_emoji in emoji_added:
-      logs=client.get_channel(738912143679946783)
-      embed = discord.Embed(title=guild.name,color=random.randint(0, 16777215),timestamp=different_emoji.created_at)
-      embed.add_field(name=f"{different_emoji.name} deleted",value=f"Animated: {different_emoji.animated}")
-      embed.add_field(name="Emojii ID:",value=different_emoji.id)
-      embed.set_image(url=different_emoji.url)
-      await logs.send(embed=embed)
-  if emoji_added := [x for x in after if x not in before]:
-    for different_emoji in emoji_added:
-      logs=client.get_channel(738912143679946783)
-      embed = discord.Embed(title=guild.name,color=random.randint(0, 16777215),timestamp=different_emoji.created_at)
-      try:
-        emoji=await guild.fetch_emoji(different_emoji.id)
-        emoji = emoji.user
-      except discord.HTTPException:
-          emoji = "Unknown"
-      embed.add_field(name=f"{different_emoji.name} added",value=f"Animated: {different_emoji.animated}")
-      embed.add_field(name="Emojii ID:",value=different_emoji.id)
-      embed.add_field(name="Emote Creator:",value=emoji)
-      embed.set_image(url=different_emoji.url)
-      await logs.send(embed=embed)
-  
-  if len(before) == len(after):
-    logs=client.get_channel(738912143679946783)
-    for x in before:
-      for y in after:
-        if x.id == y.id:
-          if x.name != y.name:
-            embed = discord.Embed(title=guild.name,color=random.randint(0, 16777215),timestamp=y.created_at)
-            try:
-              emoji=await guild.fetch_emoji(x.id)
-              emoji = emoji.user
-            except discord.HTTPException:
-              emoji = "Unknown"
-            embed.add_field(name=f"{x.name} edited",value=f"Animated: {y.animated}")
-            embed.add_field(name="Emojii ID:",value=y.id)
-            embed.add_field(name="Emote Creator",value=emoji)
-            embed.add_field(name="New name:",value=y.name)
-            embed.set_image(url=y.url)
-            await logs.send(embed=embed)
-      
 
 @client.event
 async def on_error(name,*arguments,**karguments):
@@ -3269,12 +3205,6 @@ async def on_error(name,*arguments,**karguments):
       #pass
 
 @client.event
-async def on_member_join(member):
-  embed_message=discord.Embed(title=f"{member} just joined {member.guild.name}",timestamp=datetime.datetime.utcnow(),color=random.randint(0, 16777215))
-  embed_message.set_footer(text=f"User ID: {member.id}")
-  await client.get_channel(738912143679946783).send(embed=embed_message)
-
-@client.event
 async def on_invite_create(invite):
   try:
     invite.revoked
@@ -3302,28 +3232,6 @@ async def on_invite_delete(invite):
     invite.uses
   except discord.errors.Forbidden:
     pass
-
-
-@client.event
-async def on_member_remove(member):
-  embed_message=discord.Embed(title=f"{member} just left {member.guild.name}",timestamp=datetime.datetime.utcnow(),color=random.randint(0, 16777215))
-  embed_message.set_footer(text=f"User ID: {member.id}")
-  await client.get_channel(738912143679946783).send(embed=embed_message)
-
-@client.event
-async def on_user_update(before,after):
-  embed_message = discord.Embed(description=f"{before.mention} **updated their profile!**",color=random.randint(0, 16777215),timestamp=datetime.datetime.utcnow())
-  embed_message.set_author(name=f"{before}",icon_url=(after.avatar_url))
-  embed_message.set_footer(text=f"User ID: {before.id}")
-  if not before.name==after.name:
-    embed_message.add_field(name="Username",value=f"{before.name} -> {after.name}")
-  if not before.avatar_url == after.avatar_url:
-    embed_message.add_field(name="Avatar",value=f"[[before]]({before.avatar_url}) -> [[after]]({after.avatar_url})")
-    embed_message.set_thumbnail(url=after.avatar_url)
-    embed_message.set_image(url=after.avatar_url)
-  if not before.discriminator == after.discriminator:
-    embed_message.add_field(name="Discriminator",value=f"#{before.discriminator} -> {after.discriminator}")
-  await client.get_channel(738912143679946783).send(embed=embed_message)
 
 banned_words = [
   'faggot',
