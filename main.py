@@ -3141,12 +3141,10 @@ async def on_typing(channel,user,_time):
 async def on_message_edit(before,after):
   #print("EDIT")
   
-    if(len(before.content)==0 or before.content is None):
-      before.content = "NULL"
-    if(len(after.content)==0 or after.content is None):
-      after.content = "NULL"
-    embedVar.add_field(name="Before:",value=str(before.content))
-    embedVar.add_field(name="After:",value=str(after.content))
+  if(len(before.content)==0 or before.content is None):
+    before.content = "NULL"
+  if(len(after.content)==0 or after.content is None):
+    after.content = "NULL"
     
   if not after.author.bot:
     try:
