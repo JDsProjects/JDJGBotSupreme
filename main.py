@@ -291,7 +291,7 @@ admin_contact2 = [
 #adding an id(if you have access to the source code and want to fork it, credit us, getting your discord id is easy, replace ours with the ones you are playing to use)
 
 send_channel = [
-  738912143679946783, 
+  921939352769167360, 
 ]
 
 safe_servers = [736422329399246990, 736966204606120007,736051343185412296]
@@ -400,7 +400,7 @@ async def order(ctx,*,args=None):
     embed.set_image(url=emoji_image.image_url)
     embed.set_footer(text = f"{ctx.author.id} \nCopyright: I don't know the copyright.")
     await ctx.send(content="Order has been logged for safety purposes(we want to make sure no unsafe search is sent)",embed=embed)
-    await client.get_channel(738912143679946783).send(embed=embed)
+    await client.get_channel(921939352769167360).send(embed=embed)
 
 @client.command(brief="a command to get the avatar of a user",help="using the userinfo technology it now powers avatar grabbing.",aliases=["pfp",])
 async def avatar(ctx,*,user: BetterUserconverter = None): 
@@ -442,7 +442,7 @@ async def mail(ctx,*,user: BetterUserconverter=None):
       await user.create_dm()
     await user.send(embed=embed_message)
     embed_message.add_field(name="Sent To:",value=str(user))
-    await client.get_channel(738912143679946783).send(embed=embed_message)
+    await client.get_channel(921939352769167360).send(embed=embed_message)
 
 @order.command(brief="a command to shuffle images from google images")
 async def shuffle(ctx,*,args=None):
@@ -467,7 +467,7 @@ async def shuffle(ctx,*,args=None):
     embed.set_image(url=emoji_image.image_url)
     embed.set_footer(text = f"{ctx.author.id} \nCopyright: I don't know the copyright.")
     await ctx.send(content="Order has been logged for safety purposes(we want to make sure no unsafe search is sent)",embed=embed)
-    await client.get_channel(738912143679946783).send(embed=embed)
+    await client.get_channel(921939352769167360).send(embed=embed)
 
 @client.command(brief="a command to shuffle images from google images",aliases=["order-shuffle"])
 async def order_shuffle(ctx,*,args):
@@ -492,7 +492,7 @@ async def order_shuffle(ctx,*,args):
     embed.set_image(url=emoji_image.image_url)
     embed.set_footer(text = f"{ctx.author.id} \nCopyright: I don't know the copyright.")
     await ctx.send(content="Order has been logged for safety purposes(we want to make sure no unsafe search is sent)",embed=embed)
-    await client.get_channel(738912143679946783).send(embed=embed)
+    await client.get_channel(921939352769167360).send(embed=embed)
 
 @client.command(help="a hug command to hug people",brief="this the first command to hug.")
 async def hug(ctx,*, Member: BetterMemberConverter=None):
@@ -1185,7 +1185,7 @@ async def on_message(message):
   if message.reference != None and not message.content.startswith(discordprefix) and not message.author.bot:
     if message.mentions != None and client.user in message.mentions:
       jdjg=client.get_user(168422909482762240)
-      await client.get_channel(738912143679946783).send(content=f"{jdjg.mention} {message} \n Content: {message.content} ")
+      await client.get_channel(921939352769167360).send(content=f"{jdjg.mention} {message} \n Content: {message.content} ")
     
   if message.guild is None and not message.author.bot and not message.content.startswith(discordprefix):
     punc = [' ','.','!','?']
@@ -1279,7 +1279,7 @@ async def on_message(message):
       embed_message.set_author(name=f"The user known as {message.author}",icon_url=(pfp))
       embed_message.set_thumbnail(url = "https://cdn.discordapp.com/emojis/738514652664955012.png")
       embed_message.set_footer(text = f"{message.author.id}")
-      channel_usage=client.get_channel(738912143679946783)
+      channel_usage=client.get_channel(921939352769167360)
       embed_message.add_field(name="Sent To:",value=str(channel_usage))
       await channel_usage.send(embed=embed_message)
     if (hello_check):
@@ -1337,7 +1337,7 @@ async def on_message(message):
 
       embed_message.set_thumbnail(url = "https://i.imgur.com/ugKZ7lW.png")
 
-      channel_usage=client.get_channel(738912143679946783)
+      channel_usage=client.get_channel(921939352769167360)
       embed_message.add_field(name="Sent To:",value=str(channel_usage))
       await channel_usage.send(embed=embed_message)
     return
@@ -1825,7 +1825,7 @@ async def on_message(message):
       embed_info.add_field(name="Powered by:",value="Tenor")
       embed_info.set_image(url=order_image)
       await message.channel.send(embed=embed_info)
-      await client.get_channel(738912143679946783).send(embed=embed_info)
+      await client.get_channel(921939352769167360).send(embed=embed_info)
       return
     
     if not response.status_code == 200:
@@ -1874,7 +1874,7 @@ async def on_message(message):
       embed_info.set_image(url=order_image)
       await message.channel.send(embed=embed_info)
 
-      await client.get_channel(738912143679946783).send(embed=embed_info)
+      await client.get_channel(921939352769167360).send(embed=embed_info)
       return
     
     if not response.status_code == 200:
@@ -1907,7 +1907,7 @@ async def on_message(message):
         embed_info.add_field(name="Powered by:",value="GIPHY")
         embed_info.set_image(url=order_image)
         await message.channel.send(embed=embed_info)
-        await client.get_channel(738912143679946783).send(embed=embed_info)
+        await client.get_channel(921939352769167360).send(embed=embed_info)
       
       if len(lst) == 0:
         await message.channel.send("search failed... \n Error: No gifs found.")
@@ -1950,7 +1950,7 @@ async def on_message(message):
         embed_info.set_image(url=order_image)
         await message.channel.send(embed=embed_info)
 
-        await client.get_channel(738912143679946783).send(embed=embed_info)
+        await client.get_channel(921939352769167360).send(embed=embed_info)
 
       if len(lst) == 0:
         await message.channel.send("search failed... \n Error: No gifs found.")
@@ -2105,7 +2105,7 @@ async def on_message(message):
       except:
         await message.channel.send(f'Error processesing user: {ad_id}')
 
-      channel_used = client.get_channel(738912143679946783)
+      channel_used = client.get_channel(921939352769167360)
       await channel_used.send(embed=embed_message)
       return
 
@@ -2305,7 +2305,7 @@ async def on_message(message):
         emoji_embed.add_field(name=f"Emoji Type:",value=f"{animated_value}")
         emoji_embed.set_image(url=emote_data.url)
         emoji_embed.set_footer(text = f"{message.author.id}\n Emoji in {dump_server.name}\n ID: {dump_server.id}")
-        channel_used=client.get_channel(738912143679946783)
+        channel_used=client.get_channel(921939352769167360)
         await channel_used.send(embed=emoji_embed)
         await message.channel.send(embed=emoji_embed)
     return
@@ -2390,7 +2390,7 @@ async def on_message(message):
         emoji_embed.add_field(name=f"Emoji Type:",value=f"{animated_value}")
         emoji_embed.set_image(url=emote_data.url)
         emoji_embed.set_footer(text = f"{message.author.id}\n Emoji in {dump_server.name}\n ID: {dump_server.id}")
-        channel_used=client.get_channel(738912143679946783)
+        channel_used=client.get_channel(921939352769167360)
         await channel_used.send(embed=emoji_embed)
         await message.channel.send(embed=emoji_embed)
     return
@@ -2597,7 +2597,7 @@ async def on_message(message):
     await user.send(embed=message_to_send)
 
     message_to_send.set_footer(text = f"ID: {message.author.id}\nWarned by {message.author}\nWarned ID: {user.id} \nWarned: {user}")
-    channel_used = client.get_channel(738912143679946783)
+    channel_used = client.get_channel(921939352769167360)
     await channel_used.send(embed=message_to_send)
     user_warned="Why did you warn "+str(user)+"?"
 
@@ -2800,7 +2800,7 @@ async def on_message(message):
     embed.set_thumbnail(url="https://i.imgur.com/E7GIyu6.png")
     embed.add_field(name = f"Formula: {num}√ {root_int}", value = f"Result: {root_answer}")
     await message.channel.send(embed=embed)
-    channel_usage=client.get_channel(738912143679946783)
+    channel_usage=client.get_channel(921939352769167360)
     await channel_usage.send(embed=embed)
     return
 
@@ -3059,7 +3059,7 @@ async def on_message(message):
     embed_message.set_author(name=f"{message.author} tried to excute invalid command:",icon_url=(pfp))
     embed_message.set_footer(text = f"{message.author.id}")
     embed_message.set_thumbnail(url="https://i.imgur.com/bW6ergl.png")
-    await client.get_channel(738912143679946783).send(embed=embed_message)
+    await client.get_channel(921939352769167360).send(embed=embed_message)
     await message.channel.send("That's not a valid command.")
     return
 
@@ -3154,7 +3154,7 @@ async def on_error(name,*arguments,**karguments):
           print(adID)
     except:
       print("\n can't DM them")
-    await client.get_channel(738912143679946783).send(embed=embed_message)
+    await client.get_channel(921939352769167360).send(embed=embed_message)
   if len(idle_error) > 2049:
     traceback.print_exc()
     print(f"\n{arguments}")
