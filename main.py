@@ -1961,10 +1961,6 @@ async def on_message(message):
 
     return
 
-  if message.content.startswith(discordprefix+"exportPfp") and message.author.id in admins and not message.author.bot:
-    GetPfp.DownloadAllPfp(message)
-    return
-
   if message.content.startswith(discordprefix+"fetch_content") and not message.author.bot:
     data_here=message.content.replace(discordprefix+"fetch_content ","")
     if data_here == discordprefix+"fetch_content":

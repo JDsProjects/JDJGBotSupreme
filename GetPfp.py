@@ -51,7 +51,3 @@ async def GetUserPfp(message):
   return user
   #except:
     #return "NULL"
-
-def DownloadAllPfp(message):
-  for obj in message.guild.members:
-    print(obj.avatar_url)
