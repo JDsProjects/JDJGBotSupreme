@@ -1,7 +1,7 @@
 import discord, os, random, imghdr, aiohttp, aiodns,asyncio, chardet, re, tweepy,  functools, math, logging, emojis, mystbin, json, sr_api, asuna_api, aioimgur, time, async_cse
 #modules ^
 from discord.ext import commands
-import ClientConfig, B, random_response, DatabaseControl, RankSystem, GlobalLinker, UpdateNotify, DatabaseConfig,  GetPfp, emote_program, color_code, jdjg_os, swear_checker
+import ClientConfig, B, random_response, DatabaseControl, RankSystem, GlobalLinker, UpdateNotify, DatabaseConfig,  GetPfp, emote_program, color_code, swear_checker
 #custom programs ^
 from PIL import Image
 from io import BytesIO
@@ -2949,12 +2949,6 @@ async def on_message(message):
 
   if message.content.startswith(discordprefix+"suspend") and message.author.id in admins and not message.author.bot:
     await message.channel.send("suspending bot")
-    return
-  
-  if message.content.startswith(discordprefix+"os") and not message.author.bot:
-    if client.os_user == "None":
-      client.os_user = message.author.id
-      await jdjg_os.os(message)
     return
   
   if message.content.startswith(discordprefix+"classic_delink") and not message.author.bot:
