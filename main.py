@@ -18,183 +18,6 @@ logging.basicConfig(level=logging.INFO)
 
 client = ClientConfig.client
 
-time_location = "America/New_York"
-
-all_commands = """random_message - is random messages
-ad -advice
-help is how you get help
-Owner(bot makers) has access to change the status - a.k.a with status(it's admin only for safetly reasons)
-random_number is random number(ability to choose starting and ending numbers will be added soon...)
-time will give you the current bot time
-About is who made it
-say repeats what you say
-support contacts the bot makers in Admin and gets their support(Okay so... well you can choice DM or send it to a certain channel)
-mail allows you to send messages to people in Dms soon..
-Log off is a command to turn off the bot(admins only)
-clear is now avaible(manage messages only...)
-Support also includes Suggestions(more features will be added soon)
-coin is coin flip try with coin flip <heads or tails> (it will tell you if you're right.>
-Webhook updates(JDJG only)
-
-Color to convert values:
-
-use from to values then more
-
-Example:
-
-color hex decimal ff8a00
-
-More commands
-
-Emote(find a emote in the servers the bot is in(might not be that accurate but it's alright)
-
-servers(gives some server info- admins only)
-
-Tweet - gives messages from Usernames
-
-exmaple:
-
-
-tweet MikeTV 99
-
-webhook - works url then message
-
-example:
-
-webhook <url> hey
-------------------------
-
-doesn't work the other way
-
-(might be more):
-
-webhook_create is for creating a webhook
-
-you must Use
-
-webhook_create <name> <reason>
-
-(both are not required anymore, and it will send you a test.)
-
-You must have have an attached image
-
-If you want to use an avatar you will need to attach one to the message
-
-power - get the root of the power so if you do JDBot*square 3 1 it will be 3, and stuff like that(it won't work if you do JDBot*square three one)
-
-radical will be like the number and using radical 3 so if you did 27 it would become 3
-
-Like JDBot*radical 27 3 = 3"""
-
-
-
-all_commands2 = """Work is for well seeing how well two things get a long.
-
-(I am not adding a ship command... if I really need to, then ask...)
-
-But it will say who requested the command.
-
-Try the help command and reading the source code for all the features
-
-DMing the bot will send what you send to us.
-
-Database fuctionality is provided by well you can see if you read the source code
-
-If you want a feature, just ask... or try a command and it will send it to us like :
-
-Time setting is now a thing....(so commands will no longer work at a certain time...)
-
-The insult command to insult you, why?
-
-(Fun Fact it will question your ideas.....)
-
-Eh...
-
-compliment is here as well
-apply bloopers I would like <role>, <message(reason why)>
-
-Arithmetic <starting_number> <number_multipled each time> <times_multipled>
-link_channel
-delete_link
-GetLinked
-GetChannelId
-rank
-global
-"""
-
-commmands_here=[
-  "help",
-  "random_message",
-  "advice",
-  "random_number",
-  "about/help_2",
-  "time",
-  "say",
-  "support DM ",
-  "support channel",
-  "mail",
-  "clear",
-  "rank",
-  "lead"
-]
-admin_commands = [
-"log off",
-"dev_rank",
-"link_channel",
-"delete_link",
-"global",
-"toggle [sub-command]",
-"update [sub-command]",
-"GetLinked",
-"GetChannelId",
-"status"
-]
-commands_discription=[
-"The help message you are veiwing right now",
-"Sends a random message to the channel that the command was recieved from",
-"Gives random advice to you just when you ask for it :)",
-"Gives you a random number between a given range",
-"Old Help Page",
-"Gives the current time in the JDJG time zone!",
-"Bot repeats what you say...sort of like a robot!",
-"Does nothing for some reason",
-"Also does nothing",
-"Send mail to your best Discord Friends! Irl or not Irl! Creates a dm containing your mail to the specified user",
-"Clears the last thing you said in that channel",
-"Displays your current rank in the server as well as all linked servers",
-"Shows the leaderboard for the rank system. Use JDBot*lead local for server leaderboards and JDBot*lead global for the leaderboard for all connected servers"
-]
-admin_commands_discription =[
-  "Turns off JDJG bot for all servers",
-  "Gets the rank of the specified user",
-  "Merge two channels from any server into one combined chat room",
-  "Delete a linked channel from any channel or server",
-  "Defines a global channel that can be merged with all other servers global channel so that users can partisipate in a global chat room",
-  "Toggles JDBot Settings such as level up messages!",
-  "Notify people about important events that are happening in your server!",
-  "Get all channels linked to the current Channel",
-  "Gets the current channel Id",
-  "JDBot goes into sleep mode and displays no custom status for 5 seconds?"
-]
-admin_commands_usage_discription=[
-"JDBot*log off",
-"JDBot*dev_rank USERNAME_NO_DISCRIMINATOR",
-"JDBot*link_channel CHANNEL1_ID CHANNEL2_ID",
-"JDBot*delete_link CHANNEL1_ID CHANNEL2_ID",
-"JDBot*global",
-"JDBot*toggle level_msg",
-"JDBot*update [sub-subcommand] <sub commands are : title,body_head, body, preview,set,send>",
-"JDBot*GetLinked",
-"JDBot*GetChannelId",
-"JDBot*status"
-]
-bad_value = [
-  "",
-  " ",
-]
-
-#commmands_here = commands that the code can currently do
-
 jdjg_id = [
   168422909482762240,
   393511863385587712,
@@ -233,41 +56,13 @@ discordprefix = "JDBot*"
 
 guild_prefixes = {}
 
-##Replace admins with your user ids on discord for you to be admins, and the help commands with your prefix, basically replace JDBot* with your prefix of choice if you want to.
-
 async def startup():
   await client.wait_until_ready()
-  client.os_user = "None"
-  client.check_users = {}
 
   #line added by RenDev 2/26/2021
   ClientConfig.whoami = client.user.id
 
   await status_task()
-
-async def help(message):
-  if (message.author.dm_channel is None):
-    await message.author.create_dm()
-  embedVar2 = discord.Embed(title="User Commands",color=random.randint(0, 16777215))
-  i=-1
- # print(len(commmands_here))
-  #print(len(commands_discription))
-  for x in commmands_here:
-    i=i+1
-    #print(i)
-    embedVar2.add_field(name=x,value=commands_discription[i],inline=True)
-  await message.author.dm_channel.send(embed=embedVar2)
-  if message.author.id in admins:
-    embedVar1 = discord.Embed(title="Admin Commands",color=random.randint(0, 16777215))
-    i=-1
-    #print(len(admin_commands))
-    #print(len(admin_commands_usage_discription))
-    for x in admin_commands:
-      i=i+1
-      embedVar1.add_field(name=x,value=admin_commands_discription[i]+" usage: "+admin_commands_usage_discription[i],inline=True)
-    await message.author.dm_channel.send(embed=embedVar1)
-
-  return
     
 
 admins = [
@@ -293,9 +88,6 @@ admin_contact2 = [
 send_channel = [
   921939352769167360, 
 ]
-
-safe_servers = [736422329399246990, 736966204606120007,736051343185412296]
-
 slur_censor = []
 
 class BetterMemberConverter(commands.Converter):
@@ -821,24 +613,6 @@ async def spam(ctx):
   embed.set_image(url="https://i.imgur.com/1LckTTu.gif")
   await ctx.send(content="I hate spam.",embed=embed)
 
-@client.command(help="a command to get the old help",aliases=["old help","old-help"])
-async def old_help(ctx):
-  await help(ctx.message)
-
-@client.command(help="a command to get even older help",aliases=["help2","help-2"])
-async def help_2(ctx):
-  if (ctx.author.dm_channel is None):
-      await ctx.author.create_dm()
-  await ctx.author.dm_channel.send("Help is on the way!")
-  helpmsg = "prefix is JDBot*, commands are:\n "+all_commands
-  embed_message = discord.Embed(title="About(commands):", description=helpmsg, color=random.randint(0, 16777215))
-  await ctx.author.dm_channel.send(embed=embed_message)
-  helpmsg2 = "prefix is JDBot*, More commands are:\n "+all_commands2
-  embed_message = discord.Embed(title="About(commands):",description=helpmsg2, color=random.randint(0, 16777215))
-  await ctx.author.dm_channel.send(embed=embed_message)
-  embed_message = discord.Embed(title="About(legal):",description=legal_info, color=random.randint(0, 16777215))
-  await ctx.author.dm_channel.send(embed=embed_message)
-
 @client.command(help="a command to give information about a file")
 async def file(ctx):
   if len(ctx.message.attachments) < 1:
@@ -1131,21 +905,9 @@ waitMessage = 0
 async def on_message(message):
   await GlobalLinker.respond(message)
 
-  url_collection = []
-  global safe_servers
   global waitMessage
   user = message.author
   mention = False
-
-  if client.user in message.mentions and not message.author.bot:
-    embed = discord.Embed(title="Mention info:",description="Tip: you can disable level up messages with JDBot*toggle level_msg \nNow converting mention into a command.",color=random.randint(0, 16777215))
-    await message.channel.send(embed=embed)
-    replace_value = (f"<@!{client.user.id}> ")
-    message.content=message.content.replace(replace_value, discordprefix)
-    mention = True
-
-  if client.user in message.mentions and not message.author.bot and "shut up " in (message.content.lower()+" "):
-    await message.channel.send("I try to help you know")
 
   if message.content.startswith(discordprefix+" ") and not message.author.bot:
     message_info=message.content.split(" ")
@@ -1185,19 +947,6 @@ async def on_message(message):
       jdjg=client.get_user(168422909482762240)
       await client.get_channel(921939352769167360).send(content=f"{jdjg.mention} {message} \n Content: {message.content} ")
     
-
-
-      embed_message = discord.Embed(title=message.content, description=time_used, color=random.randint(0, 16777215))
-      
-      embed_message.set_author(name=f"Direct Message From {message.author}:",icon_url=(pfp))
-      embed_message.set_footer(text = f"{message.author.id}")
-
-      embed_message.set_thumbnail(url = "https://i.imgur.com/ugKZ7lW.png")
-
-      channel_usage=client.get_channel(921939352769167360)
-      embed_message.add_field(name="Sent To:",value=str(channel_usage))
-      await channel_usage.send(embed=embed_message)
-    return
 
   if not message.guild is None and not message.author.bot:
     if message.guild.id in guild_prefixes and not message.author.bot:
