@@ -2321,29 +2321,6 @@ async def on_message(message):
 
     return
 
-  if message.content.startswith(discordprefix+"webhook_update") and not message.author.bot and message.author.id in jdjg_id:
-    if isinstance(message.channel, discord.TextChannel):
-      await message.delete()
-  
-    message_info = message.content.replace(discordprefix+"webhook_update ","")
-    async with aiohttp.ClientSession() as session:
-      webhook=discord.Webhook.from_url(os.environ["webhook1"], adapter=discord.AsyncWebhookAdapter(session))
-      embed=discord.Embed(title="Update",color=(35056),timestamp=(message.created_at))
-      embed.add_field(name="Update Info:",value=message_info)
-      embed.set_author(name="JDJG's Update",icon_url='https://i.imgur.com/pdQkCBv.png')
-      embed.set_footer(text="JDJG's Updates")
-      await webhook.execute(embed=embed)
-    
-    async with aiohttp.ClientSession() as session:
-      webhook=discord.Webhook.from_url(os.environ["webhook99"], adapter=discord.AsyncWebhookAdapter(session))
-      embed=discord.Embed(title="Update",color=(35056),timestamp=(message.created_at))
-      embed.add_field(name="Update Info:",value=message_info)
-      embed.set_author(name="JDJG's Update",icon_url='https://i.imgur.com/pdQkCBv.png')
-      embed.set_footer(text="JDJG's Updates")
-      await webhook.execute(embed=embed)
-
-    return
-
   if message.content.startswith(discordprefix+"insult") and not message.author.bot:
     await message.channel.send("Preparing insult......")
     await asyncio.sleep(1)
@@ -2351,22 +2328,6 @@ async def on_message(message):
     embed = discord.Embed(title = "Here is an insult (at your request)",color=random.randint(0, 16777215))
     embed.add_field(name = "Don't know why you want to insult yourself though?", value = f"{insultt}")
     await message.channel.send(embed=embed)
-    return
-  
-  if message.content.startswith(discordprefix+"send_tweet") and message.author.id in admins and not message.author.bot:
-
-    consumer_key = os.environ['tweet_key']
-    consumer_secret=os.environ['tweet_secret']
-    access_token=os.environ['tweet_access']
-    access_token_secret=os.environ['tweet_token']
-
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
-    twitter_api = tweepy.API(auth)
-    tweet_send=message.content.replace(discordprefix+"send_tweet ","")
-
-    twitter_api.update_status(status = tweet_send)
-
     return
 
   if message.content.startswith(discordprefix+"tweet") and not message.author.bot:
