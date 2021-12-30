@@ -1,16 +1,13 @@
-import discord, os, random, imghdr, aiohttp, aiodns,asyncio, chardet, re, tweepy,  functools, math, logging, emojis, mystbin, json, sr_api, asuna_api, aioimgur, time, async_cse
+import discord, os, random, asyncio, chardet, re, math, logging, mystbin, sr_api, asuna_api, aioimgur, time, async_cse
 #modules ^
 from discord.ext import commands
-import ClientConfig, B, random_response, DatabaseControl, RankSystem, GlobalLinker, UpdateNotify, DatabaseConfig,  GetPfp, emote_program, color_code, swear_checker
+import ClientConfig, B, random_response, DatabaseControl, RankSystem, GlobalLinker, UpdateNotify, DatabaseConfig,  GetPfp, color_code, swear_checker
 #custom programs ^
-from PIL import Image
-from io import BytesIO
 #from itertools import cycle
 import datetime
 from pytz import timezone #all good
 from difflib import SequenceMatcher
 #import itertools
-from async_timeout import timeout
 
 bad_list=swear_checker.bad_word_list
 
