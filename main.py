@@ -2105,29 +2105,6 @@ async def on_message(message):
       await channel_used.send(embed=embed_message)
       return
 
-  if message.content.startswith(discordprefix+"backup_emojis") and message.author.id in admins  and not message.author.bot:
-    guild_search = client.get_guild(736422329399246990)
-    guild_1 = client.get_guild(748753645138608239)
-    guild_2 = client.get_guild(748753770476732499)
-    guild_emoji_fetch = guild_search.emojis
-    i = -1
-    for obj in guild_emoji_fetch:
-      img = await obj.url.read()
-      if (len(img)/1000) > 255:
-        await message.channel.send("too large")
-        return
-      if(i<50):
-        if obj.animated == True:
-          await guild_1.create_custom_emoji(name = str(obj.name),image=img)
-        if obj.animated == False:
-          i = i-1
-      if(i>=50):
-        if obj.animated == False:
-          await guild_2.create_custom_emoji(name = str(obj.name),image=img)
-        if str(obj.animated) == True:
-          i =  i-1
-    return
-
   if message.content.startswith(discordprefix+"delete_emojis") and message.author.id in admins and not message.author.bot:
     guild_1 = client.get_guild(748753645138608239)
     guild_2 = client.get_guild(748753770476732499)
