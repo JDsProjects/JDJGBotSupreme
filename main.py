@@ -298,8 +298,6 @@ safe_servers = [736422329399246990, 736966204606120007,736051343185412296]
 
 slur_censor = []
 
-from_to_channel={}
-
 class BetterMemberConverter(commands.Converter):
   async def convert(self,ctx,argument):
     try:
@@ -2392,151 +2390,6 @@ async def on_message(message):
 
     x = 0
     return
-
-
-  if message.content.startswith(discordprefix+"webhook") and not message.author.bot:
-    if len(message.content.split(" ")) < 2:
-      args = None
-    
-    if len(message.content.split(" ")) > 1:
-      value = len(message.content.split(" "))
-      args = message.content.split(" ")[1:value]
-      blank = " "
-      args = blank.join(args)
-
-
-    if args is None:
-      await message.channel.send("You didn't send anything")
-
-    if args:
-      check=re.match(r"https://discord(?:app)?.com/api/webhooks/(?P<id>[0-9]{17,21})/(?P<token>[A-Za-z0-9\.\-\_]{60,68})",args)
-      if check:
-        args = args.replace(f"{check.group()} ","")
-        if args == check.group():
-          args = "No Content"
-
-        async with aiohttp.ClientSession() as session:
-          async with session.get(check.group()) as response:
-            if response.status == 200:
-              webhook=discord.Webhook.from_url(check.group(), adapter=discord.AsyncWebhookAdapter(session))
-              
-              embed = discord.Embed(title=f"Webhook {webhook.name}'s Message",color=random.randint(0, 16777215),timestamp=(message.created_at))
-              embed.add_field(name="Content:",value=args)
-              await webhook.execute(embed=embed)
-
-            if response.status != 200:
-              await message.channel.send("Not a valid link or an error occured")
-
-        if isinstance(message.channel, discord.TextChannel):
-          await message.delete()
-
-    return
-      
-  if message.content.startswith(discordprefix+"radical") and not message.author.bot:
-    try:
-      num=message.content.split(" ")[1]
-      root_int=message.content.split(" ")[2]
-
-    except:
-      num = 1
-      root_int = 1
-
-    try:
-      num_int = int(num)
-      root_int = int(root_int)
-
-    except:
-      num = int(1)
-      root_int = int(1)
-      await message.channel.send("Why would you use something that isn't a number, try again")
-
-    root_answer = int(root_int**(1/num_int))
-    embed = discord.Embed(title = "The Radical Function Has Been Completed!",color=random.randint(0, 16777215))
-    embed.set_footer(text = f"{message.author.name} | {message.author.id}")
-    embed.set_thumbnail(url="https://i.imgur.com/E7GIyu6.png")
-    embed.add_field(name = f"Formula: {num}√ {root_int}", value = f"Result: {root_answer}")
-    await message.channel.send(embed=embed)
-    channel_usage=client.get_channel(921939352769167360)
-    await channel_usage.send(embed=embed)
-    return
-
-  if message.content.startswith(discordprefix+"power") and not message.author.bot:
-    try:
-      num = message.content.split(" ")[1]
-      root = message.content.split(" ")[2]
-      num_int = int(num)
-      root_int = int(root)
-      ans = (num_int**root_int)
-      embed = discord.Embed(title = f"Result of the function",color=random.randint(0, 16777215))
-      embed.add_field(name = f"Formula: {num} ^ {root_int}", value = f"Result: {ans}")
-      embed.set_footer(text = f"{message.author.id}")
-      embed.set_thumbnail(url="https://i.imgur.com/E7GIyu6.png")
-      await message.channel.send(embed = embed)
-
-    except:
-      await message.channel.send("either it was a string you used or you didn't give enough values.")
-      
-    return
-
-  if message.content.startswith(discordprefix+"color") and not message.author.bot:
-    try:
-      convert_from = message.content.split(" ")[1].lower()
-      convert_to = message.content.split(" ")[2].lower()
-      convert_value = message.content.split(" ")[3].lower()
-    except:
-      await message.channel.send("Not enough arguments")
-      return
-
-
-    if convert_from == "rgb":
-      if convert_value.startswith("("):
-        convert_value = convert_value[1:-1]
-      triple = convert_value.split(",")
-      for i in range(3):
-        triple[i] = int(triple[i])
-        
-    elif convert_from == "hex":
-      if convert_value.startswith("#"):
-        convert_value = convert_value[1:]
-      triple = [convert_value[0:2],convert_value[2:4],convert_value[4:]] #OBOE?
-      for i in range(3):
-        triple[i] = int(triple[i],16)
-
-    elif convert_from == "decimal":
-      triple = discord.Colour(int(convert_value)).to_rgb()
-
-    else:
-      await message.channel.send("unknown format: '%s'" % convert_from)
-      return
-
-    if convert_to == "rgb":
-      converted_value = "(%d,%d,%d)" % tuple(triple)
-
-    elif convert_to == "hex":
-      converted_value = "#%02X%02X%02X" % tuple(triple)
-
-    elif convert_to == "decimal":
-      c = discord.Colour.from_rgb(*triple)
-      converted_value = str(c.value)
-
-    else:
-      await message.channel.send("unknown format: '%s'" % convert_to)
-      return
-
-    if triple == [255, 255,255]:
-      triple = [255,254,255]
-    color_embed = (discord.Colour.from_rgb(*triple))
-    embed = discord.Embed(title = "The conversion has been completed!",description=f"Converted from {convert_from} to {convert_to}:",color=color_embed)
-    embed.add_field(name = f"{convert_to}:", value = f"{converted_value}")
-    await message.channel.send(embed=embed)
-    return
-
-  if message.content.startswith(discordprefix+"message time") and not message.author.bot:
-    embed = discord.Embed(title = "Message Time:",color=random.randint(0, 16777215),timestamp=message.created_at)
-    embed.set_footer(text=f"{message.author.id}")
-    await message.channel.send(embed=embed)
-    return
-
   
   #from better_profanity import profanity
   if not message.author.bot:
@@ -2559,80 +2412,6 @@ async def on_message(message):
         await message.channel.send(banned_response)
       except discord.errors.Forbidden:
         return
-
-  if message.content.startswith(discordprefix+"clear") or message.content.startswith(discordprefix+"purge"):
-    await message.delete()
-    user = message.author
-
-    if user.guild_permissions.manage_messages:
-      try:
-        amount = int(message.content.split(" ")[1])
-      except:
-        #arguement not an integer
-        amount = 0
-        pass
-
-      if amount > 100:
-        await message.channel.send("Too high set to 100")
-        amount = 100                     
-
-      await message.channel.purge(limit = amount)
-    return
-
-  if message.content.startswith(discordprefix+"compliment") and not message.author.bot:
-    complimentt = random.choice(random_response.compliment)
-    embed = discord.Embed(title = "Here is a compliment, for you!",color=random.randint(0, 16777215))
-    embed.add_field(name = "I hope you like it!", value=complimentt)
-    await message.channel.send(embed=embed)
-    return
-
-  if message.content.startswith(discordprefix+"Arithmetic") and not message.author.bot:
-    try:
-      og_number = int(message.content.split(" ")[1])
-      per_times = int(message.content.split(" ")[2])
-      number_times = int(message.content.split(" ")[3])
-
-      number_result = og_number+per_times*(number_times-1)
-
-      embed = discord.Embed(title = f"Result of the function",color=random.randint(0, 16777215))
-
-      embed.add_field(name=f"Formula: {og_number}+{per_times}*({number_times} - 1)",value=f"Result: {number_result}")
-
-      embed.set_footer(text = f"{message.author.id}")
-      embed.set_thumbnail(url="https://i.imgur.com/E7GIyu6.png")
-
-      await message.channel.send(embed=embed)
-
-    except:
-      await message.channel.send("Either you forgot the values needed or you used text after the Arithmetic")
-    return
-
-  if message.content.startswith(discordprefix+"suspend") and message.author.id in admins and not message.author.bot:
-    await message.channel.send("suspending bot")
-    return
-  
-  if message.content.startswith(discordprefix+"classic_delink") and not message.author.bot:
-    channel = int(message.content.split(" ")[-1])
-    if channel in from_to_channel:
-      del from_to_channel[channel]
-      await message.channel.send("Linked deleted")
-    else:
-      await message.channel.send("\n Not a valid Channel.")
-    return
-  
-  if message.content.startswith(discordprefix+"classic_link") and not message.author.bot:
-      channel_one = int(message.content.split(" ")[1])
-      channel_two = int(message.content.split(" ")[2])
-      from_to_channel[channel_one] = channel_two
-      try:
-        channel_msg = message.content.split(" ", 3)[3]  # everything after the 3rd space is all one string
-      except:
-        channel_msg = ""
-      if channel_msg == "":
-        await message.channel.send("Linker set up")
-      else:
-        await message.channel.send("Message setup message for the link is: "+channel_msg)
-      return
     
   if message.content.startswith(discordprefix+"settings") and not message.author.bot:
     import server_settings
@@ -2712,12 +2491,6 @@ async def on_message(message):
     await client.get_channel(921939352769167360).send(embed=embed_message)
     await message.channel.send("That's not a valid command.")
     return
-
-  for channel_x in from_to_channel:
-    if message.channel.id == channel_x:
-      channel_id = from_to_channel[channel_x]
-      if not message.author.bot:
-        await client.get_channel(channel_id).send(message.content)
 
 #RENDEV'S CODE...NO TOUCH
 @client.event
