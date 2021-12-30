@@ -2105,24 +2105,6 @@ async def on_message(message):
       await channel_used.send(embed=embed_message)
       return
 
-  if message.content.startswith(discordprefix+"delete_emojis") and message.author.id in admins and not message.author.bot:
-    guild_1 = client.get_guild(748753645138608239)
-    guild_2 = client.get_guild(748753770476732499)
-    for x in guild_1.emojis:
-      await x.delete()
-    for y in guild_2.emojis:
-      await y.delete()
-
-    return
-
-  if message.content.startswith(discordprefix+"emoji_clean") and message.author.id in admins and not message.author.bot:
-    id_used = (763857844440268842)
-    dump_server = client.get_guild(id_used)
-    for x in dump_server.emojis:
-      await x.delete()
-
-    return
-
   if message.content.startswith(discordprefix+"emoji_add") and not message.author.bot and user.guild_permissions.manage_emojis == True:
     emote_collect = []
     from PIL import Image
