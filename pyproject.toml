@@ -8,6 +8,7 @@ authors = ["Your Name <you@example.com>"]
 python = ">=3.8.0,<3.9"
 "discord.py" = {git = "https://github.com/Rapptz/discord.py.git"}
 jishaku = {git = "https://github.com/Gorialis/jishaku"}
+Flask = "^2.0.3"
 
 [tool.poetry.dev-dependencies]
 
