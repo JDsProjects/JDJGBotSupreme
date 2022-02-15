@@ -1,5 +1,5 @@
 **/__pycache__
 /profanity
-**/venv
+/venv
 **/.config
 *.replit
