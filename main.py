@@ -149,7 +149,7 @@ async def triggered_converter(url,ctx):
   imgur_url= await imgur_client.upload_from_url(source_image.url)
 
   embed = discord.Embed(color=random.randint(0, 16777215))
-  embed.set_author(name=f"Triggered gif requested by {ctx.author}",icon_url=(ctx.author.avatar_url))
+  embed.set_author(name=f"Triggered gif requested by {ctx.author}",icon_url=(ctx.author.display_avatar.url))
   embed.set_image(url=imgur_url["link"])
   embed.set_footer(text="powered by some random api")
   await ctx.send(embed=embed)
@@ -179,7 +179,7 @@ async def order(ctx,*,args=None):
       pass
   
     embed = discord.Embed(title=f"Item: {args}", description=f"{ctx.author} ordered a {args}",color=random.randint(0, 16777215),timestamp=ctx.message.created_at)
-    embed.set_author(name=f"order for {ctx.author}:",icon_url=(ctx.author.avatar_url))
+    embed.set_author(name=f"order for {ctx.author}:",icon_url=(ctx.author.display_avatar.url))
     embed.add_field(name="Time Spent:",value=f"{int((time_after - time_before)*1000)}MS")
     embed.add_field(name="Powered by:",value="Google Images Api")
     embed.set_image(url=emoji_image.image_url)
@@ -192,8 +192,8 @@ async def avatar(ctx,*,user: BetterUserconverter = None):
   if user is None:
     user = ctx.author
   embed = discord.Embed(color=random.randint(0, 16777215))
-  embed.set_author(name=f"{user.name}'s avatar:",icon_url=(user.avatar_url))
-  embed.set_image(url=(user.avatar_url))
+  embed.set_author(name=f"{user.name}'s avatar:",icon_url=(user.display_avatar.url))
+  embed.set_image(url=(user.display_avatar.url))
   embed.set_footer(text=f"Requested by {ctx.author}")
   await ctx.send(embed=embed)
 
@@ -220,7 +220,7 @@ async def mail(ctx,*,user: BetterUserconverter=None):
     await ctx.reply("Please give me a message to use.")
     message = await client.wait_for("message",check=check)
     embed_message = discord.Embed(title=message.content, timestamp=(message.created_at), color=random.randint(0, 16777215))
-    embed_message.set_author(name=f"Mail from: {ctx.author}",icon_url=(ctx.author.avatar_url))
+    embed_message.set_author(name=f"Mail from: {ctx.author}",icon_url=(ctx.author.display_avatar.url))
     embed_message.set_footer(text = f"{ctx.author.id}")
     embed_message.set_thumbnail(url = "https://i.imgur.com/1XvDnqC.png")
     if (user.dm_channel is None):
@@ -246,7 +246,7 @@ async def shuffle(ctx,*,args=None):
       pass
 
     embed = discord.Embed(title=f"Item: {args}", description=f"{ctx.author} ordered a {args}",color=random.randint(0, 16777215),timestamp=ctx.message.created_at)
-    embed.set_author(name=f"order for {ctx.author}:",icon_url=(ctx.author.avatar_url))
+    embed.set_author(name=f"order for {ctx.author}:",icon_url=(ctx.author.display_avatar.url))
     embed.add_field(name="Time Spent:",value=f"{int((time_after - time_before)*1000)}MS")
     embed.add_field(name="Powered by:",value="Google Images Api")
     embed.set_image(url=emoji_image.image_url)
@@ -271,7 +271,7 @@ async def order_shuffle(ctx,*,args):
       pass
 
     embed = discord.Embed(title=f"Item: {args}", description=f"{ctx.author} ordered a {args}",color=random.randint(0, 16777215),timestamp=ctx.message.created_at)
-    embed.set_author(name=f"order for {ctx.author}:",icon_url=(ctx.author.avatar_url))
+    embed.set_author(name=f"order for {ctx.author}:",icon_url=(ctx.author.display_avatar.url))
     embed.add_field(name="Time Spent:",value=f"{int((time_after - time_before)*1000)}MS")
     embed.add_field(name="Powered by:",value="Google Images Api")
     embed.set_image(url=emoji_image.image_url)
@@ -296,7 +296,7 @@ async def hug(ctx,*, Member: BetterMemberConverter=None):
   image=await sr_client.get_gif("hug")
 
   embed=discord.Embed(color=random.randint(0, 16777215))
-  embed.set_author(name=f"{person} hugged you! Awwww...",icon_url=(person.avatar_url))
+  embed.set_author(name=f"{person} hugged you! Awwww...",icon_url=(person.display_avatar.url))
   embed.set_image(url=image.url)
   embed.set_footer(text="powered by some random api")
   
@@ -329,7 +329,7 @@ async def pat2(ctx,*, Member: BetterMemberConverter= None):
   url = await asuna.get_gif("pat")
 
   embed=discord.Embed(color=random.randint(0, 16777215))
-  embed.set_author(name=f"{person} patted you! *pat pat pat*",icon_url=(person.avatar_url))
+  embed.set_author(name=f"{person} patted you! *pat pat pat*",icon_url=(person.display_avatar.url))
   embed.set_image(url=url.url)
   embed.set_footer(text="powered using the asuna.ga api")
   
@@ -363,7 +363,7 @@ async def facepalm(ctx,*, Member: BetterMemberConverter=None):
   image=await sr_client.get_gif("face-palm")
 
   embed=discord.Embed(color=random.randint(0, 16777215))
-  embed.set_author(name=f"{target} you made {person} facepalm",icon_url=(person.avatar_url))
+  embed.set_author(name=f"{target} you made {person} facepalm",icon_url=(person.display_avatar.url))
   embed.set_image(url=image.url)
   embed.set_footer(text="powered by some random api")
   
@@ -970,7 +970,7 @@ async def on_message(message):
   #await bot.send_typing(ctx.channel)
   #CHANNEL LINKER COMMANDS
   if not message.author.bot: #Channel Link Message Repeater
-    if not message.content.startswith(discordprefix):
+    if not message.content.startswith(discordprefix) and message.guild:
       if (waitMessage==1):
         await GlobalLinker.TestGLink(message)
         waitMessage = 0

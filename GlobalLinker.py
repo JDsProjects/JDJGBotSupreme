@@ -54,8 +54,8 @@ async def SendMessage(message):
               #  print(client.get_guild(gChan['ser_id']).name)
               #except:
               #  print("Error " + str(gChan['ser_id']))
-              embedVar = discord.Embed(title=f"{message.guild}",description=str(FilterMessage(message)),inline=True, color = 15428885, timestamp = message.created_at, )
-              embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)
+              embedVar = discord.Embed(title=f"{message.guild}",description=str(FilterMessage(message)), color = 15428885, timestamp = message.created_at, )
+              embedVar.set_author(name=str(message.author),icon_url=message.author.display_avatar.url)
               embedVar.set_thumbnail(url = GetPfp.GetServerPfp(message))
               try:
                 await client.get_channel(gChan['chan_id']).send(embed=embedVar)
@@ -64,7 +64,7 @@ async def SendMessage(message):
 
 async def TestGLink(message):
   embedVar = discord.Embed(title=f"{message.guild}", color = 15428885, timestamp = message.created_at, )
-  embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)            
+  embedVar.set_author(name=str(message.author),icon_url=message.author.display_avatar.url)            
   embedVar.set_thumbnail(url = GetPfp.GetServerPfp(message))
   val = str(FilterMessage(message))
   images = message.attachments
@@ -100,7 +100,7 @@ async def FindGlobal(message):
 
 def GetGlobalEmbed(message):
   embedVar = discord.Embed(title=f"{message.guild}", color = 15428885, timestamp = message.created_at)
-  embedVar.set_author(name=str(message.author),icon_url=message.author.avatar_url)            
+  embedVar.set_author(name=str(message.author),icon_url=message.author.display_avatar.url)            
   embedVar.set_thumbnail(url = GetPfp.GetServerPfp(message))
   val = str(FilterMessage(message))
   images = message.attachments

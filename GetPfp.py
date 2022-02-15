@@ -12,7 +12,7 @@ def GetServerPfp(message):
     id_bit = int(message.guild.id)
   
   guild_fetched=ClientConfig.client.get_guild(id_bit)
-  server_icon=guild_fetched.icon_url
+  server_icon= guild_fetched.icon.url if guild_fetched.icon else "https://i.imgur.com/3ZUrjUP.png"
   return server_icon
 
 async def get_username(message):
