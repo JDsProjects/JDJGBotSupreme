@@ -6,6 +6,7 @@ import logging
 import traceback
 import re
 import aiohttp
+import asyncpg
 
 async def get_prefix(bot, message):
     extras = ["jd/", "j/"]
