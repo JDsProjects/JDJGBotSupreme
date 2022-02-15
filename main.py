@@ -29,6 +29,8 @@ class JDJGBot(commands.Bot):
     #self.linked_data = await self.db.fetch("SELECT * FROM linked_chat")
     #self.linked_channels = [c.get("channel_id") for c in self.linked_data]
 
+    #change this to be different(unique global chat table name, with linked channels like the orginal method)
+
     #grab from guild_bans - guild bans
     #bans - user bans (blacklist)
 
