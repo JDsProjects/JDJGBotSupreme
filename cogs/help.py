@@ -40,10 +40,11 @@ class Dropdown(discord.ui.Select):
                 print(str(cog))
         if label == "Close":
             embede = discord.Embed(
-                title=":books: Help System",
-                description=f"Welcome To {self.bot.user.name} Help System",
+                title=f"{self.bot.user.name} Help",
+                description=f"",
+                color = discord.Color.blurple()
             )
-            embede.set_footer(text="PLACEHOLDER")
+            embede.set_footer(text="Use help [command] or help [category] for more information | <> is required | [] is optional")
             await interaction.response.edit_message(embed=embede, view=None)
 
 
@@ -72,15 +73,16 @@ async def get_help(self, interaction, CogToPassAlong):
     emb = discord.Embed(
         title=f"{CogToPassAlong} - Commands",
         description=self.bot.cogs[CogToPassAlong].__doc__,
+        color = discord.Color.blurple()
     )
     emb.set_author(name="Help System")
     # getting commands from cog
     for command in self.bot.get_cog(CogToPassAlong).get_commands():
         # if cog is not hidden
         if not command.hidden:
-            emb.add_field(name=f"『`{command.name}`』",
+            emb.add_field(name=f"`{command.name}`",
                           value=command.help,
-                          inline=False)
+                          inline=True)
     # found cog - breaking loop
     await interaction.response.edit_message(embed=emb)
 
@@ -174,7 +176,7 @@ class MyHelp(commands.HelpCommand):
     async def send_command_help(self, command):
         """triggers when a `<prefix>help <command>` is called"""
         signature = self.get_command_signature(command) # get_command_signature gets the signature of a command in <required> [optional]
-        embed = HelpEmbed(title=signature, description=command.help or "No help found...")
+        embed = HelpEmbed(title=signature, description=command.brief or "No help found...")
 
         if cog := command.cog:
             embed.add_field(name="Category", value=cog.qualified_name)
@@ -200,7 +202,7 @@ class MyHelp(commands.HelpCommand):
 
         if filtered_commands := await self.filter_commands(commands):
             for command in filtered_commands:
-                embed.add_field(name=self.get_command_signature(command), value=command.help or "No help found...")
+                embed.add_field(name=self.get_command_signature(command), value=command.brief or "No help found...")
            
         await self.send(embed=embed)
 
