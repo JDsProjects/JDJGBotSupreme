@@ -48,12 +48,12 @@ class Dropdown(discord.ui.Select):
 
 
 class DropdownView(discord.ui.View):
-    def __init__(self, bot):
+    def __init__(self, options,ctx):
         super().__init__()
 
         # Adds the dropdown to our view object.
-        self.bot = bot
-        self.add_item(Dropdown(self.bot))
+        self.bot = ctx
+        self.add_item(Dropdown(options,self.bot))
 
 
 async def get_help(self, interaction, CogToPassAlong):
