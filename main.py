@@ -3,6 +3,7 @@ import discord
 import os
 import B
 import logging 
+import traceback
 
 bot = commands.Bot(command_prefix = "jd/", intents = discord.Intents.all())
 
