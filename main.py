@@ -5,6 +5,7 @@ import B
 import logging 
 import traceback
 import re
+import aiohttp
 
 async def get_prefix(bot, message):
     extras = ["jd/", "j/"]
@@ -16,7 +17,29 @@ async def get_prefix(bot, message):
 
     return commands.when_mentioned_or(*extras)(bot, message)
 
-bot = commands.Bot(command_prefix = (get_prefix), intents = discord.Intents.all())
+class JDJGBot(commands.Bot):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+
+  async def start(self, *args, **kwargs):
+    self.session = aiohttp.ClientSession()
+    self.db = await asyncpg.create_pool(os.getenv("DB_key"))
+
+    #self.linked_data = await self.db.fetch("SELECT * FROM linked_chat")
+    #self.linked_channels = [c.get("channel_id") for c in self.linked_data]
+
+    #grab from guild_bans - guild bans
+    #bans - user bans (blacklist)
+
+    await super().start(*args, **kwargs)
+
+  async def close(self):
+    await self.session.close()
+    await self.db.close()
+    await super().close()
+
+
+bot = JDJGBot(command_prefix = (get_prefix), intents = discord.Intents.all())
 
 @bot.event
 async def on_error(event, *args, **kwargs):
