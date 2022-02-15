@@ -4,7 +4,6 @@ from discord.ext import commands
 from discord.ui import Button, Select, View
 import contextlib
 
-
 class Dropdown(discord.ui.Select):
     def __init__(self,options,ctx):
         self.bot = ctx.bot  # one thing fixed...
@@ -47,7 +46,6 @@ class Dropdown(discord.ui.Select):
             embede.set_footer(text="Use help [command] or help [category] for more information | <> is required | [] is optional")
             await interaction.response.edit_message(embed=embede, view=None)
 
-
 class DropdownView(discord.ui.View):
     def __init__(self, options,ctx):
         super().__init__()
@@ -56,64 +54,6 @@ class DropdownView(discord.ui.View):
         self.bot = ctx
         self.add_item(Dropdown(options,self.bot))
 
-
-async def get_help(self, interaction, CogToPassAlong):
-    # if CogToPassAlong == "NSFW":
-    # if not interaction.channel.is_nsfw():
-    # embed = discord.Embed(title="Non-NSFW channel 🔞", description=f"Find yourself an NSFW-Channel and retry from there.", color=discord.Colour.red())
-    # embed.set_footer(text=f"set_your_footer_here")
-    # await interaction.respond(embed=embed)
-    # return
-    # else:
-    # pass
-
-    for _ in self.bot.get_cog(CogToPassAlong).get_commands():
-        pass
-    # making title - getting description from doc-string below class
-    emb = discord.Embed(
-        title=f"{CogToPassAlong} - Commands",
-        description=self.bot.cogs[CogToPassAlong].__doc__,
-        color = discord.Color.blurple()
-    )
-    emb.set_author(name="Help System")
-    # getting commands from cog
-    for command in self.bot.get_cog(CogToPassAlong).get_commands():
-        # if cog is not hidden
-        if not command.hidden:
-            emb.add_field(name=f"`{command.name}`",
-                          value=command.help,
-                          inline=True)
-    # found cog - breaking loop
-    await interaction.response.edit_message(embed=emb)
-
-
-"""class Help(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-
-    @commands.command(slash_command=True,
-                      message_command=True,
-                      description="Help Command")
-    async def help(self, ctx):
-        embed = discord.Embed(title="SELECTION TEST",
-                              description="Testing our embeds",
-                              color=0xFF8000)
-        embede = discord.Embed(
-            title=":books: Help System",
-            description=f"Welcome To {self.bot.user.name} Help System",
-        )
-        embede.set_footer(text="PLACEHOLDER")
-        view = DropdownView(self.bot)
-
-        done_components = [
-            Button(style=ButtonStyle.secondary, label="·", disabled=True),
-        ]
-
-        # async def callback(interaction):
-        # await interaction.send(embed=embed)
-
-        await ctx.send(embed=embede, view=view)"""
-
 class Help(commands.Cog):
     "The Help Menu Cog"
 
@@ -121,7 +61,8 @@ class Help(commands.Cog):
         self.bot = bot
         
         self.bot.help_command = MyHelp()
-        
+
+
 
 class HelpEmbed(discord.Embed): # Our embed with some preset attributes to avoid setting it multiple times
     def __init__(self, **kwargs):
@@ -130,6 +71,7 @@ class HelpEmbed(discord.Embed): # Our embed with some preset attributes to avoid
         text = "Use help [command] or help [category] for more information | <> is required | [] is optional"
         self.set_footer(text=text)
         self.color = discord.Color.blurple()
+        
 
 class MyHelp(commands.HelpCommand):
     def __init__(self):
@@ -215,6 +157,38 @@ class MyHelp(commands.HelpCommand):
         """triggers when a `<prefix>help <cog>` is called"""
         title = cog.qualified_name or "No"
         await self.send_help_embed(f'{title} Category', cog.description, cog.get_commands())
+
+
+
+
+async def get_help(self, interaction, CogToPassAlong):
+    # if CogToPassAlong == "NSFW":
+    # if not interaction.channel.is_nsfw():
+    # embed = discord.Embed(title="Non-NSFW channel 🔞", description=f"Find yourself an NSFW-Channel and retry from there.", color=discord.Colour.red())
+    # embed.set_footer(text=f"set_your_footer_here")
+    # await interaction.respond(embed=embed)
+    # return
+    # else:
+    # pass
+
+    for _ in self.bot.get_cog(CogToPassAlong).get_commands():
+        pass
+    # making title - getting description from doc-string below class
+    emb = discord.Embed(
+        title=f"{CogToPassAlong} - Commands",
+        description=self.bot.cogs[CogToPassAlong].__doc__,
+        color = discord.Color.blurple()
+    )
+    emb.set_author(name="Help System")
+    # getting commands from cog
+    for command in self.bot.get_cog(CogToPassAlong).get_commands():
+        # if cog is not hidden
+        if not command.hidden:
+            emb.add_field(name=f"`{command.name}`",
+                          value=command.help,
+                          inline=True)
+    # found cog - breaking loop
+    await interaction.response.edit_message(embed=emb)
 
 def setup(bot):
     bot.add_cog(Help(bot))
