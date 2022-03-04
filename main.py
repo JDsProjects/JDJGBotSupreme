@@ -8,6 +8,9 @@ import datetime
 from pytz import timezone #all good
 from difflib import SequenceMatcher
 #import itertools
+import dotenv
+
+dotenv.load_dotenv()
 
 bad_list=swear_checker.bad_word_list
 
