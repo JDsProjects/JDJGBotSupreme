@@ -1,7 +1,7 @@
 import discord, os, random, asyncio, chardet, re, math, logging, mystbin, sr_api, asuna_api, aioimgur, time, async_cse
 #modules ^
 from discord.ext import commands
-import ClientConfig, B, random_response, DatabaseControl, RankSystem, GlobalLinker, UpdateNotify, DatabaseConfig,  GetPfp, color_code, swear_checker
+import ClientConfig, random_response, DatabaseControl, RankSystem, GlobalLinker, UpdateNotify, DatabaseConfig,  GetPfp, color_code, swear_checker
 #custom programs ^
 #from itertools import cycle
 import datetime
@@ -1437,7 +1437,7 @@ banned_words = [
 
 token_grab = os.environ['Discordtoken']
 
-B.b()
+
 client.loop.create_task(startup())
 client.run(token_grab)
 
