@@ -1,3 +1,7 @@
+import dotenv
+dotenv.load_dotenv()
+#quick dotenv load and env load
+
 import discord, os, random, asyncio, chardet, re, math, logging, mystbin, sr_api, asuna_api, aioimgur, time, async_cse
 #modules ^
 from discord.ext import commands
@@ -8,9 +12,6 @@ import datetime
 from pytz import timezone #all good
 from difflib import SequenceMatcher
 #import itertools
-import dotenv
-
-dotenv.load_dotenv()
 
 bad_list=swear_checker.bad_word_list
 
