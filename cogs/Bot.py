@@ -3,8 +3,8 @@ import time
 import discord
 import random
 
-class Bot(commands.Cog):
 
+class Bot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -83,6 +83,7 @@ class Bot(commands.Cog):
         )
 
         await ctx.send(embed=embed, view=view)
+
 
 def setup(bot):
     bot.add_cog(Bot(bot))

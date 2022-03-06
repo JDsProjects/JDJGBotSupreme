@@ -11,6 +11,7 @@ jishaku = {git = "https://github.com/Gorialis/jishaku"}
 Flask = "^2.0.3"
 asyncpg = "^0.25.0"
 better-profanity = "^0.7.0"
+python-dotenv = "^0.19.2"
 
 [tool.poetry.dev-dependencies]
 
