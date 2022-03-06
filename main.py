@@ -1,7 +1,6 @@
 from discord.ext import commands
 import discord
 import os
-import B
 import logging 
 import traceback
 import re
@@ -59,5 +58,4 @@ for filename in os.listdir("./cogs"):
             traceback.print_exc()
 
 logging.basicConfig(level=logging.INFO)
-B.b()
 bot.run(os.environ["TOKEN"])
