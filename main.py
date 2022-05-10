@@ -45,6 +45,14 @@ class JDJGBot(commands.Bot):
         await self.db.close()
         await super().close()
 
+    async def setup_hook(self):
+        for filename in os.listdir("./cogs"):
+            if filename.endswith(".py"):
+                try:
+                    await self.load_extension(f"cogs.{filename[:-3]}")
+                except commands.errors.ExtensionError:
+                    traceback.print_exc()
+
 
 bot = JDJGBot(command_prefix=(get_prefix), intents=discord.Intents.all())
 
@@ -56,13 +64,6 @@ async def on_error(event, *args, **kwargs):
     traceback.print_exc()
     # print(more_information[0])
 
-
-for filename in os.listdir("./cogs"):
-    if filename.endswith(".py"):
-        try:
-            bot.load_extension(f"cogs.{filename[:-3]}")
-        except commands.errors.ExtensionError:
-            traceback.print_exc()
 
 logging.basicConfig(level=logging.INFO)
 bot.run(os.environ["TOKEN"])
