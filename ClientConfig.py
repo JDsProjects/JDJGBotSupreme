@@ -75,6 +75,8 @@ class JDJG_Bot(commands.Bot):
         except commands.errors.ExtensionError:
           traceback.print_exc()
 
+    self.loop.create_task(startup(self))
+
     
 
 client = JDJG_Bot(command_prefix=(get_prefix),intents = discord.Intents.all())
