@@ -27,27 +27,6 @@ jdjg_id = [
 #this is used for the order command
 
 #jdjg's id only(don't add any more)
-
-async def status_task():
-    while True:
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name=" JDBot*help"))
-        await asyncio.sleep(30)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(client.guilds)} servers | {len(client.users)} users"))
-        await asyncio.sleep(30)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="the creators:"))
-        await asyncio.sleep(30)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="Nomic Zorua"))
-        await asyncio.sleep(30)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="JDJG and Shadi"))
-        await asyncio.sleep(30)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="RenDev and LinuxTerm"))
-        await asyncio.sleep(30)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="JDJG Bot will DM you two servers join if you want help from the bot makers - from about command or help command"))
-        await asyncio.sleep(30)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="(the first one is the support server), though the blooper server will tend to do it now - second one"))
-        await asyncio.sleep(30)
-        await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="use JDBot!help for the test commands"))
-        await asyncio.sleep(30)
         
 
 #be careful not to have a * anywhere else,
@@ -56,14 +35,6 @@ async def status_task():
 discordprefix = "JDBot*"
 
 guild_prefixes = {}
-
-async def startup():
-  await client.wait_until_ready()
-
-  #line added by RenDev 2/26/2021
-  ClientConfig.whoami = client.user.id
-
-  await status_task()
     
 
 admins = [
@@ -1442,7 +1413,6 @@ banned_words = [
 token_grab = os.environ['Discordtoken']
 
 
-client.loop.create_task(startup())
 client.run(token_grab)
 
 #token_grab uses Discordtoken - for 24/7 bot and Discordtoken2 for testing purposes
