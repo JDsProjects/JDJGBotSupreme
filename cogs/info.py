@@ -14,5 +14,5 @@ class Info(commands.Cog):
     
     await ctx.send(f"{guild.icon_url if guild.icon_url else 'No Url for This Guild, I am sorry dude :('}")
 
-def setup(bot):
-  bot.add_cog(Info(bot))
+async def setup(bot):
+  await bot.add_cog(Info(bot))

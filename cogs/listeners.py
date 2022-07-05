@@ -53,5 +53,5 @@ class Events(commands.Cog):
     print(f"Logged in as {self.bot.user}")
     print(f"Id: {self.bot.user.id}")
 
-def setup(bot):
-  bot.add_cog(Events(bot))
+async def setup(bot):
+  await bot.add_cog(Events(bot))

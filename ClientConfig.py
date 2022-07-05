@@ -32,7 +32,7 @@ async def status_task():
         await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="use JDBot!help for the test commands"))
         await asyncio.sleep(30)
 
-async def startup():
+async def startup(self):
   await self.wait_until_ready()
 
   #line added by RenDev 2/26/2021

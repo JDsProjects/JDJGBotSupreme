@@ -12,5 +12,5 @@ class Extra(commands.Cog):
     embed.set_author(name = f"Pingu has been summoned by {ctx.author}:", icon_url = ctx.author.avatar_url)
     await ctx.send("nook nook", embed = embed)
 
-def setup(bot):
-  bot.add_cog(Extra(bot))
+async def setup(bot):
+  await bot.add_cog(Extra(bot))
