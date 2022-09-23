@@ -36,3 +36,16 @@ def invert_sm64_str(text: str):
 
 
 # sm64 inverting methods created by Juuzoq
+
+
+# (check that it's 13 characters)
+# <8> <space> <4>
+# repeat?
+
+
+def color_code_checker(text: str):
+
+    return True
+
+
+# something else later
