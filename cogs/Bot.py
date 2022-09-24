@@ -1,7 +1,8 @@
-from discord.ext import commands
-import time
-import discord
 import random
+import time
+
+import discord
+from discord.ext import commands
 
 
 class Bot(commands.Cog):

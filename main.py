@@ -1,12 +1,14 @@
-from discord.ext import commands
-import discord
-import os
 import logging
-import traceback
+import os
 import re
+import sys
+import traceback
+
 import aiohttp
 import asyncpg
+import discord
 import dotenv
+from discord.ext import commands
 
 dotenv.load_dotenv()
 
@@ -59,7 +61,7 @@ bot = JDJGBot(command_prefix=(get_prefix), intents=discord.Intents.all())
 
 @bot.event
 async def on_error(event, *args, **kwargs):
-    more_information = os.sys.exc_info()
+    more_information = sys.exc_info()
     error_wanted = traceback.format_exc()
     traceback.print_exc()
     # print(more_information[0])
