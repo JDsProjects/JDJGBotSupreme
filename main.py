@@ -10,8 +10,6 @@ import discord
 import dotenv
 from discord.ext import commands
 
-dotenv.load_dotenv()
-
 
 async def get_prefix(bot, message):
     extras = ["jd/", "j/"]
