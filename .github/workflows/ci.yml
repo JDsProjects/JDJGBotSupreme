@@ -24,6 +24,7 @@ jobs:
           git add -A
           git commit -m "[ci] Autoformat with black"
           git push
+
       - name: Fail job if changes were made (PR only)
         if: github.event_name == 'pull_request'
         run: git diff-index --quiet HEAD -- || (git diff && exit 1)
