@@ -44,7 +44,6 @@ def invert_sm64_str(text: str):
 
 
 def color_code_checker(text: str):
-
     return True
 
 

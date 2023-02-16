@@ -73,7 +73,6 @@ class HelpEmbed(discord.Embed):  # Our embed with some preset attributes to avoi
 
 class MyHelp(commands.HelpCommand):
     def __init__(self):
-
         super().__init__(
             command_attrs={"help": "The help command for the bot"}
         )  # create our class with some aliases and cooldown

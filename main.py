@@ -48,9 +48,7 @@ class JDJGBot(commands.Bot):
         await super().close()
 
     async def setup_hook(self):
-
         for cog in EXTENSIONS:
-
             try:
                 await self.load_extension(f"{cog}")
 
