@@ -8,9 +8,9 @@ authors = ["Your Name <you@example.com>"]
 python = ">=3.10.0,<4.0"
 "discord.py" = {git = "https://github.com/Rapptz/discord.py.git"}
 jishaku = {git = "https://github.com/Gorialis/jishaku"}
-asyncpg = "^0.25.0"
-better-profanity = "^0.7.0"
-python-dotenv = "^0.19.2"
+asyncpg = ">=0.25.0"
+better-profanity = ">=0.7.0"
+python-dotenv = ">=0.19.2"
 
 [tool.poetry.dev-dependencies]
 
