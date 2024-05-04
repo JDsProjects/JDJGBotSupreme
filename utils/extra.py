@@ -23,14 +23,14 @@ def invert_sm64_str(text: str):
     for i in text.splitlines():
         if not i:
             continue
-        addr, hex = i.split(" ")
-        fh = hex[:2]
-        sh = hex[2:4]
+        addr, hex_value = i.split(" ")
+        fh = hex_value[:2]
+        sh = hex_value[2:4]
         nhex = convert_to_hex(invert(convert_to_int(fh)))
         if sh != "00":
             nhex += convert_to_hex(invert(convert_to_int(sh)))
         else:
-            nhex += f"00"
+            nhex += "00"
         e.append(f"{addr} {nhex}")
     return "\n".join(e)
 

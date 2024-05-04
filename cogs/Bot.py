@@ -21,7 +21,7 @@ class Bot(commands.Cog):
 
         embed.add_field(name="Websocket Response time:", value=f"{round(self.bot.latency*1000)} MS", inline=False)
 
-        await message.edit(content=f"Pong", embed=embed)
+        await message.edit(content="Pong", embed=embed)
 
     @commands.command(brief="gives you an invite to invite the bot.", aliases=["inv"])
     async def invite(self, ctx):
@@ -48,7 +48,7 @@ class Bot(commands.Cog):
 
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
         embed.set_footer(
-            text=f"not all features may work if you invite with minimal perms, if you invite with 0 make sure these permissions are in a Bots/Bot role."
+            text="not all features may work if you invite with minimal perms, if you invite with 0 make sure these permissions are in a Bots/Bot role."
         )
 
         view = discord.ui.View()

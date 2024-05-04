@@ -37,7 +37,7 @@ class Dropdown(discord.ui.Select):
                 await get_help(self, interaction, CogToPassAlong=cog)
                 print(str(cog))
         if label == "Close":
-            embede = discord.Embed(title=f"{self.bot.user.name} Help", description=f"", color=discord.Color.blurple())
+            embede = discord.Embed(title=f"{self.bot.user.name} Help", description="", color=discord.Color.blurple())
             embede.set_footer(
                 text="Use help [command] or help [category] for more information | <> is required | [] is optional"
             )
