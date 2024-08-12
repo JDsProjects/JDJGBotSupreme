@@ -11,11 +11,13 @@ The `HelpEmbed` class is a custom Discord Embed class that is used to format the
 
 The `get_help` function is a helper function that is used to generate the help information for a specific cog.
 """
+
 import discord
 from discord.ext import commands
 from discord import ButtonStyle, SelectOption
 from discord.ui import Button, Select, View
 import contextlib
+
 
 class Dropdown(discord.ui.Select):
     def __init__(self, options, bot):
@@ -33,16 +35,15 @@ class Dropdown(discord.ui.Select):
                 await get_help(self, interaction, CogToPassAlong=cog)
                 return
 
+
 class DropdownView(discord.ui.View):
     def __init__(self, bot):
         super().__init__()
         self.bot = bot
-        options = [
-            SelectOption(label=cog, value=cog)
-            for cog in bot.cogs
-        ]
+        options = [SelectOption(label=cog, value=cog) for cog in bot.cogs]
         options.append(SelectOption(label="Close", value="Close"))
         self.add_item(Dropdown(options, self.bot))
+
 
 class PaginationView(discord.ui.View):
     def __init__(self, embeds, bot):
@@ -53,11 +54,7 @@ class PaginationView(discord.ui.View):
 
         self.add_item(
             Dropdown(
-                [
-                    SelectOption(label=cog, value=cog)
-                    for cog in bot.cogs
-                ]
-                + [SelectOption(label="Close", value="Close")],
+                [SelectOption(label=cog, value=cog) for cog in bot.cogs] + [SelectOption(label="Close", value="Close")],
                 self.bot,
             )
         )
@@ -74,8 +71,10 @@ class PaginationView(discord.ui.View):
         await interaction.response.edit_message(embed=self.embeds[self.current_page], view=self)
         return True
 
+
 class Help(commands.HelpCommand):
     "The Help Menu Cog"
+
     def __init__(self, bot):
         super().__init__()
         self.bot = bot
@@ -117,11 +116,13 @@ class Help(commands.HelpCommand):
         except Exception as e:
             await self.context.send(f"An error occurred while processing the cog help: {e}")
 
+
 class HelpEmbed(discord.Embed):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.timestamp = discord.utils.utcnow()
         self.set_footer(text="Use dropdown to select category")
+
 
 async def get_help(self, interaction, CogToPassAlong):
     cog = self.bot.get_cog(CogToPassAlong)
@@ -186,6 +187,7 @@ async def get_help(self, interaction, CogToPassAlong):
         await interaction.response.edit_message(embed=embeds[0], view=view)
     else:
         await interaction.response.edit_message(embed=embeds[0])
+
 
 def setup(bot):
     bot.add_cog(Help(bot))
