@@ -18,7 +18,6 @@ from discord import ButtonStyle, SelectOption
 from discord.ui import Button, Select, View
 
 
-
 class Dropdown(discord.ui.Select):
     def __init__(self, options, bot):
         self.bot = bot
@@ -71,22 +70,21 @@ class PaginationView(discord.ui.View):
         await interaction.response.edit_message(embed=self.embeds[self.current_page], view=self)
         return True
 
+
 class Help(commands.Cog):
     "The Help Menu Cog"
 
     def __init__(self, bot):
         self.bot = bot
         self.bot.help_command = MyHelp()
-        
+
 
 class MyHelp(commands.HelpCommand):
     "The Help Menu Cog"
 
     def __init__(self):
-        super().__init__(
-            command_attrs={"help": "The help command for the bot"}
-        )
-    
+        super().__init__(command_attrs={"help": "The help command for the bot"})
+
     async def send(self, **kwargs):
         """a short cut to sending to get_destination"""
         await self.get_destination().send(**kwargs)
@@ -150,7 +148,9 @@ async def get_help(self, interaction, CogToPassAlong):
     commands_text = ""
     for command in cog.get_commands():
         if isinstance(command, (discord.app_commands.Command, commands.Command)):
-            command_text = f"『`/{command.name}`』: {command.description or command.help or 'No description available'}\n"
+            command_text = (
+                f"『`/{command.name}`』: {command.description or command.help or 'No description available'}\n"
+            )
             if len(commands_text) + len(command_text) > 1024:
                 embed.add_field(name="Commands", value=commands_text, inline=False)
                 embeds.append(embed)
@@ -163,7 +163,9 @@ async def get_help(self, interaction, CogToPassAlong):
             else:
                 commands_text += command_text
         elif isinstance(command, (discord.app_commands.Group, commands.Group)):
-            command_text = f"『`/{command.name}`』: {command.description or command.help or 'No description available'}\n"
+            command_text = (
+                f"『`/{command.name}`』: {command.description or command.help or 'No description available'}\n"
+            )
             if len(commands_text) + len(command_text) > 1024:
                 embed.add_field(name="Commands", value=commands_text, inline=False)
                 embeds.append(embed)

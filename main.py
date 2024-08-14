@@ -26,7 +26,7 @@ async def get_prefix(bot, message):
 
 
 class JDJGBot(commands.Bot):
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.db = None
@@ -34,7 +34,7 @@ class JDJGBot(commands.Bot):
 
     async def start(self, *args, **kwargs):
         self.session = aiohttp.ClientSession()
-        
+
         try:
             self.db = await asyncpg.create_pool(self.db_key)
             self.linked_data = await self.db.fetch("SELECT * FROM global_link")
@@ -85,6 +85,7 @@ def main():
 
     bot.db_key = db_key
     bot.run(token)
+
 
 if __name__ == "__main__":
     main()
