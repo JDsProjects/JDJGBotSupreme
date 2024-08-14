@@ -31,7 +31,11 @@ class JDJGBot(commands.Bot):
 
     async def start(self, *args, **kwargs):
         self.session = aiohttp.ClientSession()
-        self.db = await asyncpg.create_pool(os.getenv("DB_key"))
+        db_key = os.getenv("DB_key")
+        if db_key is None:
+            load_dotenv()
+            db_key = os.getenv("DB_key")
+        self.db = await asyncpg.create_pool(db_key)
 
         self.linked_data = await self.db.fetch("SELECT * FROM global_link")
         self.linked_channels = [c.get("channel_id") for c in self.linked_data]
@@ -69,6 +73,10 @@ async def on_error(event, *args, **kwargs):
     traceback.print_exc()
     # print(more_information[0])
 
-load_dotenv()
+
 logging.basicConfig(level=logging.INFO)
-bot.run(os.environ["TOKEN"])
+token = os.getenv("TOKEN")
+if token is None:
+    load_dotenv()
+    token = os.getenv("TOKEN")
+bot.run(token)
