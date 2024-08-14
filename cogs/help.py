@@ -11,11 +11,13 @@ The `HelpEmbed` class is a custom Discord Embed class that is used to format the
 
 The `get_help` function is a helper function that is used to generate the help information for a specific cog.
 """
+
 import discord
 from discord.ext import commands
 from discord import ButtonStyle, SelectOption
 from discord.ui import Button, Select, View
-import contextlib
+
+
 
 class Dropdown(discord.ui.Select):
     def __init__(self, options, bot):
@@ -33,16 +35,15 @@ class Dropdown(discord.ui.Select):
                 await get_help(self, interaction, CogToPassAlong=cog)
                 return
 
+
 class DropdownView(discord.ui.View):
     def __init__(self, bot):
         super().__init__()
         self.bot = bot
-        options = [
-            SelectOption(label=cog, value=cog)
-            for cog in bot.cogs
-        ]
+        options = [SelectOption(label=cog, value=cog) for cog in bot.cogs]
         options.append(SelectOption(label="Close", value="Close"))
         self.add_item(Dropdown(options, self.bot))
+
 
 class PaginationView(discord.ui.View):
     def __init__(self, embeds, bot):
@@ -53,11 +54,7 @@ class PaginationView(discord.ui.View):
 
         self.add_item(
             Dropdown(
-                [
-                    SelectOption(label=cog, value=cog)
-                    for cog in bot.cogs
-                ]
-                + [SelectOption(label="Close", value="Close")],
+                [SelectOption(label=cog, value=cog) for cog in bot.cogs] + [SelectOption(label="Close", value="Close")],
                 self.bot,
             )
         )
@@ -74,20 +71,34 @@ class PaginationView(discord.ui.View):
         await interaction.response.edit_message(embed=self.embeds[self.current_page], view=self)
         return True
 
-class Help(commands.HelpCommand):
+class Help(commands.Cog):
     "The Help Menu Cog"
+
     def __init__(self, bot):
-        super().__init__()
         self.bot = bot
+        self.bot.help_command = MyHelp()
+        
+
+class MyHelp(commands.HelpCommand):
+    "The Help Menu Cog"
+
+    def __init__(self):
+        super().__init__(
+            command_attrs={"help": "The help command for the bot"}
+        )
+    
+    async def send(self, **kwargs):
+        """a short cut to sending to get_destination"""
+        await self.get_destination().send(**kwargs)
 
     async def send_bot_help(self, mapping):
         embed = discord.Embed(
             title=":books: Help System",
-            description=f"Welcome To {self.bot.user.name} Help System",
+            description=f"Welcome To {self.context.bot.user.name} Help System",
         )
         embed.set_footer(text="Use dropdown to select category")
-        view = DropdownView(self.bot)
-        await self.context.send(embed=embed, view=view)
+        view = DropdownView(self.context.bot)
+        await self.send(embed=embed, view=view)
 
     async def send_command_help(self, command):
         try:
@@ -107,21 +118,23 @@ class Help(commands.HelpCommand):
                     value=f"{cooldown.rate} per {cooldown.per:.0f} seconds",
                 )
 
-            await self.context.send(embed=embed)
+            await self.send(embed=embed)
         except Exception as e:
-            await self.context.send(f"An error occurred while processing the command help: {e}")
+            await self.send(f"An error occurred while processing the command help: {e}")
 
     async def send_cog_help(self, cog):
         try:
             await get_help(self, self.context, cog.qualified_name)
         except Exception as e:
-            await self.context.send(f"An error occurred while processing the cog help: {e}")
+            await self.send(f"An error occurred while processing the cog help: {e}")
+
 
 class HelpEmbed(discord.Embed):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.timestamp = discord.utils.utcnow()
         self.set_footer(text="Use dropdown to select category")
+
 
 async def get_help(self, interaction, CogToPassAlong):
     cog = self.bot.get_cog(CogToPassAlong)
@@ -136,8 +149,8 @@ async def get_help(self, interaction, CogToPassAlong):
     embed.set_author(name="Help System")
     commands_text = ""
     for command in cog.get_commands():
-        if isinstance(command, discord.app_commands.Command):
-            command_text = f"『`/{command.name}`』: {command.description}\n"
+        if isinstance(command, (discord.app_commands.Command, commands.Command)):
+            command_text = f"『`/{command.name}`』: {command.description or command.help or 'No description available'}\n"
             if len(commands_text) + len(command_text) > 1024:
                 embed.add_field(name="Commands", value=commands_text, inline=False)
                 embeds.append(embed)
@@ -149,8 +162,8 @@ async def get_help(self, interaction, CogToPassAlong):
                 commands_text = command_text
             else:
                 commands_text += command_text
-        elif isinstance(command, discord.app_commands.Group):
-            command_text = f"『`/{command.name}`』: {command.description}\n"
+        elif isinstance(command, (discord.app_commands.Group, commands.Group)):
+            command_text = f"『`/{command.name}`』: {command.description or command.help or 'No description available'}\n"
             if len(commands_text) + len(command_text) > 1024:
                 embed.add_field(name="Commands", value=commands_text, inline=False)
                 embeds.append(embed)
@@ -163,7 +176,7 @@ async def get_help(self, interaction, CogToPassAlong):
             else:
                 commands_text += command_text
             for subcommand in command.commands:
-                subcommand_text = f"  『`/{command.name} {subcommand.name}`』: {subcommand.description}\n"
+                subcommand_text = f"  『`/{command.name} {subcommand.name}`』: {subcommand.description or subcommand.help or 'No description available'}\n"
                 if len(commands_text) + len(subcommand_text) > 1024:
                     embed.add_field(name="Commands", value=commands_text, inline=False)
                     embeds.append(embed)
@@ -186,6 +199,7 @@ async def get_help(self, interaction, CogToPassAlong):
         await interaction.response.edit_message(embed=embeds[0], view=view)
     else:
         await interaction.response.edit_message(embed=embeds[0])
+
 
 def setup(bot):
     bot.add_cog(Help(bot))
