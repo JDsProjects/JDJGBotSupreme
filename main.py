@@ -8,6 +8,7 @@ import aiohttp
 import asyncpg
 import discord
 import dotenv
+from dotenv import load_dotenv
 from discord.ext import commands
 
 from cogs import EXTENSIONS
@@ -68,6 +69,6 @@ async def on_error(event, *args, **kwargs):
     traceback.print_exc()
     # print(more_information[0])
 
-
+load_dotenv()
 logging.basicConfig(level=logging.INFO)
 bot.run(os.environ["TOKEN"])

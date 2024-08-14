@@ -2,3 +2,4 @@
 /profanity
 /venv
 **/.config
+.env
